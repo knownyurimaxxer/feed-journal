@@ -1,6 +1,8 @@
+**TLDR**: it's a Notes taking app with a personalizable UI that reminds you of _Tumblr_.
+
 The idea for this app comes from
 [this post](https://www.tumblr.com/rubensmuse/831592820192280576/killer-new-startup-idea-phone-app-called-the)
-by [@rubensmuse](https://www.tumblr.com/rubensmuse) on Tumblr.
+by [@rubensmuse](https://www.tumblr.com/rubensmuse) on _Tumblr_.
 
 If you ever feel like it, I have a [Ko-fi](https://ko-fi.com/knownyurimaxxer)!
 
