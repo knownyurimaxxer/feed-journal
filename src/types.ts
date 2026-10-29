@@ -21,6 +21,10 @@ export type Settings = {
 	maxChars: number;
 	/** Most tags a post can have (see LIMITS for the allowed range). */
 	maxTags: number;
+	/** Obsidian compatibility: ![[image]] embeds from the vault and - [ ] checklists. */
+	obsidianEnabled: boolean;
+	/** URI of the Obsidian vault folder (where embedded images are looked up), or null. */
+	vaultUri: string | null;
 };
 
 export type UpdateSetting = <K extends keyof Settings>(

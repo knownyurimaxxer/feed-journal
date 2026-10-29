@@ -16,6 +16,9 @@ const SAMPLES = [
 	"emoji 😀 **bold 😀**",
 	"a [link](https://a.com) and **[b](http://b.org)**",
 	"[bad](javascript:x) and [half](https://",
+	"- [ ] todo\n- [x] done **bold**\n* [X] up\n- [ ]\n- [ ]no",
+	"![[a b.png|200]] and ![alt|10x10](https://a.com/i.png) and ![](https://",
+	"```\n- [ ] in code\n```",
 ];
 
 const ACTIVE_RANGES: ([number, number] | null)[] = [
@@ -30,6 +33,15 @@ describe("liveSpans", () => {
 		for (const text of SAMPLES) {
 			for (const active of ACTIVE_RANGES) {
 				const spans = liveSpans(text, active);
+				expect(spans.map((s) => s.text).join("")).toBe(text);
+			}
+		}
+	});
+
+	it("never adds or removes characters with Obsidian compatibility on", () => {
+		for (const text of SAMPLES) {
+			for (const active of ACTIVE_RANGES) {
+				const spans = liveSpans(text, active, { obsidian: true });
 				expect(spans.map((s) => s.text).join("")).toBe(text);
 			}
 		}
@@ -131,5 +143,58 @@ describe("liveSpans links", () => {
 		expect(liveSpans("[hi](https://)", null)).toEqual([
 			{ text: "[hi](https://)" },
 		]);
+	});
+});
+
+describe("liveSpans checklists", () => {
+	const on = { obsidian: true };
+
+	it("keeps the marker and the box visible, even on other lines", () => {
+		expect(liveSpans("- [ ] a", null, on)).toEqual([
+			{ text: "- ", marker: true },
+			{ text: "[ ]", marker: true, task: true },
+			{ text: " ", marker: true },
+			{ text: "a" },
+		]);
+	});
+
+	it("marks the text of a checked item as done", () => {
+		const spans = liveSpans("- [x] a **b**", null, on);
+		expect(spans[1]).toEqual({ text: "[x]", marker: true, task: true });
+		expect(spans.filter((s) => s.done).map((s) => s.text)).toContain("a ");
+		expect(spans.find((s) => s.bold)).toMatchObject({ text: "b", done: true });
+	});
+
+	it("is a plain bullet when Obsidian compatibility is off", () => {
+		expect(liveSpans("- [ ] a", null)).toEqual([
+			{ text: "- ", marker: true },
+			{ text: "[ ] a" },
+		]);
+	});
+
+	it("does not treat a missing space as a checklist", () => {
+		expect(liveSpans("- [ ]a", null, on)[0]).toEqual({ text: "- ", marker: true });
+		expect(liveSpans("- [ ]a", null, on)).toHaveLength(2);
+	});
+});
+
+describe("liveSpans images", () => {
+	const on = { obsidian: true };
+
+	it("keeps a Markdown image visible in full, as a chip", () => {
+		expect(liveSpans("![a](https://a.com/i.png)", null)).toEqual([
+			{ text: "![a](https://a.com/i.png)", marker: true, image: true },
+		]);
+	});
+
+	it("shows ![[embeds]] as chips only with Obsidian compatibility", () => {
+		expect(liveSpans("![[a.png]]", null, on)).toEqual([
+			{ text: "![[a.png]]", marker: true, image: true },
+		]);
+		expect(liveSpans("![[a.png]]", null)).toEqual([{ text: "![[a.png]]" }]);
+	});
+
+	it("leaves unusable images as plain text", () => {
+		expect(liveSpans("![](https://)", null, on)).toEqual([{ text: "![](https://)" }]);
 	});
 });

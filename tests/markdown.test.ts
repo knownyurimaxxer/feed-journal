@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
+	collectImages,
+	imageRef,
 	looksLikeUrl,
 	parseBlocks,
 	parseInline,
@@ -215,5 +217,180 @@ describe("looksLikeUrl", () => {
 		expect(looksLikeUrl("mailto:a@b.c")).toBe(true);
 		expect(looksLikeUrl("e.g")).toBe(false);
 		expect(looksLikeUrl("hello world")).toBe(false);
+	});
+});
+
+describe("checklists (Obsidian compatibility)", () => {
+	const on = { obsidian: true };
+
+	it("reads - [ ] and - [x] lines, with their line number", () => {
+		expect(parseBlocks("intro\n- [ ] one\n- [x] two\n- [X] three", on)).toEqual([
+			{ type: "paragraph", text: "intro" },
+			{ type: "task", checked: false, text: "one", line: 1 },
+			{ type: "task", checked: true, text: "two", line: 2 },
+			{ type: "task", checked: true, text: "three", line: 3 },
+		]);
+	});
+
+	it("counts the lines of earlier blocks, blank lines and code fences", () => {
+		const blocks = parseBlocks("a\n\n```\n- [ ] not a task\n```\n- [ ] yes", on);
+		const tasks = blocks.filter((b) => b.type === "task");
+		expect(tasks).toEqual([{ type: "task", checked: false, text: "yes", line: 5 }]);
+	});
+
+	it("allows an empty item and other list markers", () => {
+		expect(parseBlocks("* [ ]", on)).toEqual([
+			{ type: "task", checked: false, text: "", line: 0 },
+		]);
+	});
+
+	it("needs a space after the box", () => {
+		expect(parseBlocks("- [ ]nope", on)).toEqual([
+			{ type: "bullet", text: "[ ]nope" },
+		]);
+		expect(parseBlocks("- [y] nope", on)[0].type).toBe("bullet");
+	});
+
+	it("is plain bullets when Obsidian compatibility is off", () => {
+		expect(parseBlocks("- [ ] one")).toEqual([
+			{ type: "bullet", text: "[ ] one" },
+		]);
+	});
+});
+
+describe("images", () => {
+	const on = { obsidian: true };
+	const web = (url: string) => ({ kind: "web", url });
+	const vault = (path: string) => ({ kind: "vault", path });
+
+	it("reads ![alt](https://...) with or without Obsidian compatibility", () => {
+		for (const opts of [{}, on]) {
+			expect(parseInline("![a cat](https://a.com/cat.png)", opts)).toEqual([
+				{ type: "image", image: web("https://a.com/cat.png"), alt: "a cat" },
+			]);
+		}
+	});
+
+	it("accepts an empty description and keeps text around the picture", () => {
+		expect(parseInline("see ![](http://a.com/x) now")).toEqual([
+			{ type: "text", text: "see " },
+			{ type: "image", image: web("http://a.com/x"), alt: "" },
+			{ type: "text", text: " now" },
+		]);
+	});
+
+	it("reads sizes: ![alt|300](url) and ![alt|300x200](url)", () => {
+		expect(parseInline("![cat|300](https://a.com/c.png)")).toEqual([
+			{ type: "image", image: web("https://a.com/c.png"), alt: "cat", width: 300 },
+		]);
+		expect(parseInline("![|300x200](https://a.com/c.png)")).toEqual([
+			{
+				type: "image",
+				image: web("https://a.com/c.png"),
+				alt: "",
+				width: 300,
+				height: 200,
+			},
+		]);
+	});
+
+	it("reads ![[file.png]] embeds only with Obsidian compatibility", () => {
+		expect(parseInline("![[My Photo.png]]", on)).toEqual([
+			{ type: "image", image: vault("My Photo.png"), alt: "" },
+		]);
+		expect(parseInline("![[My Photo.png]]")).toEqual([
+			{ type: "text", text: "![[My Photo.png]]" },
+		]);
+	});
+
+	it("reads embed sizes and descriptions", () => {
+		expect(parseInline("![[a.png|250]]", on)).toEqual([
+			{ type: "image", image: vault("a.png"), alt: "", width: 250 },
+		]);
+		expect(parseInline("![[a.png|a sunset|250x100]]", on)).toEqual([
+			{
+				type: "image",
+				image: vault("a.png"),
+				alt: "a sunset",
+				width: 250,
+				height: 100,
+			},
+		]);
+		expect(parseInline("![[a.png|a sunset]]", on)).toEqual([
+			{ type: "image", image: vault("a.png"), alt: "a sunset" },
+		]);
+	});
+
+	it("keeps folders in embeds and drops #anchors", () => {
+		expect(parseInline("![[Attachments/a b.png#x]]", on)).toEqual([
+			{ type: "image", image: vault("Attachments/a b.png"), alt: "" },
+		]);
+	});
+
+	it("looks up vault paths written the Markdown way, only with Obsidian compatibility", () => {
+		expect(parseInline("![](Attachments/my%20photo.jpg)", on)).toEqual([
+			{ type: "image", image: vault("Attachments/my photo.jpg"), alt: "" },
+		]);
+		expect(parseInline("![](Attachments/photo.jpg)")).toEqual([
+			{ type: "text", text: "![](Attachments/photo.jpg)" },
+		]);
+	});
+
+	it("does not draw things that are not pictures", () => {
+		for (const bad of [
+			"![[Some note]]",
+			"![[doc.pdf]]",
+			"![](javascript:alert(1))",
+			"![](file:///etc/passwd)",
+			"![](https://)",
+		])
+			expect(parseInline(bad, on)).toEqual([{ type: "text", text: bad }]);
+		// A bare address is not a web address (it would be a vault path, if Obsidian is on).
+		expect(parseInline("![](example.com/a.png)")).toEqual([
+			{ type: "text", text: "![](example.com/a.png)" },
+		]);
+	});
+
+	it("is not confused with links", () => {
+		const [link, , img] = parseInline("[a](https://a.com) ![b](https://b.com/i.png)");
+		expect(link.type).toBe("link");
+		expect(img.type).toBe("image");
+	});
+
+	it("can sit inside bold", () => {
+		const [bold] = parseInline("**![](https://a.com/i.png)**");
+		expect(bold.type).toBe("bold");
+	});
+
+	it("is found by collectImages, in order, skipping code", () => {
+		const md = "![](https://a.com/1.png) text\n```\n![](https://a.com/x.png)\n```\n- ![[2.png]]\n> ![](https://a.com/3.png)";
+		expect(collectImages(md, on).map((i) => i.image)).toEqual([
+			web("https://a.com/1.png"),
+			vault("2.png"),
+			web("https://a.com/3.png"),
+		]);
+		expect(collectImages(md).map((i) => i.image)).toEqual([
+			web("https://a.com/1.png"),
+			web("https://a.com/3.png"),
+		]);
+	});
+});
+
+describe("imageRef", () => {
+	it("accepts http and https addresses", () => {
+		expect(imageRef("https://a.com/x", false)).toEqual({ kind: "web", url: "https://a.com/x" });
+		expect(imageRef("HTTP://a.com/x.png", true)).toEqual({ kind: "web", url: "HTTP://a.com/x.png" });
+	});
+
+	it("cleans vault paths", () => {
+		expect(imageRef("./a\\b.png", true)).toEqual({ kind: "vault", path: "a/b.png" });
+		expect(imageRef("/a.PNG", true)).toEqual({ kind: "vault", path: "a.PNG" });
+		expect(imageRef("100%.png", true)).toEqual({ kind: "vault", path: "100%.png" });
+	});
+
+	it("rejects other file types and empty names", () => {
+		expect(imageRef("a.svg", true)).toBeNull();
+		expect(imageRef("#x", true)).toBeNull();
+		expect(imageRef("", true)).toBeNull();
 	});
 });

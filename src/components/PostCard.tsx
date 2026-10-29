@@ -14,6 +14,8 @@ type Props = {
 	nickname: string | null;
 	onMenu: (anchor: Anchor) => void;
 	onTag: (tag: string) => void;
+	/** A checklist box was tapped: the 0-based line of the item in the note body. */
+	onToggleTask: (line: number) => void;
 };
 
 export default function PostCard({
@@ -23,6 +25,7 @@ export default function PostCard({
 	nickname,
 	onMenu,
 	onTag,
+	onToggleTask,
 }: Props) {
 	const theme = useTheme();
 	const s = useMemo(() => makeStyles(theme), [theme]);
@@ -63,7 +66,7 @@ export default function PostCard({
 			</View>
 
 			{note.title && <Text style={s.title}>{note.title}</Text>}
-			<MarkdownText text={note.body} />
+			<MarkdownText text={note.body} onToggleTask={onToggleTask} />
 
 			{note.tags.length > 0 && (
 				<View style={s.tagRow}>

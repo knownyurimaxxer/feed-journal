@@ -17,6 +17,15 @@ If you ever feel like it, I have a [Ko-fi](https://ko-fi.com/knownyurimaxxer)!
 - **Formatting while you type.** Bold, italic, strikethrough, links,
   headings, quotes, code and lists. Links are `[text](url)`, tap them in a post to
   open them. There's a button to peek at the raw Markdown too.
+- **Images.** Write `![description](https://address)` to show a picture from
+  the web, or use the image button in the toolbar. Add a size with
+  `![description|300](https://address)`. The editor keeps the text visible and
+  previews the picture under it.
+- **Obsidian compatibility (optional).** Turn it on in Settings > Folder and
+  pick your vault. Then `![[photo.png]]` (also `![[photo.png|300]]` and
+  `![](Attachments/photo.png)`) shows the picture from the vault, and
+  `- [ ]` / `- [x]` lines become checkboxes you can tap in the feed and in the
+  editor (not in the Markdown view). The vault is only read, never changed.
 - **Search and tags.** Find an old post by a word from it, or tap a tag to
   see everything under it.
 - **Fake likes.** Each post picks up a like or two when it scrolls into view.

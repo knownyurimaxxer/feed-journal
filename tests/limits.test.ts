@@ -88,6 +88,18 @@ describe("visibleLength", () => {
 		expect(visibleLength("[half](https://")).toBe(15);
 	});
 
+	it("does not count images, with or without Obsidian compatibility", () => {
+		expect(visibleLength("a ![](https://example.com/very/long.png) b")).toBe(4);
+		expect(visibleLength("a ![[long name.png]] b", { obsidian: true })).toBe(4);
+		expect(visibleLength("a ![[long name.png]] b")).toBe(22);
+	});
+
+	it("does not count the checklist marker and box", () => {
+		expect(visibleLength("- [ ] todo", { obsidian: true })).toBe(4);
+		expect(visibleLength("- [x] todo", { obsidian: true })).toBe(4);
+		expect(visibleLength("- [ ] todo")).toBe(8); // off: "[ ] todo" is plain text
+	});
+
 	it("counts emoji like the input does (UTF-16 units)", () => {
 		expect(visibleLength("😀")).toBe("😀".length);
 	});
@@ -132,5 +144,13 @@ describe("fitToLimit", () => {
 		const out = fitToLimit("ab", "ab😀😀", 3);
 		expect(out === "ab" || out === "ab😀").toBe(true);
 		expect(out.length).toBeLessThanOrEqual(4);
+	});
+});
+
+describe("fitToLimit with Obsidian compatibility", () => {
+	it("lets you add a checklist box at the limit", () => {
+		const opts = { obsidian: true };
+		expect(fitToLimit("- [ ] ab", "- [x] ab", 2, opts)).toBe("- [x] ab");
+		expect(fitToLimit("- [ ] ab", "- [ ] abc", 2, opts)).toBe("- [ ] ab");
 	});
 });

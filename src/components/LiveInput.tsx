@@ -1,5 +1,6 @@
 import { ComponentRef, RefObject, useMemo } from "react";
 import { Platform, StyleSheet, Text, TextInput } from "react-native";
+import { useObsidian } from "../theme/ObsidianContext";
 import { useTheme } from "../theme/ThemeContext";
 import { Selection, Theme } from "../types";
 import { linkColor } from "../utils/format";
@@ -40,6 +41,7 @@ export default function LiveInput({
 }: Props) {
 	const theme = useTheme();
 	const st = useMemo(() => makeStyles(theme), [theme]);
+	const { enabled: obsidian } = useObsidian();
 
 	// Only the lines being edited matter, so the styled text is rebuilt when
 	// the cursor changes line, not on every cursor move.
@@ -48,13 +50,15 @@ export default function LiveInput({
 		: [-1, -1];
 	const children = useMemo(() => {
 		if (raw) return value ? <Text style={st.raw}>{value}</Text> : null;
-		const spans = liveSpans(value, first < 0 ? null : [first, last]);
+		const spans = liveSpans(value, first < 0 ? null : [first, last], {
+			obsidian,
+		});
 		return spans.map((span, i) => (
 			<Text key={i} style={spanStyle(span, st)}>
 				{span.text}
 			</Text>
 		));
-	}, [value, raw, first, last, st]);
+	}, [value, raw, first, last, st, obsidian]);
 
 	return (
 		<TextInput
@@ -99,6 +103,9 @@ function spanStyle(span: Span, st: Styles) {
 	if (span.link) out.push(st.link);
 	if (span.quote) out.push(st.quote);
 	if (span.marker) out.push(st.marker);
+	if (span.task) out.push(st.taskBox);
+	if (span.image) out.push(st.imageChip);
+	if (span.done) out.push(st.done);
 	if (span.dim) out.push(st.dim);
 	return out;
 }
@@ -130,4 +137,7 @@ const makeStyles = (t: Theme) =>
 		},
 		quote: { color: t.text + "CC" },
 		marker: { color: t.accent, fontWeight: "700" },
+		taskBox: { fontFamily: MONO },
+		imageChip: { fontFamily: MONO, fontSize: 15, fontWeight: "400" },
+		done: { textDecorationLine: "line-through", color: t.text + "88" },
 	});

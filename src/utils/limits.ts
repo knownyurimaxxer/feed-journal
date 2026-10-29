@@ -1,4 +1,5 @@
 import { liveSpans } from "./liveStyle";
+import type { ParseOptions } from "./markdown";
 
 /**
  * Turns whatever came out of a text box or the database into a usable limit:
@@ -25,12 +26,13 @@ export function clampLimit(
  * read. Markdown syntax is free: the *, **, ~~ and ` around text, the "[" and
  * "](url)" of a link (the address included), heading #s, list and quote
  * markers and code fences. Line breaks and everything else count.
+ * Images and checklist boxes are free too.
  * It is derived from the same pieces the editor draws, so the count always
  * agrees with what the post shows.
  */
-export function visibleLength(md: string): number {
+export function visibleLength(md: string, opts: ParseOptions = {}): number {
 	let n = 0;
-	for (const span of liveSpans(md, null))
+	for (const span of liveSpans(md, null, opts))
 		if (!span.hidden && !span.marker) n += span.text.length;
 	return n;
 }
@@ -42,9 +44,14 @@ export function visibleLength(md: string): number {
  * pasted is shortened until it fits (typing one more character at the limit
  * gives back `prev`), so the rest of the post is never touched.
  */
-export function fitToLimit(prev: string, next: string, limit: number): string {
-	const allowed = Math.max(limit, visibleLength(prev));
-	if (visibleLength(next) <= allowed) return next;
+export function fitToLimit(
+	prev: string,
+	next: string,
+	limit: number,
+	opts: ParseOptions = {},
+): string {
+	const allowed = Math.max(limit, visibleLength(prev, opts));
+	if (visibleLength(next, opts) <= allowed) return next;
 
 	// What was inserted is what lies between the common start and common end.
 	let a = 0;
@@ -66,7 +73,7 @@ export function fitToLimit(prev: string, next: string, limit: number): string {
 		const code = added.charCodeAt(n - 1);
 		if (n > 0 && code >= 0xd800 && code <= 0xdbff) continue; // never split an emoji
 		const candidate = head + added.slice(0, n) + tail;
-		if (visibleLength(candidate) <= allowed) return candidate;
+		if (visibleLength(candidate, opts) <= allowed) return candidate;
 	}
 	return prev;
 }

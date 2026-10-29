@@ -7,7 +7,14 @@
  * on lines the cursor is not on, and shown faintly on the line being edited.
  */
 
-import { FENCE, INLINE_RE, safeHref } from "./markdown";
+import {
+	FENCE,
+	imageFromMatch,
+	INLINE_RE,
+	ParseOptions,
+	safeHref,
+	TASK_RE,
+} from "./markdown";
 
 export type Span = {
 	text: string;
@@ -28,6 +35,12 @@ export type Span = {
 	/** Heading level (1-6). */
 	heading?: number;
 	quote?: boolean;
+	/** The "[ ]" / "[x]" box of a checklist item. */
+	task?: boolean;
+	/** Text of a checked checklist item. */
+	done?: boolean;
+	/** A Markdown image or ![[embed]]: kept visible as a chip (the editor can't draw pictures). */
+	image?: boolean;
 };
 
 const HEADING = /^(#{1,6})([ \t]+)(.*)$/;
@@ -51,11 +64,16 @@ export function activeLineRange(
 	return [lineAt(a), lineAt(b)];
 }
 
-/** `active` is the range of lines being edited, or null when nothing is focused. */
+/**
+ * `active` is the range of lines being edited, or null when nothing is focused.
+ * With `opts.obsidian`, "- [ ]" checklists and ![[embeds]] are understood too.
+ */
 export function liveSpans(
 	text: string,
 	active: [number, number] | null,
+	opts: ParseOptions = {},
 ): Span[] {
+	const obsidian = !!opts.obsidian;
 	const lines = text.split("\n");
 	const out: Span[] = [];
 	let inBlock = false;
@@ -108,6 +126,11 @@ export function liveSpans(
 					push(syntax("*", flags));
 					inline(m[5], { ...flags, italic: true });
 					push(syntax("*", flags));
+				} else if (m[8] !== undefined || m[10] !== undefined) {
+					// Images stay visible, in full: free of the character count, never hidden.
+					if (imageFromMatch(m, obsidian))
+						push({ ...flags, text: m[0], marker: true, image: true });
+					else push({ ...flags, text: m[0] });
 				} else if (safeHref(m[7])) {
 					// [text](url): only the text stays visible (as a link) off the active line.
 					push(syntax("[", flags));
@@ -125,6 +148,7 @@ export function liveSpans(
 		let flags: Partial<Span> = {};
 		const h = line.match(HEADING);
 		const q = line.match(QUOTE);
+		const t = obsidian ? line.match(TASK_RE) : null;
 		const b = line.match(BULLET) ?? line.match(ORDERED);
 		if (h) {
 			flags = { heading: h[1].length };
@@ -134,6 +158,13 @@ export function liveSpans(
 			flags = { quote: true };
 			push({ text: q[1], marker: true });
 			inline(q[2], flags);
+		} else if (t) {
+			// "- [ ] text": the list marker and the box stay visible; checked text is struck out.
+			flags = t[2] === " " ? {} : { done: true };
+			push({ text: t[1], marker: true });
+			push({ text: `[${t[2]}]`, marker: true, task: true });
+			push({ text: t[3] ?? "", marker: true });
+			inline(t[4] ?? "", flags);
 		} else if (b) {
 			push({ text: b[1], marker: true });
 			inline(b[2], flags);

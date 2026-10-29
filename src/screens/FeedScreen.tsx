@@ -29,12 +29,15 @@ type Props = {
 	settings: Settings;
 	updateSetting: UpdateSetting;
 	resetSettings: () => Promise<void>;
+	/** Looks for the vault's pictures again (pull to refresh). */
+	refreshVault: () => void;
 };
 
 export default function FeedScreen({
 	settings,
 	updateSetting,
 	resetSettings,
+	refreshVault,
 }: Props) {
 	const theme = useTheme();
 	const s = useMemo(() => makeStyles(theme), [theme]);
@@ -57,6 +60,7 @@ export default function FeedScreen({
 		refresh,
 		addNote,
 		editNote,
+		toggleTask,
 		removeNote,
 		wipeAll,
 		registerViews,
@@ -150,6 +154,11 @@ export default function FeedScreen({
 	const handlePickFolder = async () => {
 		const uri = await pickDirectory();
 		if (uri) updateSetting("folderUri", uri);
+	};
+
+	const handlePickVault = async () => {
+		const uri = await pickDirectory();
+		if (uri) updateSetting("vaultUri", uri);
 	};
 
 	const handlePickPhoto = async () => {
@@ -283,7 +292,10 @@ export default function FeedScreen({
 				refreshControl={
 					<RefreshControl
 						refreshing={false}
-						onRefresh={refresh}
+						onRefresh={() => {
+							refresh();
+							refreshVault();
+						}}
 						tintColor={theme.accent}
 					/>
 				}
@@ -305,6 +317,7 @@ export default function FeedScreen({
 							nickname={nicknameValue}
 							onMenu={(anchor) => setMenu({ note: item, anchor })}
 							onTag={setActiveTag}
+							onToggleTask={(line) => toggleTask(item, line)}
 						/>
 					);
 					return columns > 1 ? (
@@ -351,6 +364,7 @@ export default function FeedScreen({
 				settings={settings}
 				update={updateSetting}
 				onPickFolder={handlePickFolder}
+				onPickVault={handlePickVault}
 				onPickPhoto={handlePickPhoto}
 				onRemovePhoto={handleRemovePhoto}
 				onResetAll={handleResetAll}

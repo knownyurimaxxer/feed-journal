@@ -1,12 +1,15 @@
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { useSettings } from "./src/hooks/useSettings";
+import { useVault } from "./src/hooks/useVault";
 import FeedScreen from "./src/screens/FeedScreen";
+import { ObsidianContext } from "./src/theme/ObsidianContext";
 import { ThemeContext } from "./src/theme/ThemeContext";
 import { readableOn } from "./src/utils/format";
 
 export default function App() {
 	const { settings, ready, update, reset } = useSettings();
+	const vault = useVault(settings.obsidianEnabled, settings.vaultUri);
 
 	if (!ready) return null;
 
@@ -15,12 +18,15 @@ export default function App() {
 	return (
 		<SafeAreaProvider>
 			<ThemeContext.Provider value={settings.theme}>
-				<StatusBar style={darkBg ? "light" : "dark"} />
-				<FeedScreen
-					settings={settings}
-					updateSetting={update}
-					resetSettings={reset}
-				/>
+				<ObsidianContext.Provider value={vault.api}>
+					<StatusBar style={darkBg ? "light" : "dark"} />
+					<FeedScreen
+						settings={settings}
+						updateSetting={update}
+						resetSettings={reset}
+						refreshVault={vault.refresh}
+					/>
+				</ObsidianContext.Provider>
 			</ThemeContext.Provider>
 		</SafeAreaProvider>
 	);

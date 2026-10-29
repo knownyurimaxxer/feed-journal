@@ -29,6 +29,7 @@ type Props = {
 	settings: Settings;
 	update: UpdateSetting;
 	onPickFolder: () => void;
+	onPickVault: () => void;
 	onPickPhoto: () => void;
 	onRemovePhoto: () => void;
 	onResetAll: () => void;
@@ -40,6 +41,7 @@ export default function SettingsModal({
 	settings,
 	update,
 	onPickFolder,
+	onPickVault,
 	onPickPhoto,
 	onRemovePhoto,
 	onResetAll,
@@ -101,6 +103,60 @@ export default function SettingsModal({
 							)}
 						</View>
 					</View>
+
+					<View style={[s.row, { marginTop: 12 }]}>
+						<View style={{ flex: 1, paddingRight: 12 }}>
+							<Text style={s.rowTitle}>Obsidian compatibility</Text>
+							<Text style={s.rowHint}>
+								Shows images written as ![[photo.png]] from your
+								vault, and turns "- [ ]" and "- [x]" lines into
+								checkboxes you can tap (except in the Markdown
+								view).
+							</Text>
+						</View>
+						<Switch
+							value={settings.obsidianEnabled}
+							onValueChange={(v) => update("obsidianEnabled", v)}
+							trackColor={{
+								true: theme.accent,
+								false: "#88888888",
+							}}
+						/>
+					</View>
+					{settings.obsidianEnabled && (
+						<View style={[s.rowBlock, { marginTop: 12 }]}>
+							<Text style={s.rowTitle}>
+								{settings.vaultUri
+									? folderLabel(settings.vaultUri)
+									: "No vault chosen"}
+							</Text>
+							<Text style={s.rowHint}>
+								Choose your Obsidian vault (the folder that holds
+								the .obsidian folder). Images are looked up there
+								by name or path. Nothing in the vault is changed.
+							</Text>
+							<View style={s.btnRow}>
+								<Pressable style={s.btn} onPress={onPickVault}>
+									<Text style={s.btnText}>Choose folder</Text>
+								</Pressable>
+								{settings.vaultUri && (
+									<Pressable
+										style={[s.btn, s.btnGhost]}
+										onPress={() => update("vaultUri", null)}
+									>
+										<Text
+											style={[
+												s.btnText,
+												{ color: theme.accent },
+											]}
+										>
+											Clear
+										</Text>
+									</Pressable>
+								)}
+							</View>
+						</View>
+					)}
 
 					{/* User */}
 					<Text style={[s.section, { marginTop: 24 }]}>User</Text>

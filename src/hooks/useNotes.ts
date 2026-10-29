@@ -22,6 +22,7 @@ import {
 } from "../storage/notesFolder";
 import { Draft, Note } from "../types";
 import { newNoteId } from "../utils/format";
+import { toggleTaskLine } from "../utils/markdownEdit";
 import {
 	cleanTitle,
 	composeNote,
@@ -216,6 +217,28 @@ export function useNotes(folderUri: string | null, likesEnabled: boolean) {
 		[folderUri],
 	);
 
+	/**
+	 * Ticks or unticks the checklist item on `line` (0-based) of a post's text,
+	 * straight from the feed. The file keeps its name, whatever it is called.
+	 */
+	const toggleTask = useCallback((note: Note, line: number) => {
+		try {
+			const body = toggleTaskLine(note.body, line);
+			if (body === note.body) return;
+			const text = composeNote(body, note.tags, note.extra);
+			updateNote(note.uri, text);
+			setNotes((ns) =>
+				ns.map((n) =>
+					n.id === note.id
+						? { ...n, text, body, modifiedAt: Date.now() }
+						: n,
+				),
+			);
+		} catch (e) {
+			fail("save the changes", e);
+		}
+	}, []);
+
 	const removeNote = useCallback((note: Note) => {
 		try {
 			deleteNote(note.uri);
@@ -269,6 +292,7 @@ export function useNotes(folderUri: string | null, likesEnabled: boolean) {
 		refresh,
 		addNote,
 		editNote,
+		toggleTask,
 		removeNote,
 		wipeAll,
 		registerViews,
