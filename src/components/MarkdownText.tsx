@@ -1,13 +1,14 @@
 import { ReactNode, useMemo } from "react";
-import { Platform, StyleSheet, Text, View } from "react-native";
+import { Alert, Linking, Platform, StyleSheet, Text, View } from "react-native";
 import { useTheme } from "../theme/ThemeContext";
 import { Theme } from "../types";
+import { linkColor } from "../utils/format";
 import { Inline, parseBlocks, parseInline } from "../utils/markdown";
 
 type Props = { text: string };
 type Styles = ReturnType<typeof makeStyles>;
 
-/** Renders the Markdown subset the editor produces. */
+/** Renders the Markdown subset the editor produces (links open on tap). */
 export default function MarkdownText({ text }: Props) {
 	const theme = useTheme();
 	const s = useMemo(() => makeStyles(theme), [theme]);
@@ -77,6 +78,13 @@ export default function MarkdownText({ text }: Props) {
 	);
 }
 
+/** Opens a link in the browser (or mail app); tells the user when nothing can handle it. */
+function openLink(href: string) {
+	Linking.openURL(href).catch(() =>
+		Alert.alert("Couldn't open the link", href),
+	);
+}
+
 function renderInline(nodes: Inline[], s: Styles, key: string): ReactNode[] {
 	return nodes.map((n, i) => {
 		const k = `${key}.${i}`;
@@ -107,6 +115,17 @@ function renderInline(nodes: Inline[], s: Styles, key: string): ReactNode[] {
 						{renderInline(n.children, s, k)}
 					</Text>
 				);
+			case "link":
+				return (
+					<Text
+						key={k}
+						style={s.link}
+						accessibilityRole="link"
+						onPress={() => openLink(n.href)}
+					>
+						{renderInline(n.children, s, k)}
+					</Text>
+				);
 		}
 	});
 }
@@ -124,6 +143,7 @@ const makeStyles = (t: Theme) =>
 		bold: { fontWeight: "700" },
 		italic: { fontStyle: "italic" },
 		strike: { textDecorationLine: "line-through" },
+		link: { color: linkColor(t), textDecorationLine: "underline" },
 		inlineCode: { fontFamily: MONO, backgroundColor: t.text + "18" },
 		quote: {
 			borderLeftWidth: 3,

@@ -3,11 +3,11 @@
  * run of characters. The pieces always add up to exactly the original text
  * (nothing is added or removed), so the text input never gets out of sync.
  *
- * Syntax characters ("**", "## ", the fences of a code block...) are hidden
+ * Syntax characters ("**", "## ", "[" and "](url)" of a link, the fences of a code block...) are hidden
  * on lines the cursor is not on, and shown faintly on the line being edited.
  */
 
-import { FENCE, INLINE_RE } from "./markdown";
+import { FENCE, INLINE_RE, safeHref } from "./markdown";
 
 export type Span = {
 	text: string;
@@ -21,6 +21,8 @@ export type Span = {
 	italic?: boolean;
 	strike?: boolean;
 	code?: boolean;
+	/** The visible text of a [text](url) link. */
+	link?: boolean;
 	/** Inside a fenced code block. */
 	block?: boolean;
 	/** Heading level (1-6). */
@@ -102,10 +104,18 @@ export function liveSpans(
 					push(syntax("~~", flags));
 					inline(m[4], { ...flags, strike: true });
 					push(syntax("~~", flags));
-				} else {
+				} else if (m[5] !== undefined) {
 					push(syntax("*", flags));
 					inline(m[5], { ...flags, italic: true });
 					push(syntax("*", flags));
+				} else if (safeHref(m[7])) {
+					// [text](url): only the text stays visible (as a link) off the active line.
+					push(syntax("[", flags));
+					inline(m[6], { ...flags, link: true });
+					push(syntax(`](${m[7]})`, flags));
+				} else {
+					// Not an address we are willing to open: plain text, like the renderer shows it.
+					push({ ...flags, text: m[0] });
 				}
 				last = start + m[0].length;
 			}

@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { parseBlocks, parseInline } from "../src/utils/markdown";
+import {
+	looksLikeUrl,
+	parseBlocks,
+	parseInline,
+	safeHref,
+} from "../src/utils/markdown";
 
 describe("parseBlocks", () => {
 	it("reads headings", () => {
@@ -115,5 +120,100 @@ describe("parseInline", () => {
 		expect(parseInline("`**x**`")).toEqual([
 			{ type: "code", text: "**x**" },
 		]);
+	});
+});
+
+describe("links", () => {
+	it("parses [text](url)", () => {
+		expect(parseInline("see [docs](https://a.com/x) now")).toEqual([
+			{ type: "text", text: "see " },
+			{
+				type: "link",
+				href: "https://a.com/x",
+				children: [{ type: "text", text: "docs" }],
+			},
+			{ type: "text", text: " now" },
+		]);
+	});
+
+	it("allows formatting inside the link text", () => {
+		const [link] = parseInline("[**hi**](https://a.com)");
+		expect(link).toEqual({
+			type: "link",
+			href: "https://a.com",
+			children: [
+				{ type: "bold", children: [{ type: "text", text: "hi" }] },
+			],
+		});
+	});
+
+	it("allows a link inside bold", () => {
+		const [bold] = parseInline("**see [a](https://a.com)**");
+		expect(bold.type).toBe("bold");
+	});
+
+	it("keeps one level of parentheses in the url", () => {
+		const [link] = parseInline("[w](https://en.wikipedia.org/wiki/A_(b))");
+		expect(link).toMatchObject({
+			type: "link",
+			href: "https://en.wikipedia.org/wiki/A_(b)",
+		});
+	});
+
+	it("does not link addresses it will not open", () => {
+		expect(parseInline("[x](javascript:alert(1))")).toEqual([
+			{ type: "text", text: "[x](javascript:alert(1))" },
+		]);
+		expect(parseInline("[x](https://)")).toEqual([
+			{ type: "text", text: "[x](https://)" },
+		]);
+	});
+
+	it("leaves lone brackets alone", () => {
+		expect(parseInline("[not a link] (nope)")).toEqual([
+			{ type: "text", text: "[not a link] (nope)" },
+		]);
+	});
+});
+
+describe("safeHref", () => {
+	it("accepts http, https and mailto", () => {
+		expect(safeHref("https://a.com")).toBe("https://a.com");
+		expect(safeHref("HTTP://a.com")).toBe("HTTP://a.com");
+		expect(safeHref("mailto:me@a.com")).toBe("mailto:me@a.com");
+	});
+
+	it("adds https:// to bare addresses", () => {
+		expect(safeHref("example.com")).toBe("https://example.com");
+		expect(safeHref("www.example.com/a?b=1")).toBe(
+			"https://www.example.com/a?b=1",
+		);
+		expect(safeHref("example.com:8080/x")).toBe(
+			"https://example.com:8080/x",
+		);
+	});
+
+	it("rejects everything else", () => {
+		for (const bad of [
+			"javascript:alert(1)",
+			"data:text/html,hi",
+			"file:///etc/passwd",
+			"intent://x",
+			"hello",
+			"https://",
+			"a b.com",
+			"",
+		])
+			expect(safeHref(bad)).toBeNull();
+	});
+});
+
+describe("looksLikeUrl", () => {
+	it("is true only for clear addresses", () => {
+		expect(looksLikeUrl("https://a.com")).toBe(true);
+		expect(looksLikeUrl("www.a.com")).toBe(true);
+		expect(looksLikeUrl("mailto:a@b.c")).toBe(true);
+		expect(looksLikeUrl("e.g")).toBe(false);
+		expect(looksLikeUrl("hello world")).toBe(false);
 	});
 });

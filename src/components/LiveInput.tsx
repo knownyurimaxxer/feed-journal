@@ -2,6 +2,7 @@ import { ComponentRef, RefObject, useMemo } from "react";
 import { Platform, StyleSheet, Text, TextInput } from "react-native";
 import { useTheme } from "../theme/ThemeContext";
 import { Selection, Theme } from "../types";
+import { linkColor } from "../utils/format";
 import { activeLineRange, liveSpans, Span } from "../utils/liveStyle";
 
 type Props = {
@@ -12,7 +13,6 @@ type Props = {
 	focused: boolean;
 	selection: Selection;
 	forcedSelection: Selection | undefined;
-	maxLength: number;
 	placeholder: string;
 	onChangeText: (v: string) => void;
 	onSelectionChange: (sel: Selection) => void;
@@ -32,7 +32,6 @@ export default function LiveInput({
 	focused,
 	selection,
 	forcedSelection,
-	maxLength,
 	placeholder,
 	onChangeText,
 	onSelectionChange,
@@ -67,7 +66,6 @@ export default function LiveInput({
 			textAlignVertical="top"
 			placeholder={placeholder}
 			placeholderTextColor={theme.text + "77"}
-			maxLength={maxLength}
 			selection={forcedSelection}
 			onChangeText={onChangeText}
 			onSelectionChange={(e) =>
@@ -98,6 +96,7 @@ function spanStyle(span: Span, st: Styles) {
 	if (span.italic) out.push(st.italic);
 	if (span.strike) out.push(st.strike);
 	if (span.code) out.push(st.code);
+	if (span.link) out.push(st.link);
 	if (span.quote) out.push(st.quote);
 	if (span.marker) out.push(st.marker);
 	if (span.dim) out.push(st.dim);
@@ -123,6 +122,7 @@ const makeStyles = (t: Theme) =>
 		italic: { fontStyle: "italic" },
 		strike: { textDecorationLine: "line-through" },
 		code: { fontFamily: MONO, backgroundColor: t.text + "18" },
+		link: { color: linkColor(t), textDecorationLine: "underline" },
 		block: {
 			fontFamily: MONO,
 			fontSize: 15,

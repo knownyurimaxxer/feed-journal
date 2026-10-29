@@ -14,6 +14,8 @@ const SAMPLES = [
 	"line\n\n\nlines\n",
 	"2 * 3 * 4 and **",
 	"emoji 😀 **bold 😀**",
+	"a [link](https://a.com) and **[b](http://b.org)**",
+	"[bad](javascript:x) and [half](https://",
 ];
 
 const ACTIVE_RANGES: ([number, number] | null)[] = [
@@ -105,5 +107,29 @@ describe("live styling matches what posts render", () => {
 			(s) => s.bold || s.italic || s.strike || s.code,
 		).length;
 		expect(live).toBe(rendered);
+	});
+});
+
+describe("liveSpans links", () => {
+	it("hides the brackets and url off the active line", () => {
+		expect(liveSpans("[hi](https://a.com)", null)).toEqual([
+			{ text: "[", hidden: true },
+			{ text: "hi", link: true },
+			{ text: "](https://a.com)", hidden: true },
+		]);
+	});
+
+	it("shows the syntax faintly on the active line", () => {
+		expect(liveSpans("[hi](https://a.com)", [0, 0])).toEqual([
+			{ text: "[", dim: true },
+			{ text: "hi", link: true },
+			{ text: "](https://a.com)", dim: true },
+		]);
+	});
+
+	it("leaves an unusable address as plain text", () => {
+		expect(liveSpans("[hi](https://)", null)).toEqual([
+			{ text: "[hi](https://)" },
+		]);
 	});
 });

@@ -11,10 +11,12 @@ If you ever feel like it, I have a [Ko-fi](https://ko-fi.com/knownyurimaxxer)!
 - **Short posts.** 280 characters by default, and up to 10 tags if you feel
   organized. Add a title if you feel fancy. Want it longer, shorter, or with
   no tags at all? Settings has a Limits section: anywhere from 10 to 5,000
-  characters and 0 to 30 tags. Changing the limits never cuts a post you
-  already wrote.
-- **Formatting while you type.** Bold, italic, strikethrough, headings,
-  quotes, code and lists. There's a button to peek at the raw Markdown too.
+  characters and 0 to 30 tags. Only the text you can read counts: Markdown
+  formatting (`**`, `#`, link addresses...) is free. Changing the limits never
+  cuts a post you already wrote.
+- **Formatting while you type.** Bold, italic, strikethrough, links,
+  headings, quotes, code and lists. Links are `[text](url)`, tap them in a post to
+  open them. There's a button to peek at the raw Markdown too.
 - **Search and tags.** Find an old post by a word from it, or tap a tag to
   see everything under it.
 - **Fake likes.** Each post picks up a like or two when it scrolls into view.

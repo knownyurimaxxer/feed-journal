@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
 	toggleCodeBlock,
 	toggleLinePrefix,
+	toggleLink,
 	toggleWrap,
 } from "../src/utils/markdownEdit";
 
@@ -98,5 +99,59 @@ describe("toggleLinePrefix", () => {
 
 	it("works on an empty text", () => {
 		expect(toggleLinePrefix("", sel(0), "bullet").text).toBe("- ");
+	});
+});
+
+describe("toggleLink", () => {
+	it("inserts a template with the label selected when nothing is selected", () => {
+		const r = toggleLink("ab", sel(1));
+		expect(r.text).toBe("a[link text](https://)b");
+		expect(r.text.slice(r.selection.start, r.selection.end)).toBe(
+			"link text",
+		);
+	});
+
+	it("turns selected text into the label and selects the address placeholder", () => {
+		const r = toggleLink("see docs here", sel(4, 8));
+		expect(r.text).toBe("see [docs](https://) here");
+		expect(r.text.slice(r.selection.start, r.selection.end)).toBe(
+			"https://",
+		);
+	});
+
+	it("turns a selected address into the target, cursor in the label", () => {
+		const r = toggleLink("go www.a.com now", sel(3, 12));
+		expect(r.text).toBe("go [](www.a.com) now");
+		expect(r.selection).toEqual(sel(4));
+	});
+
+	it("removes an existing link and keeps its text", () => {
+		const r = toggleLink("x [hi](https://a.com) y", sel(4));
+		expect(r.text).toBe("x hi y");
+		expect(r.selection).toEqual(sel(2, 4));
+	});
+
+	it("removes the link when the whole link is selected", () => {
+		const text = "[hi](https://a.com)";
+		expect(toggleLink(text, sel(0, text.length)).text).toBe("hi");
+	});
+
+	it("treats a cursor right after the link as outside it", () => {
+		const text = "[hi](https://a.com)";
+		expect(toggleLink(text, sel(text.length)).text).toBe(
+			text + "[link text](https://)",
+		);
+	});
+
+	it("does not touch a selection across lines", () => {
+		expect(toggleLink("a\nb", sel(0, 3))).toEqual({
+			text: "a\nb",
+			selection: sel(0, 3),
+		});
+	});
+
+	it("only looks at the cursor's own line", () => {
+		const r = toggleLink("[a](https://a.com)\nplain", sel(21));
+		expect(r.text).toBe("[a](https://a.com)\npl[link text](https://)ain");
 	});
 });

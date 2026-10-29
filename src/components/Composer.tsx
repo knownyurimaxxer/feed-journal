@@ -2,7 +2,6 @@ import { ComponentProps, ComponentRef, useMemo, useRef, useState } from "react";
 import {
 	KeyboardAvoidingView,
 	Modal,
-	Platform,
 	Pressable,
 	ScrollView,
 	StyleSheet,
@@ -16,10 +15,12 @@ import { MAX_TAG_LENGTH, MAX_TITLE } from "../constants";
 import { useTheme } from "../theme/ThemeContext";
 import { Draft, Note, Selection, Theme } from "../types";
 import { readableOn } from "../utils/format";
+import { fitToLimit, visibleLength } from "../utils/limits";
 import {
 	EditResult,
 	toggleCodeBlock,
 	toggleLinePrefix,
+	toggleLink,
 	toggleWrap,
 } from "../utils/markdownEdit";
 import { cleanTitle, normalizeTag } from "../utils/noteText";
@@ -59,6 +60,7 @@ const TOOLS: Tool[] = [
 		label: "Strikethrough",
 		run: (t, s) => toggleWrap(t, s, "~~"),
 	},
+	{ icon: "link-variant", label: "Link", run: toggleLink },
 	{
 		icon: "format-header-pound",
 		label: "Heading",
@@ -112,18 +114,25 @@ export default function Composer({
 	const [forced, setForced] = useState<Selection | undefined>(undefined);
 	const bodyRef = useRef<ComponentRef<typeof TextInput>>(null);
 
-	// Lowering the limit never cuts a post you already wrote: while editing,
-	// it can stay as long as it is (but can't grow past that).
-	const limit = Math.max(maxChars, editing?.body.length ?? 0);
-	const left = limit - body.length;
+	// The limit counts what you can read: Markdown syntax (**, [](url), ...)
+	// is free (see visibleLength). Lowering it never cuts a post you already
+	// wrote: while editing, it can stay as long as it is (but can't grow past that).
+	const used = useMemo(() => visibleLength(body), [body]);
+	const startLength = useMemo(
+		() => (editing ? visibleLength(editing.body) : 0),
+		[editing],
+	);
+	const limit = Math.max(maxChars, startLength);
+	const left = limit - used;
 	// With tags set to 0 the box is hidden, unless this post already has some.
 	const showTags = maxTags > 0 || tags.length > 0;
 	const canPost = body.trim().length > 0;
 
 	const applyTool = (tool: Tool) => {
 		const r = tool.run(body, selection);
-		// Toolbar edits bypass the input's maxLength, so enforce the limit here.
-		if (r.text.length > limit && r.text.length > body.length) return;
+		// Toolbar edits don't go through the input, so enforce the limit here.
+		const grows = visibleLength(r.text) > used;
+		if (grows && visibleLength(r.text) > limit) return;
 		setBody(r.text);
 		setSelection(r.selection);
 		setForced(r.selection);
@@ -162,13 +171,16 @@ export default function Composer({
 		<Modal
 			visible={visible}
 			animationType="slide"
+			statusBarTranslucent
 			onRequestClose={onClose}
 			supportedOrientations={["portrait", "landscape"]}
 		>
 			<SafeAreaView style={s.root}>
 				<KeyboardAvoidingView
 					style={{ flex: 1 }}
-					behavior={Platform.OS === "ios" ? "padding" : undefined}
+					// "padding" on Android too: without it nothing lifts the toolbar
+					// above the keyboard (Android no longer resizes the window for us).
+					behavior="padding"
 				>
 					<View style={s.header}>
 						<Pressable onPress={onClose} hitSlop={10}>
@@ -246,10 +258,10 @@ export default function Composer({
 							focused={bodyFocused}
 							selection={selection}
 							forcedSelection={forced}
-							maxLength={limit}
 							placeholder="What's on your mind? (no one will see this)"
 							onChangeText={(v) => {
-								setBody(v);
+								// Over the limit: what was just typed or pasted is cut to fit.
+								setBody((prev) => fitToLimit(prev, v, limit));
 								setForced(undefined);
 							}}
 							onSelectionChange={(sel) => {

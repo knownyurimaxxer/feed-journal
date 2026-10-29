@@ -3,6 +3,7 @@
  * selection and returns the new text and selection.
  */
 import type { Selection } from "../types";
+import { LINK_RE, looksLikeUrl } from "./markdown";
 
 export type EditResult = { text: string; selection: Selection };
 export type LineKind = "quote" | "bullet" | "ordered" | "heading";
@@ -169,5 +170,65 @@ export function toggleLinePrefix(
 			start === end
 				? { start: lineEnd + delta, end: lineEnd + delta }
 				: { start: lineStart, end: lineEnd + delta },
+	};
+}
+
+const LINK_PLACEHOLDER = "https://";
+const LINK_LABEL = "link text";
+
+/**
+ * The link button.
+ * - Cursor or selection inside an existing [text](url): removes the link, keeps the text.
+ * - Selected text that is itself an address: becomes the target, cursor goes in the empty label.
+ * - Any other selection: becomes the label, with the address placeholder selected, ready to paste over.
+ * - Nothing selected: inserts a template with its label selected.
+ * A selection that crosses lines is left alone (a link can't span lines).
+ */
+export function toggleLink(text: string, sel: Selection): EditResult {
+	const { start, end } = ordered(sel);
+
+	// 1. Already a link? Remove it.
+	const lineStart = start === 0 ? 0 : text.lastIndexOf("\n", start - 1) + 1;
+	const found = text.indexOf("\n", lineStart);
+	const lineEnd = found === -1 ? text.length : found;
+	for (const m of text.slice(lineStart, lineEnd).matchAll(LINK_RE)) {
+		const from = lineStart + (m.index ?? 0);
+		const to = from + m[0].length;
+		// A bare cursor right at either edge of the link is outside it.
+		const edge = start === end && (start === from || start === to);
+		if (start < from || end > to || edge) continue;
+		return {
+			text: text.slice(0, from) + m[1] + text.slice(to),
+			selection: { start: from, end: from + m[1].length },
+		};
+	}
+
+	const before = text.slice(0, start);
+	const mid = text.slice(start, end);
+	const after = text.slice(end);
+	if (mid.includes("\n")) return { text, selection: { start, end } };
+
+	// 2. The selection is an address: it becomes the target of an empty label.
+	if (looksLikeUrl(mid)) {
+		return {
+			text: `${before}[](${mid})${after}`,
+			selection: { start: start + 1, end: start + 1 },
+		};
+	}
+
+	// 3. Plain text selected: it becomes the label.
+	if (mid) {
+		const open = `[${mid}](`;
+		const s = start + open.length;
+		return {
+			text: `${before}${open}${LINK_PLACEHOLDER})${after}`,
+			selection: { start: s, end: s + LINK_PLACEHOLDER.length },
+		};
+	}
+
+	// 4. Nothing selected: template with the label selected.
+	return {
+		text: `${before}[${LINK_LABEL}](${LINK_PLACEHOLDER})${after}`,
+		selection: { start: start + 1, end: start + 1 + LINK_LABEL.length },
 	};
 }

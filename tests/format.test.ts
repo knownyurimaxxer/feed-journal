@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { PRESETS } from "../src/constants";
 import {
+	contrastRatio,
 	folderLabel,
+	linkColor,
 	newNoteId,
 	parseIdDate,
 	readableOn,
@@ -87,5 +89,33 @@ describe("folderLabel", () => {
 		expect(folderLabel("content://x/%E0%A4%A")).toBe(
 			"content://x/%E0%A4%A",
 		);
+	});
+});
+
+describe("contrastRatio / linkColor", () => {
+	it("measures the WCAG contrast ratio", () => {
+		expect(contrastRatio("#000000", "#FFFFFF")).toBeCloseTo(21, 0);
+		expect(contrastRatio("#FFFFFF", "#000000")).toBeCloseTo(21, 0);
+		expect(contrastRatio("#336699", "#336699")).toBeCloseTo(1, 5);
+	});
+
+	it("uses the accent when it stands out, the text color when it is too faint", () => {
+		const base = PRESETS[Object.keys(PRESETS)[0]];
+		expect(
+			linkColor({ ...base, accent: "#000000", card: "#FFFFFF" }),
+		).toBe("#000000");
+		expect(
+			linkColor({
+				...base,
+				accent: "#EEEEEE",
+				card: "#FFFFFF",
+				text: "#111111",
+			}),
+		).toBe("#111111");
+	});
+
+	it("gives every preset a link color that is readable on its card", () => {
+		for (const t of Object.values(PRESETS))
+			expect(contrastRatio(linkColor(t), t.card)).toBeGreaterThanOrEqual(3);
 	});
 });
