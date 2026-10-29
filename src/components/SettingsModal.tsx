@@ -70,7 +70,7 @@ export default function SettingsModal({
 					keyboardShouldPersistTaps="handled"
 				>
 					{/* folder */}
-					<Text style={s.section}>Notes folder</Text>
+					<Text style={s.section}>Folder</Text>
 					<View style={s.rowBlock}>
 						<Text style={s.rowTitle}>
 							{folderLabel(settings.folderUri)}
@@ -102,8 +102,8 @@ export default function SettingsModal({
 						</View>
 					</View>
 
-					{/* nickname */}
-					<Text style={[s.section, { marginTop: 24 }]}>Nickname</Text>
+					{/* User */}
+					<Text style={[s.section, { marginTop: 24 }]}>User</Text>
 					<View style={s.row}>
 						<View style={{ flex: 1, paddingRight: 12 }}>
 							<Text style={s.rowTitle}>Show nickname</Text>
@@ -132,10 +132,7 @@ export default function SettingsModal({
 							returnKeyType="done"
 						/>
 					)}
-
-					{/* avatar */}
-					<Text style={[s.section, { marginTop: 24 }]}>Avatar</Text>
-					<View style={s.row}>
+					<View style={[s.row, { marginTop: 12 }]}>
 						<View style={{ flex: 1, paddingRight: 12 }}>
 							<Text style={s.rowTitle}>Show avatar</Text>
 							<Text style={s.rowHint}>
@@ -212,9 +209,9 @@ export default function SettingsModal({
 						</>
 					)}
 
-					{/* likes */}
-					<Text style={[s.section, { marginTop: 24 }]}>Likes</Text>
-					<View style={s.row}>
+					{/* UI */}
+					<Text style={[s.section, { marginTop: 24 }]}>UI</Text>
+					<View style={[s.row, { marginTop: 12 }]}>
 						<View style={{ flex: 1, paddingRight: 12 }}>
 							<Text style={s.rowTitle}>Fake likes</Text>
 							<Text style={s.rowHint}>
@@ -231,18 +228,17 @@ export default function SettingsModal({
 							}}
 						/>
 					</View>
-
-					{/* limits */}
-					<Text style={[s.section, { marginTop: 24 }]}>Limits</Text>
-					<NumberField
-						title="Characters per post"
-						hint={`From ${LIMITS.chars.min} to ${LIMITS.chars.max}. Posts you already wrote are never cut.`}
-						value={settings.maxChars}
-						min={LIMITS.chars.min}
-						max={LIMITS.chars.max}
-						onChange={(n) => update("maxChars", n)}
-					/>
-					<View style={{ marginTop: 8 }}>
+					<View style={{ marginTop: 12 }}>
+						<NumberField
+							title="Characters per post"
+							hint={`From ${LIMITS.chars.min} to ${LIMITS.chars.max}. Posts you already wrote are never cut.`}
+							value={settings.maxChars}
+							min={LIMITS.chars.min}
+							max={LIMITS.chars.max}
+							onChange={(n) => update("maxChars", n)}
+						/>
+					</View>
+					<View style={{ marginTop: 12 }}>
 						<NumberField
 							title="Tags per post"
 							hint={`From ${LIMITS.tags.min} to ${LIMITS.tags.max}. 0 hides the tag box when writing.`}
@@ -254,11 +250,12 @@ export default function SettingsModal({
 					</View>
 
 					{/* theme */}
-					<Text style={[s.section, { marginTop: 24 }]}>Presets</Text>
+					<Text style={[s.section, { marginTop: 24 }]}>Theme</Text>
+					<Text style={[s.sectionTitle]}>Presets</Text>
 					<ScrollView
 						horizontal
 						showsHorizontalScrollIndicator={false}
-						contentContainerStyle={{ gap: 8, paddingBottom: 8 }}
+						contentContainerStyle={{ gap: 8 }}
 					>
 						{Object.entries(PRESETS).map(([name, t]) => (
 							<Pressable
@@ -310,8 +307,10 @@ export default function SettingsModal({
 					</ScrollView>
 
 					{roles.map((role) => (
-						<View key={role} style={{ marginTop: 20 }}>
-							<Text style={s.section}>{ROLE_LABELS[role]}</Text>
+						<View key={role} style={{ marginTop: 8 }}>
+							<Text style={s.sectionTitle}>
+								{ROLE_LABELS[role]}
+							</Text>
 							<View style={s.swatchRow}>
 								{SWATCHES[role].map((c) => (
 									<Pressable
@@ -334,30 +333,26 @@ export default function SettingsModal({
 						</View>
 					))}
 
-					<View style={s.resetWrap}>
-						<Text style={s.section}>Reset</Text>
-						<View style={s.resetCard}>
-							<Text style={s.resetText}>
-								Deletes every note in your notes folder, plus
-								all likes and settings, and puts the app back
-								the way it was on first launch. This can't be
-								undone.
-							</Text>
-						</View>
-						<Pressable
-							accessibilityRole="button"
-							onPress={onResetAll}
-							style={({ pressed }) => [
-								s.resetBtn,
-								pressed && s.resetPressed,
-							]}
-						>
-							<Text style={s.resetBtnText}>
-								Delete all notes and reset app
-							</Text>
-						</Pressable>
+					<Text style={[s.section, { marginTop: 24 }]}>Reset</Text>
+					<View style={s.resetCard}>
+						<Text style={s.resetText}>
+							Deletes every note in your notes folder, plus all
+							likes and settings, and puts the app back the way it
+							was on first launch. This can't be undone.
+						</Text>
 					</View>
-
+					<Pressable
+						accessibilityRole="button"
+						onPress={onResetAll}
+						style={({ pressed }) => [
+							s.resetBtn,
+							pressed && s.resetPressed,
+						]}
+					>
+						<Text style={s.resetBtnText}>
+							Delete all notes and reset app
+						</Text>
+					</Pressable>
 					<CreditsSection />
 				</ScrollView>
 			</SafeAreaView>
@@ -392,6 +387,13 @@ const makeStyles = (t: Theme) => {
 			fontWeight: "700",
 			marginBottom: 8,
 			fontSize: 14,
+			opacity: 0.85,
+		},
+		sectionTitle: {
+			color: onBg,
+			fontWeight: "700",
+			marginBottom: 8,
+			fontSize: 12,
 			opacity: 0.85,
 		},
 		row: {
