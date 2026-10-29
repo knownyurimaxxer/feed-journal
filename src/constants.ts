@@ -105,6 +105,8 @@ export const DEFAULT_SETTINGS: Settings = {
 	folderUri: null,
 	maxChars: LIMITS.chars.default,
 	maxTags: LIMITS.tags.default,
+	obsidianEnabled: false,
+	vaultUri: null,
 };
 
 export const AVATAR_ICONS = [

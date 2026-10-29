@@ -21,6 +21,8 @@ export function useSettings() {
 				nickname,
 				maxChars,
 				maxTags,
+				obsidianEnabled,
+				vaultUri,
 			] = await Promise.all([
 				getSetting("theme", DEFAULT_SETTINGS.theme),
 				getSetting("likesEnabled", DEFAULT_SETTINGS.likesEnabled),
@@ -38,6 +40,11 @@ export function useSettings() {
 				getSetting("nickname", DEFAULT_SETTINGS.nickname),
 				getSetting("maxChars", DEFAULT_SETTINGS.maxChars),
 				getSetting("maxTags", DEFAULT_SETTINGS.maxTags),
+				getSetting("obsidianEnabled", DEFAULT_SETTINGS.obsidianEnabled),
+				getSetting<string | null>(
+					"vaultUri",
+					DEFAULT_SETTINGS.vaultUri,
+				),
 			]);
 			setSettings({
 				theme: { ...DEFAULT_SETTINGS.theme, ...theme },
@@ -60,6 +67,8 @@ export function useSettings() {
 					LIMITS.tags.max,
 					LIMITS.tags.default,
 				),
+				obsidianEnabled,
+				vaultUri,
 			});
 			setReady(true);
 		})();

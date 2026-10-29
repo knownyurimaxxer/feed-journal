@@ -1,18 +1,31 @@
+**TLDR**: it's a Notes taking app with a personalizable UI that reminds you of _Tumblr_.
+
 The idea for this app comes from
 [this post](https://www.tumblr.com/rubensmuse/831592820192280576/killer-new-startup-idea-phone-app-called-the)
-by [@rubensmuse](https://www.tumblr.com/rubensmuse) on Tumblr.
+by [@rubensmuse](https://www.tumblr.com/rubensmuse) on _Tumblr_.
 
-If you ever feel like it, I have a [Ko-fi page](https://ko-fi.com/knownyurimaxxer)!
+If you ever feel like it, I have a [Ko-fi](https://ko-fi.com/knownyurimaxxer)!
 
 ## What it does
 
 - **Short posts.** 280 characters by default, and up to 10 tags if you feel
   organized. Add a title if you feel fancy. Want it longer, shorter, or with
   no tags at all? Settings has a Limits section: anywhere from 10 to 5,000
-  characters and 0 to 30 tags. Changing the limits never cuts a post you
-  already wrote.
-- **Formatting while you type.** Bold, italic, strikethrough, headings,
-  quotes, code and lists. There's a button to peek at the raw Markdown too.
+  characters and 0 to 30 tags. Only the text you can read counts: Markdown
+  formatting (`**`, `#`, link addresses...) is free. Changing the limits never
+  cuts a post you already wrote.
+- **Formatting while you type.** Bold, italic, strikethrough, links,
+  headings, quotes, code and lists. Links are `[text](url)`, tap them in a post to
+  open them. There's a button to peek at the raw Markdown too.
+- **Images.** Write `![description](https://address)` to show a picture from
+  the web, or use the image button in the toolbar. Add a size with
+  `![description|300](https://address)`. The editor keeps the text visible and
+  previews the picture under it.
+- **Obsidian compatibility (optional).** Turn it on in Settings > Folder and
+  pick your vault. Then `![[photo.png]]` (also `![[photo.png|300]]` and
+  `![](Attachments/photo.png)`) shows the picture from the vault, and
+  `- [ ]` / `- [x]` lines become checkboxes you can tap in the feed and in the
+  editor (not in the Markdown view). The vault is only read, never changed.
 - **Search and tags.** Find an old post by a word from it, or tap a tag to
   see everything under it.
 - **Fake likes.** Each post picks up a like or two when it scrolls into view.

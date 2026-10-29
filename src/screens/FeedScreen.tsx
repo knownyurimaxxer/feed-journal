@@ -29,12 +29,15 @@ type Props = {
 	settings: Settings;
 	updateSetting: UpdateSetting;
 	resetSettings: () => Promise<void>;
+	/** Looks for the vault's pictures again (pull to refresh). */
+	refreshVault: () => void;
 };
 
 export default function FeedScreen({
 	settings,
 	updateSetting,
 	resetSettings,
+	refreshVault,
 }: Props) {
 	const theme = useTheme();
 	const s = useMemo(() => makeStyles(theme), [theme]);
@@ -57,6 +60,7 @@ export default function FeedScreen({
 		refresh,
 		addNote,
 		editNote,
+		toggleTask,
 		removeNote,
 		wipeAll,
 		registerViews,
@@ -150,6 +154,11 @@ export default function FeedScreen({
 	const handlePickFolder = async () => {
 		const uri = await pickDirectory();
 		if (uri) updateSetting("folderUri", uri);
+	};
+
+	const handlePickVault = async () => {
+		const uri = await pickDirectory();
+		if (uri) updateSetting("vaultUri", uri);
 	};
 
 	const handlePickPhoto = async () => {
@@ -277,13 +286,16 @@ export default function FeedScreen({
 				}
 				data={visible}
 				keyExtractor={(n) => n.id}
-				contentContainerStyle={{ padding: 12, paddingBottom: 110 }}
+				contentContainerStyle={{ padding: 12, paddingBottom: 85 }}
 				onViewableItemsChanged={onViewable}
 				viewabilityConfig={viewConfig}
 				refreshControl={
 					<RefreshControl
 						refreshing={false}
-						onRefresh={refresh}
+						onRefresh={() => {
+							refresh();
+							refreshVault();
+						}}
 						tintColor={theme.accent}
 					/>
 				}
@@ -305,6 +317,7 @@ export default function FeedScreen({
 							nickname={nicknameValue}
 							onMenu={(anchor) => setMenu({ note: item, anchor })}
 							onTag={setActiveTag}
+							onToggleTask={(line) => toggleTask(item, line)}
 						/>
 					);
 					return columns > 1 ? (
@@ -351,6 +364,7 @@ export default function FeedScreen({
 				settings={settings}
 				update={updateSetting}
 				onPickFolder={handlePickFolder}
+				onPickVault={handlePickVault}
 				onPickPhoto={handlePickPhoto}
 				onRemovePhoto={handleRemovePhoto}
 				onResetAll={handleResetAll}
@@ -378,7 +392,7 @@ const makeStyles = (t: Theme) => {
 			alignItems: "center",
 			gap: 12,
 			paddingHorizontal: 12,
-			paddingTop: 8,
+			paddingTop: 16,
 			paddingBottom: 8,
 		},
 		search: {
@@ -402,7 +416,7 @@ const makeStyles = (t: Theme) => {
 		fab: {
 			position: "absolute",
 			right: 20,
-			bottom: 28,
+			bottom: 20,
 			width: 60,
 			height: 60,
 			borderRadius: 30,

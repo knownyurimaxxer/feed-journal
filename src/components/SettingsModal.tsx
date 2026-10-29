@@ -29,6 +29,7 @@ type Props = {
 	settings: Settings;
 	update: UpdateSetting;
 	onPickFolder: () => void;
+	onPickVault: () => void;
 	onPickPhoto: () => void;
 	onRemovePhoto: () => void;
 	onResetAll: () => void;
@@ -40,6 +41,7 @@ export default function SettingsModal({
 	settings,
 	update,
 	onPickFolder,
+	onPickVault,
 	onPickPhoto,
 	onRemovePhoto,
 	onResetAll,
@@ -65,12 +67,12 @@ export default function SettingsModal({
 				</View>
 
 				<ScrollView
-					contentContainerStyle={{ padding: 16, paddingBottom: 48 }}
+					contentContainerStyle={{ padding: 16 }}
 					automaticallyAdjustKeyboardInsets
 					keyboardShouldPersistTaps="handled"
 				>
 					{/* folder */}
-					<Text style={s.section}>Notes folder</Text>
+					<Text style={s.section}>Folder</Text>
 					<View style={s.rowBlock}>
 						<Text style={s.rowTitle}>
 							{folderLabel(settings.folderUri)}
@@ -102,8 +104,65 @@ export default function SettingsModal({
 						</View>
 					</View>
 
-					{/* nickname */}
-					<Text style={[s.section, { marginTop: 24 }]}>Nickname</Text>
+					<View style={[s.row, { marginTop: 12 }]}>
+						<View style={{ flex: 1, paddingRight: 12 }}>
+							<Text style={s.rowTitle}>
+								Obsidian compatibility
+							</Text>
+							<Text style={s.rowHint}>
+								Shows images written as ![[photo.png]] from your
+								vault, and turns "- [ ]" and "- [x]" lines into
+								checkboxes you can tap (except in the Markdown
+								view).
+							</Text>
+						</View>
+						<Switch
+							value={settings.obsidianEnabled}
+							onValueChange={(v) => update("obsidianEnabled", v)}
+							trackColor={{
+								true: theme.accent,
+								false: "#88888888",
+							}}
+						/>
+					</View>
+					{settings.obsidianEnabled && (
+						<View style={[s.rowBlock, { marginTop: 12 }]}>
+							<Text style={s.rowTitle}>
+								{settings.vaultUri
+									? folderLabel(settings.vaultUri)
+									: "No vault chosen"}
+							</Text>
+							<Text style={s.rowHint}>
+								Choose your Obsidian vault (the folder that
+								holds the .obsidian folder). Images are looked
+								up there by name or path. Nothing in the vault
+								is changed.
+							</Text>
+							<View style={s.btnRow}>
+								<Pressable style={s.btn} onPress={onPickVault}>
+									<Text style={s.btnText}>Choose folder</Text>
+								</Pressable>
+								{settings.vaultUri && (
+									<Pressable
+										style={[s.btn, s.btnGhost]}
+										onPress={() => update("vaultUri", null)}
+									>
+										<Text
+											style={[
+												s.btnText,
+												{ color: theme.accent },
+											]}
+										>
+											Clear
+										</Text>
+									</Pressable>
+								)}
+							</View>
+						</View>
+					)}
+
+					{/* User */}
+					<Text style={[s.section, { marginTop: 24 }]}>User</Text>
 					<View style={s.row}>
 						<View style={{ flex: 1, paddingRight: 12 }}>
 							<Text style={s.rowTitle}>Show nickname</Text>
@@ -132,10 +191,7 @@ export default function SettingsModal({
 							returnKeyType="done"
 						/>
 					)}
-
-					{/* avatar */}
-					<Text style={[s.section, { marginTop: 24 }]}>Avatar</Text>
-					<View style={s.row}>
+					<View style={[s.row, { marginTop: 12 }]}>
 						<View style={{ flex: 1, paddingRight: 12 }}>
 							<Text style={s.rowTitle}>Show avatar</Text>
 							<Text style={s.rowHint}>
@@ -212,9 +268,9 @@ export default function SettingsModal({
 						</>
 					)}
 
-					{/* likes */}
-					<Text style={[s.section, { marginTop: 24 }]}>Likes</Text>
-					<View style={s.row}>
+					{/* UI */}
+					<Text style={[s.section, { marginTop: 24 }]}>UI</Text>
+					<View style={[s.row, { marginTop: 12 }]}>
 						<View style={{ flex: 1, paddingRight: 12 }}>
 							<Text style={s.rowTitle}>Fake likes</Text>
 							<Text style={s.rowHint}>
@@ -231,18 +287,17 @@ export default function SettingsModal({
 							}}
 						/>
 					</View>
-
-					{/* limits */}
-					<Text style={[s.section, { marginTop: 24 }]}>Limits</Text>
-					<NumberField
-						title="Characters per post"
-						hint={`From ${LIMITS.chars.min} to ${LIMITS.chars.max}. Posts you already wrote are never cut.`}
-						value={settings.maxChars}
-						min={LIMITS.chars.min}
-						max={LIMITS.chars.max}
-						onChange={(n) => update("maxChars", n)}
-					/>
-					<View style={{ marginTop: 8 }}>
+					<View style={{ marginTop: 12 }}>
+						<NumberField
+							title="Characters per post"
+							hint={`From ${LIMITS.chars.min} to ${LIMITS.chars.max}. Posts you already wrote are never cut.`}
+							value={settings.maxChars}
+							min={LIMITS.chars.min}
+							max={LIMITS.chars.max}
+							onChange={(n) => update("maxChars", n)}
+						/>
+					</View>
+					<View style={{ marginTop: 12 }}>
 						<NumberField
 							title="Tags per post"
 							hint={`From ${LIMITS.tags.min} to ${LIMITS.tags.max}. 0 hides the tag box when writing.`}
@@ -254,11 +309,12 @@ export default function SettingsModal({
 					</View>
 
 					{/* theme */}
-					<Text style={[s.section, { marginTop: 24 }]}>Presets</Text>
+					<Text style={[s.section, { marginTop: 24 }]}>Theme</Text>
+					<Text style={[s.sectionTitle]}>Presets</Text>
 					<ScrollView
 						horizontal
 						showsHorizontalScrollIndicator={false}
-						contentContainerStyle={{ gap: 8, paddingBottom: 8 }}
+						contentContainerStyle={{ gap: 8 }}
 					>
 						{Object.entries(PRESETS).map(([name, t]) => (
 							<Pressable
@@ -310,12 +366,19 @@ export default function SettingsModal({
 					</ScrollView>
 
 					{roles.map((role) => (
-						<View key={role} style={{ marginTop: 20 }}>
-							<Text style={s.section}>{ROLE_LABELS[role]}</Text>
+						<View key={role} style={{ marginTop: 8 }}>
+							<Text style={s.sectionTitle}>
+								{ROLE_LABELS[role]}
+							</Text>
 							<View style={s.swatchRow}>
 								{SWATCHES[role].map((c) => (
 									<Pressable
 										key={c}
+										accessibilityRole="button"
+										accessibilityState={{
+											selected:
+												settings.theme[role] === c,
+										}}
 										onPress={() =>
 											update("theme", {
 												...settings.theme,
@@ -323,41 +386,43 @@ export default function SettingsModal({
 											})
 										}
 										style={[
-											s.swatch,
-											{ backgroundColor: c },
+											s.swatchRing,
 											settings.theme[role] === c &&
-												s.swatchActive,
+												s.swatchRingActive,
 										]}
-									/>
+									>
+										<View
+											style={[
+												s.swatch,
+												{ backgroundColor: c },
+											]}
+										/>
+									</Pressable>
 								))}
 							</View>
 						</View>
 					))}
 
-					<View style={s.resetWrap}>
-						<Text style={s.section}>Reset</Text>
-						<View style={s.resetCard}>
-							<Text style={s.resetText}>
-								Deletes every note in your notes folder, plus
-								all likes and settings, and puts the app back
-								the way it was on first launch. This can't be
-								undone.
-							</Text>
-						</View>
-						<Pressable
-							accessibilityRole="button"
-							onPress={onResetAll}
-							style={({ pressed }) => [
-								s.resetBtn,
-								pressed && s.resetPressed,
-							]}
-						>
-							<Text style={s.resetBtnText}>
-								Delete all notes and reset app
-							</Text>
-						</Pressable>
+					<Text style={[s.section, { marginTop: 24 }]}>Reset</Text>
+					<View style={s.resetCard}>
+						<Text style={s.resetText}>
+							Deletes every note in your notes folder, plus all
+							likes and settings, and puts the app back the way it
+							was on first launch. This can't be undone.
+						</Text>
 					</View>
-
+					<Pressable
+						accessibilityRole="button"
+						onPress={onResetAll}
+						style={({ pressed }) => [
+							s.resetBtn,
+							pressed && s.resetPressed,
+						]}
+					>
+						<Text style={s.resetBtnText}>
+							Delete all notes and reset app
+						</Text>
+					</Pressable>
 					<CreditsSection />
 				</ScrollView>
 			</SafeAreaView>
@@ -392,6 +457,13 @@ const makeStyles = (t: Theme) => {
 			fontWeight: "700",
 			marginBottom: 8,
 			fontSize: 14,
+			opacity: 0.85,
+		},
+		sectionTitle: {
+			color: onBg,
+			fontWeight: "700",
+			marginBottom: 8,
+			fontSize: 12,
 			opacity: 0.85,
 		},
 		row: {
@@ -433,14 +505,24 @@ const makeStyles = (t: Theme) => {
 		},
 		presetCard: { width: "100%", borderRadius: 4, padding: 6 },
 		swatchRow: { flexDirection: "row", flexWrap: "wrap", gap: 10 },
+		// The selected swatch gets two rings: a gap in the background color,
+		// then the accent color around it, so it shows even when the swatch IS the accent.
+		swatchRing: {
+			width: 46,
+			height: 46,
+			borderRadius: 23,
+			borderWidth: 2,
+			borderColor: "transparent",
+			padding: 3,
+			backgroundColor: t.background,
+		},
+		swatchRingActive: { borderColor: t.accent },
 		swatch: {
-			width: 40,
-			height: 40,
+			flex: 1,
 			borderRadius: 20,
 			borderWidth: 1,
 			borderColor: "#88888855",
 		},
-		swatchActive: { borderWidth: 3, borderColor: t.accent },
 		resetWrap: { marginTop: 32 },
 		resetCard: { backgroundColor: t.card, borderRadius: 8, padding: 14 },
 		resetText: { color: t.text, fontSize: 13, lineHeight: 18 },
@@ -462,7 +544,7 @@ const makeStyles = (t: Theme) => {
 			marginTop: 12,
 		},
 		avatarOption: {
-			padding: 4,
+			padding: 3,
 			borderRadius: 10,
 			borderWidth: 2,
 			borderColor: "transparent",

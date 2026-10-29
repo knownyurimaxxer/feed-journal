@@ -1,8 +1,14 @@
-import { ComponentProps, ComponentRef, useMemo, useRef, useState } from "react";
+import {
+	ComponentProps,
+	ComponentRef,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from "react";
 import {
 	KeyboardAvoidingView,
 	Modal,
-	Platform,
 	Pressable,
 	ScrollView,
 	StyleSheet,
@@ -13,18 +19,25 @@ import {
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MAX_TAG_LENGTH, MAX_TITLE } from "../constants";
+import { useObsidian } from "../theme/ObsidianContext";
 import { useTheme } from "../theme/ThemeContext";
 import { Draft, Note, Selection, Theme } from "../types";
 import { readableOn } from "../utils/format";
+import { fitToLimit, visibleLength } from "../utils/limits";
+import { collectImages } from "../utils/markdown";
 import {
 	EditResult,
 	toggleCodeBlock,
+	toggleImage,
 	toggleLinePrefix,
+	toggleLink,
+	toggleTaskAtTap,
 	toggleWrap,
 } from "../utils/markdownEdit";
 import { cleanTitle, normalizeTag } from "../utils/noteText";
 import Avatar from "./Avatar";
 import LiveInput from "./LiveInput";
+import PostImage from "./PostImage";
 
 type Props = {
 	visible: boolean;
@@ -59,6 +72,8 @@ const TOOLS: Tool[] = [
 		label: "Strikethrough",
 		run: (t, s) => toggleWrap(t, s, "~~"),
 	},
+	{ icon: "link-variant", label: "Link", run: toggleLink },
+	{ icon: "image-outline", label: "Image", run: toggleImage },
 	{
 		icon: "format-header-pound",
 		label: "Heading",
@@ -82,6 +97,15 @@ const TOOLS: Tool[] = [
 	},
 ];
 
+/** Only with Obsidian compatibility on. */
+const TASK_TOOLS: Tool[] = [
+	{
+		icon: "format-list-checks",
+		label: "Checklist",
+		run: (t, s) => toggleLinePrefix(t, s, "task"),
+	},
+];
+
 /** Mount with a `key` that changes per note so its state resets for each open. */
 export default function Composer({
 	visible,
@@ -95,6 +119,12 @@ export default function Composer({
 }: Props) {
 	const theme = useTheme();
 	const s = useMemo(() => makeStyles(theme), [theme]);
+	const { enabled: obsidian } = useObsidian();
+	const opts = useMemo(() => ({ obsidian }), [obsidian]);
+	const tools = useMemo(
+		() => (obsidian ? [...TOOLS, ...TASK_TOOLS] : TOOLS),
+		[obsidian],
+	);
 
 	const [title, setTitle] = useState(editing?.title ?? "");
 	const [body, setBody] = useState(editing?.body ?? "");
@@ -111,19 +141,40 @@ export default function Composer({
 	});
 	const [forced, setForced] = useState<Selection | undefined>(undefined);
 	const bodyRef = useRef<ComponentRef<typeof TextInput>>(null);
+	const lastEdit = useRef(0); // when the text was last typed, to tell a tap from typing
 
-	// Lowering the limit never cuts a post you already wrote: while editing,
-	// it can stay as long as it is (but can't grow past that).
-	const limit = Math.max(maxChars, editing?.body.length ?? 0);
-	const left = limit - body.length;
+	// Pictures in the text are shown under it once typing pauses (so a web
+	// address isn't fetched letter by letter while it is being typed).
+	const [previewText, setPreviewText] = useState(body);
+	useEffect(() => {
+		const t = setTimeout(() => setPreviewText(body), 700);
+		return () => clearTimeout(t);
+	}, [body]);
+	const previews = useMemo(
+		() => collectImages(previewText, opts),
+		[previewText, opts],
+	);
+
+	// The limit counts what you can read: Markdown syntax (**, [](url), ...)
+	// is free (see visibleLength). Lowering it never cuts a post you already
+	// wrote: while editing, it can stay as long as it is (but can't grow past that).
+	const used = useMemo(() => visibleLength(body, opts), [body, opts]);
+	const startLength = useMemo(
+		() => (editing ? visibleLength(editing.body, opts) : 0),
+		[editing, opts],
+	);
+	const limit = Math.max(maxChars, startLength);
+	const left = limit - used;
 	// With tags set to 0 the box is hidden, unless this post already has some.
 	const showTags = maxTags > 0 || tags.length > 0;
 	const canPost = body.trim().length > 0;
 
 	const applyTool = (tool: Tool) => {
 		const r = tool.run(body, selection);
-		// Toolbar edits bypass the input's maxLength, so enforce the limit here.
-		if (r.text.length > limit && r.text.length > body.length) return;
+		// Toolbar edits don't go through the input, so enforce the limit here.
+		const grows = visibleLength(r.text, opts) > used;
+		if (grows && visibleLength(r.text, opts) > limit) return;
+		lastEdit.current = Date.now();
 		setBody(r.text);
 		setSelection(r.selection);
 		setForced(r.selection);
@@ -162,13 +213,16 @@ export default function Composer({
 		<Modal
 			visible={visible}
 			animationType="slide"
+			statusBarTranslucent
 			onRequestClose={onClose}
 			supportedOrientations={["portrait", "landscape"]}
 		>
 			<SafeAreaView style={s.root}>
 				<KeyboardAvoidingView
 					style={{ flex: 1 }}
-					behavior={Platform.OS === "ios" ? "padding" : undefined}
+					// "padding" on Android too: without it nothing lifts the toolbar
+					// above the keyboard (Android no longer resizes the window for us).
+					behavior="padding"
 				>
 					<View style={s.header}>
 						<Pressable onPress={onClose} hitSlop={10}>
@@ -246,13 +300,27 @@ export default function Composer({
 							focused={bodyFocused}
 							selection={selection}
 							forcedSelection={forced}
-							maxLength={limit}
 							placeholder="What's on your mind? (no one will see this)"
 							onChangeText={(v) => {
-								setBody(v);
+								lastEdit.current = Date.now();
+								// Over the limit: what was just typed or pasted is cut to fit.
+								setBody((prev) => fitToLimit(prev, v, limit, opts));
 								setForced(undefined);
 							}}
 							onSelectionChange={(sel) => {
+								// With Obsidian compatibility on, tapping a checklist box
+								// ticks it (not in the Markdown view, and never right after typing).
+								const tapped =
+									obsidian && !raw && Date.now() - lastEdit.current > 300
+										? toggleTaskAtTap(body, selection, sel)
+										: null;
+								if (tapped) {
+									lastEdit.current = Date.now();
+									setBody(tapped.text);
+									setSelection(tapped.selection);
+									setForced(tapped.selection);
+									return;
+								}
 								setSelection(sel);
 								setForced((f) =>
 									f &&
@@ -265,6 +333,14 @@ export default function Composer({
 							onFocus={() => setBodyFocused(true)}
 							onBlur={() => setBodyFocused(false)}
 						/>
+
+						{!raw && previews.length > 0 && (
+							<View style={s.previews}>
+								{previews.map((img, i) => (
+									<PostImage key={`${i}`} image={img} />
+								))}
+							</View>
+						)}
 
 						{showTags && (
 							<View style={s.tagRow}>
@@ -327,7 +403,7 @@ export default function Composer({
 								keyboardShouldPersistTaps="always"
 								contentContainerStyle={s.toolbarRow}
 							>
-								{TOOLS.map((tool) => (
+								{tools.map((tool) => (
 									<Pressable
 										key={tool.label}
 										style={({ pressed }) => [
@@ -408,6 +484,7 @@ const makeStyles = (t: Theme) => {
 			borderBottomWidth: StyleSheet.hairlineWidth,
 			borderBottomColor: t.text + "33",
 		},
+		previews: { marginTop: 8, gap: 4 },
 		tagRow: {
 			flexDirection: "row",
 			flexWrap: "wrap",

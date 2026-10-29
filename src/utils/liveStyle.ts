@@ -3,11 +3,18 @@
  * run of characters. The pieces always add up to exactly the original text
  * (nothing is added or removed), so the text input never gets out of sync.
  *
- * Syntax characters ("**", "## ", the fences of a code block...) are hidden
+ * Syntax characters ("**", "## ", "[" and "](url)" of a link, the fences of a code block...) are hidden
  * on lines the cursor is not on, and shown faintly on the line being edited.
  */
 
-import { FENCE, INLINE_RE } from "./markdown";
+import {
+	FENCE,
+	imageFromMatch,
+	INLINE_RE,
+	ParseOptions,
+	safeHref,
+	TASK_RE,
+} from "./markdown";
 
 export type Span = {
 	text: string;
@@ -21,11 +28,19 @@ export type Span = {
 	italic?: boolean;
 	strike?: boolean;
 	code?: boolean;
+	/** The visible text of a [text](url) link. */
+	link?: boolean;
 	/** Inside a fenced code block. */
 	block?: boolean;
 	/** Heading level (1-6). */
 	heading?: number;
 	quote?: boolean;
+	/** The "[ ]" / "[x]" box of a checklist item. */
+	task?: boolean;
+	/** Text of a checked checklist item. */
+	done?: boolean;
+	/** A Markdown image or ![[embed]]: kept visible as a chip (the editor can't draw pictures). */
+	image?: boolean;
 };
 
 const HEADING = /^(#{1,6})([ \t]+)(.*)$/;
@@ -49,11 +64,16 @@ export function activeLineRange(
 	return [lineAt(a), lineAt(b)];
 }
 
-/** `active` is the range of lines being edited, or null when nothing is focused. */
+/**
+ * `active` is the range of lines being edited, or null when nothing is focused.
+ * With `opts.obsidian`, "- [ ]" checklists and ![[embeds]] are understood too.
+ */
 export function liveSpans(
 	text: string,
 	active: [number, number] | null,
+	opts: ParseOptions = {},
 ): Span[] {
+	const obsidian = !!opts.obsidian;
 	const lines = text.split("\n");
 	const out: Span[] = [];
 	let inBlock = false;
@@ -102,10 +122,23 @@ export function liveSpans(
 					push(syntax("~~", flags));
 					inline(m[4], { ...flags, strike: true });
 					push(syntax("~~", flags));
-				} else {
+				} else if (m[5] !== undefined) {
 					push(syntax("*", flags));
 					inline(m[5], { ...flags, italic: true });
 					push(syntax("*", flags));
+				} else if (m[8] !== undefined || m[10] !== undefined) {
+					// Images stay visible, in full: free of the character count, never hidden.
+					if (imageFromMatch(m, obsidian))
+						push({ ...flags, text: m[0], marker: true, image: true });
+					else push({ ...flags, text: m[0] });
+				} else if (safeHref(m[7])) {
+					// [text](url): only the text stays visible (as a link) off the active line.
+					push(syntax("[", flags));
+					inline(m[6], { ...flags, link: true });
+					push(syntax(`](${m[7]})`, flags));
+				} else {
+					// Not an address we are willing to open: plain text, like the renderer shows it.
+					push({ ...flags, text: m[0] });
 				}
 				last = start + m[0].length;
 			}
@@ -115,6 +148,7 @@ export function liveSpans(
 		let flags: Partial<Span> = {};
 		const h = line.match(HEADING);
 		const q = line.match(QUOTE);
+		const t = obsidian ? line.match(TASK_RE) : null;
 		const b = line.match(BULLET) ?? line.match(ORDERED);
 		if (h) {
 			flags = { heading: h[1].length };
@@ -124,6 +158,13 @@ export function liveSpans(
 			flags = { quote: true };
 			push({ text: q[1], marker: true });
 			inline(q[2], flags);
+		} else if (t) {
+			// "- [ ] text": the list marker and the box stay visible; checked text is struck out.
+			flags = t[2] === " " ? {} : { done: true };
+			push({ text: t[1], marker: true });
+			push({ text: `[${t[2]}]`, marker: true, task: true });
+			push({ text: t[3] ?? "", marker: true });
+			inline(t[4] ?? "", flags);
 		} else if (b) {
 			push({ text: b[1], marker: true });
 			inline(b[2], flags);
