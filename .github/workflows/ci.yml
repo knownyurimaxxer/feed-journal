@@ -1,4 +1,4 @@
-# Feed Journal: checks on every push / pull request, and an installable
+# Feed Journal: checks on every push to main, and an installable
 # Android APK (published as a GitHub Release) every time `main` changes.
 #
 # One-time setup for the APK: see "Releases and Obtainium" in the README
@@ -8,16 +8,17 @@ name: CI and Release
 
 on:
     push:
+        branches:
+            - main
         paths-ignore:
             - "**.md"
             - "LICENSE"
-    pull_request:
     workflow_dispatch: # lets you press "Run workflow" by hand on main
 
 concurrency:
     group: ci-${{ github.ref }}
-    # A newer push replaces an older check, but never cancels a release build.
-    cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+    # A newer push replaces an older check. Releases are never cancelled.
+    cancel-in-progress: false
 
 permissions:
     contents: read
@@ -45,7 +46,7 @@ jobs:
     release:
         name: Build APK and publish release
         needs: check
-        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        if: github.ref == 'refs/heads/main'
         runs-on: ubuntu-latest
         timeout-minutes: 60
         permissions:
