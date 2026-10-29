@@ -58,6 +58,14 @@ export default function CreditsSection() {
 					>
 						Ionicons
 					</Text>{" "}
+					by{" "}
+					<Text
+						style={s.link}
+						accessibilityRole="link"
+						onPress={() => open(LINKS.ionic)}
+					>
+						@ionic
+					</Text>{" "}
 					and{" "}
 					<Text
 						style={s.link}

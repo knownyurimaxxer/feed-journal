@@ -129,6 +129,7 @@ export const LINKS = {
 	developer: "https://www.tumblr.com/knownyurimaxxer",
 	kofi: "https://ko-fi.com/knownyurimaxxer",
 	ionicons: "https://ionic.io/ionicons",
+	ionic: "https://ionic.io/",
 	mdi: "https://pictogrammers.com/library/mdi/",
 	pictogrammers: "https://pictogrammers.com/",
 } as const;
