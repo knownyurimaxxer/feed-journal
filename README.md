@@ -2,7 +2,7 @@ The idea for this app comes from
 [this post](https://www.tumblr.com/rubensmuse/831592820192280576/killer-new-startup-idea-phone-app-called-the)
 by [@rubensmuse](https://www.tumblr.com/rubensmuse) on Tumblr.
 
-If you ever feel like it, I have a [Ko-fi page](https://ko-fi.com/knownyurimaxxer)!
+If you ever feel like it, I have a [Ko-fi](https://ko-fi.com/knownyurimaxxer)!
 
 ## What it does
 
