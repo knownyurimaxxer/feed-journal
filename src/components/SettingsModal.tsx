@@ -67,7 +67,7 @@ export default function SettingsModal({
 				</View>
 
 				<ScrollView
-					contentContainerStyle={{ padding: 16, paddingBottom: 48 }}
+					contentContainerStyle={{ padding: 16 }}
 					automaticallyAdjustKeyboardInsets
 					keyboardShouldPersistTaps="handled"
 				>
@@ -106,7 +106,9 @@ export default function SettingsModal({
 
 					<View style={[s.row, { marginTop: 12 }]}>
 						<View style={{ flex: 1, paddingRight: 12 }}>
-							<Text style={s.rowTitle}>Obsidian compatibility</Text>
+							<Text style={s.rowTitle}>
+								Obsidian compatibility
+							</Text>
 							<Text style={s.rowHint}>
 								Shows images written as ![[photo.png]] from your
 								vault, and turns "- [ ]" and "- [x]" lines into
@@ -131,9 +133,10 @@ export default function SettingsModal({
 									: "No vault chosen"}
 							</Text>
 							<Text style={s.rowHint}>
-								Choose your Obsidian vault (the folder that holds
-								the .obsidian folder). Images are looked up there
-								by name or path. Nothing in the vault is changed.
+								Choose your Obsidian vault (the folder that
+								holds the .obsidian folder). Images are looked
+								up there by name or path. Nothing in the vault
+								is changed.
 							</Text>
 							<View style={s.btnRow}>
 								<Pressable style={s.btn} onPress={onPickVault}>
@@ -371,6 +374,11 @@ export default function SettingsModal({
 								{SWATCHES[role].map((c) => (
 									<Pressable
 										key={c}
+										accessibilityRole="button"
+										accessibilityState={{
+											selected:
+												settings.theme[role] === c,
+										}}
 										onPress={() =>
 											update("theme", {
 												...settings.theme,
@@ -378,12 +386,18 @@ export default function SettingsModal({
 											})
 										}
 										style={[
-											s.swatch,
-											{ backgroundColor: c },
+											s.swatchRing,
 											settings.theme[role] === c &&
-												s.swatchActive,
+												s.swatchRingActive,
 										]}
-									/>
+									>
+										<View
+											style={[
+												s.swatch,
+												{ backgroundColor: c },
+											]}
+										/>
+									</Pressable>
 								))}
 							</View>
 						</View>
@@ -491,14 +505,24 @@ const makeStyles = (t: Theme) => {
 		},
 		presetCard: { width: "100%", borderRadius: 4, padding: 6 },
 		swatchRow: { flexDirection: "row", flexWrap: "wrap", gap: 10 },
+		// The selected swatch gets two rings: a gap in the background color,
+		// then the accent color around it, so it shows even when the swatch IS the accent.
+		swatchRing: {
+			width: 46,
+			height: 46,
+			borderRadius: 23,
+			borderWidth: 2,
+			borderColor: "transparent",
+			padding: 3,
+			backgroundColor: t.background,
+		},
+		swatchRingActive: { borderColor: t.accent },
 		swatch: {
-			width: 40,
-			height: 40,
+			flex: 1,
 			borderRadius: 20,
 			borderWidth: 1,
 			borderColor: "#88888855",
 		},
-		swatchActive: { borderWidth: 3, borderColor: t.accent },
 		resetWrap: { marginTop: 32 },
 		resetCard: { backgroundColor: t.card, borderRadius: 8, padding: 14 },
 		resetText: { color: t.text, fontSize: 13, lineHeight: 18 },
@@ -520,7 +544,7 @@ const makeStyles = (t: Theme) => {
 			marginTop: 12,
 		},
 		avatarOption: {
-			padding: 4,
+			padding: 3,
 			borderRadius: 10,
 			borderWidth: 2,
 			borderColor: "transparent",

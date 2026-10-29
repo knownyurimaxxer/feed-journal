@@ -102,7 +102,7 @@ export default function CreditsSection() {
 
 const makeStyles = (t: Theme) =>
 	StyleSheet.create({
-		wrap: { marginTop: 32, marginBottom: -32 },
+		wrap: { marginTop: 32 },
 		section: {
 			color: readableOn(t.background),
 			fontWeight: "700",

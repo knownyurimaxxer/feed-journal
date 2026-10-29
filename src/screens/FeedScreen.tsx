@@ -286,7 +286,7 @@ export default function FeedScreen({
 				}
 				data={visible}
 				keyExtractor={(n) => n.id}
-				contentContainerStyle={{ padding: 12, paddingBottom: 110 }}
+				contentContainerStyle={{ padding: 12, paddingBottom: 85 }}
 				onViewableItemsChanged={onViewable}
 				viewabilityConfig={viewConfig}
 				refreshControl={
@@ -392,7 +392,7 @@ const makeStyles = (t: Theme) => {
 			alignItems: "center",
 			gap: 12,
 			paddingHorizontal: 12,
-			paddingTop: 8,
+			paddingTop: 16,
 			paddingBottom: 8,
 		},
 		search: {
@@ -416,7 +416,7 @@ const makeStyles = (t: Theme) => {
 		fab: {
 			position: "absolute",
 			right: 20,
-			bottom: 28,
+			bottom: 20,
 			width: 60,
 			height: 60,
 			borderRadius: 30,
