@@ -60,6 +60,6 @@ it, and `npm run check` to run the type check and the tests.
 
 ## Credits
 
-[Ionicons](https://ionic.io/ionicons) and
+[Ionicons](https://ionic.io/ionicons) by [@ionic](https://ionic.io/) and
 [Material Design Icons](https://pictogrammers.com/library/mdi/) by
 [@pictogrammers](https://pictogrammers.com/).
