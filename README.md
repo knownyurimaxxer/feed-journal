@@ -1,9 +1,3 @@
-A social feed where the only person on it is you.
-
-You write posts, they show up in a nice scrollable feed, and the likes keep
-coming in. Nobody sees any of it. No account, no followers, no internet
-needed. It's a journal wearing a social media (Tumblr) costume.
-
 The idea for this app comes from
 [this post](https://www.tumblr.com/rubensmuse/831592820192280576/killer-new-startup-idea-phone-app-called-the)
 by [@rubensmuse](https://www.tumblr.com/rubensmuse) on Tumblr.
