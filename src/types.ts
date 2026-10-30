@@ -5,6 +5,8 @@ export type Theme = {
 	accent: string;
 };
 
+import type { HapticTrigger } from "./constants";
+
 export type Settings = {
 	theme: Theme;
 	likesEnabled: boolean;
@@ -27,6 +29,10 @@ export type Settings = {
 	vaultUri: string | null;
 	/** "system" (follow the phone), or the code of one of the languages in i18n/LANGUAGES. */
 	language: string;
+	/** Master switch for vibration feedback. */
+	hapticsEnabled: boolean;
+	/** Which haptic triggers are on (only used while hapticsEnabled is on). */
+	haptics: Record<HapticTrigger, boolean>;
 };
 
 export type UpdateSetting = <K extends keyof Settings>(

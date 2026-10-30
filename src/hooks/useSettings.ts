@@ -47,6 +47,11 @@ export function useSettings() {
 				DEFAULT_SETTINGS.vaultUri,
 			);
 			const language = get("language", DEFAULT_SETTINGS.language);
+			const hapticsEnabled = get(
+				"hapticsEnabled",
+				DEFAULT_SETTINGS.hapticsEnabled,
+			);
+			const savedHaptics = get<unknown>("haptics", null);
 			setSettings({
 				theme: { ...DEFAULT_SETTINGS.theme, ...theme },
 				likesEnabled,
@@ -71,6 +76,14 @@ export function useSettings() {
 				obsidianEnabled,
 				vaultUri,
 				language,
+				hapticsEnabled,
+				// A trigger added in a later version starts on, like the others.
+				haptics: {
+					...DEFAULT_SETTINGS.haptics,
+					...(savedHaptics && typeof savedHaptics === "object"
+						? savedHaptics
+						: {}),
+				},
 			});
 			setReady(true);
 		})();

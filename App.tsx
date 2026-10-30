@@ -15,6 +15,7 @@ import FeedScreen from "./src/screens/FeedScreen";
 import { ObsidianContext } from "./src/theme/ObsidianContext";
 import { warmDb } from "./src/storage/db";
 import { ThemeContext } from "./src/theme/ThemeContext";
+import { configureHaptics } from "./src/utils/haptics";
 import { readableOn } from "./src/utils/format";
 
 // Keep the splash screen up until the app can show its final layout, and open
@@ -39,6 +40,7 @@ export default function App() {
 	const { settings, ready, update, reset } = useSettings();
 	const vault = useVault(settings.obsidianEnabled, settings.vaultUri);
 	const deviceLanguages = useDeviceLanguageTags();
+	configureHaptics(settings.hapticsEnabled, settings.haptics);
 	const [fontsReady, setFontsReady] = useState(false);
 	const [feedLoaded, setFeedLoaded] = useState(false);
 	const splashHidden = useRef(false);

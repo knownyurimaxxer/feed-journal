@@ -25,6 +25,7 @@ import { deleteAvatarImage, pickAvatarImage } from "../storage/avatarImage";
 import { useTheme } from "../theme/ThemeContext";
 import { Anchor, Draft, Note, Settings, Theme, UpdateSetting } from "../types";
 import { readableOn } from "../utils/format";
+import { haptic } from "../utils/haptics";
 
 type Props = {
 	settings: Settings;
@@ -135,7 +136,10 @@ export default function FeedScreen({
 		const ok = composer.editing
 			? editNote(composer.editing, draft)
 			: addNote(draft);
-		if (ok) closeComposer();
+		if (ok) {
+			haptic("save");
+			closeComposer();
+		}
 	};
 
 	const confirmDelete = (n: Note) =>
@@ -144,7 +148,10 @@ export default function FeedScreen({
 			{
 				text: t("common.delete"),
 				style: "destructive",
-				onPress: () => removeNote(n),
+				onPress: () => {
+					haptic("delete");
+					removeNote(n);
+				},
 			},
 		]);
 
@@ -152,11 +159,13 @@ export default function FeedScreen({
 	// modal or alert while another one is dismissing can silently fail.
 	const menuEdit = () => {
 		const n = menu?.note;
+		haptic("action");
 		setMenu(null);
 		if (n) setTimeout(() => setComposer({ open: true, editing: n }), 100);
 	};
 	const menuDelete = () => {
 		const n = menu?.note;
+		haptic("action");
 		setMenu(null);
 		if (n) setTimeout(() => confirmDelete(n), 100);
 	};
@@ -216,6 +225,7 @@ export default function FeedScreen({
 			setActiveTag(null);
 			setSettingsOpen(false);
 		} catch (e) {
+			haptic("error");
 			Alert.alert(
 				t("feed.resetFailed"),
 				String(e instanceof Error ? e.message : e),
@@ -253,7 +263,13 @@ export default function FeedScreen({
 					returnKeyType="search"
 					clearButtonMode="while-editing"
 				/>
-				<Pressable onPress={() => setSettingsOpen(true)} hitSlop={10}>
+				<Pressable
+					onPress={() => {
+						haptic("settings");
+						setSettingsOpen(true);
+					}}
+					hitSlop={10}
+				>
 					<Ionicons
 						name="settings-outline"
 						size={24}
@@ -272,16 +288,20 @@ export default function FeedScreen({
 						<Chip
 							label={t("feed.all")}
 							active={!activeTag}
-							onPress={() => setActiveTag(null)}
+							onPress={() => {
+								haptic("tag");
+								setActiveTag(null);
+							}}
 						/>
 						{allTags.map((t) => (
 							<Chip
 								key={t}
 								label={`#${t}`}
 								active={activeTag === t}
-								onPress={() =>
-									setActiveTag(activeTag === t ? null : t)
-								}
+								onPress={() => {
+									haptic("tag");
+									setActiveTag(activeTag === t ? null : t);
+								}}
 							/>
 						))}
 					</ScrollView>
@@ -305,6 +325,7 @@ export default function FeedScreen({
 					<RefreshControl
 						refreshing={false}
 						onRefresh={() => {
+							haptic("refresh");
 							refresh();
 							refreshVault();
 						}}
@@ -328,8 +349,14 @@ export default function FeedScreen({
 							avatar={avatarValue}
 							nickname={nicknameValue}
 							onMenu={(anchor) => setMenu({ note: item, anchor })}
-							onTag={setActiveTag}
-							onToggleTask={(line) => toggleTask(item, line)}
+							onTag={(tag) => {
+								haptic("tag");
+								setActiveTag(tag);
+							}}
+							onToggleTask={(line) => {
+								haptic("checklist");
+								toggleTask(item, line);
+							}}
 						/>
 					);
 					return columns > 1 ? (
@@ -342,7 +369,10 @@ export default function FeedScreen({
 
 			<Pressable
 				style={s.fab}
-				onPress={() => setComposer({ open: true, editing: null })}
+				onPress={() => {
+					haptic("compose");
+					setComposer({ open: true, editing: null });
+				}}
 			>
 				<Ionicons
 					name="add"

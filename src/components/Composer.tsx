@@ -25,6 +25,7 @@ import { useObsidian } from "../theme/ObsidianContext";
 import { useTheme } from "../theme/ThemeContext";
 import { Draft, Note, Selection, Theme } from "../types";
 import { readableOn } from "../utils/format";
+import { haptic } from "../utils/haptics";
 import { fitToLimit, visibleLength } from "../utils/limits";
 import { collectImages } from "../utils/markdown";
 import {
@@ -213,12 +214,17 @@ export default function Composer({
 
 	const onBg = readableOn(theme.background);
 
+	const cancel = () => {
+		haptic("cancel");
+		onClose();
+	};
+
 	return (
 		<Modal
 			visible={visible}
 			animationType="slide"
 			statusBarTranslucent
-			onRequestClose={onClose}
+			onRequestClose={cancel}
 			supportedOrientations={["portrait", "landscape"]}
 		>
 			<SafeAreaView style={s.root}>
@@ -229,7 +235,7 @@ export default function Composer({
 					behavior="padding"
 				>
 					<View style={s.header}>
-						<Pressable onPress={onClose} hitSlop={10}>
+						<Pressable onPress={cancel} hitSlop={10}>
 							<Ionicons name="close" size={26} color={onBg} />
 						</Pressable>
 

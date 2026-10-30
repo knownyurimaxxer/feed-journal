@@ -105,6 +105,23 @@ export const PRESET_LABELS: Record<string, MessageKey> = {
 	Grape: "preset.grape",
 };
 
+/** Every moment the app can vibrate. Each one has its own switch in Settings. */
+export const HAPTIC_TRIGGERS = [
+	"done",
+	"save",
+	"cancel",
+	"menu",
+	"action",
+	"settings",
+	"refresh",
+	"compose",
+	"checklist",
+	"tag",
+	"delete",
+	"error",
+] as const;
+export type HapticTrigger = (typeof HAPTIC_TRIGGERS)[number];
+
 export const DEFAULT_SETTINGS: Settings = {
 	theme: PRESETS["Navy"],
 	likesEnabled: true,
@@ -119,6 +136,10 @@ export const DEFAULT_SETTINGS: Settings = {
 	obsidianEnabled: false,
 	vaultUri: null,
 	language: "system",
+	hapticsEnabled: false,
+	haptics: Object.fromEntries(
+		HAPTIC_TRIGGERS.map((k) => [k, true]),
+	) as Record<HapticTrigger, boolean>,
 };
 
 export const AVATAR_ICONS = [
