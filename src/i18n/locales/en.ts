@@ -17,6 +17,7 @@ export const en = {
 	"feed.search": "Search your posts",
 	"feed.all": "All",
 	"feed.empty": "Nothing here yet.\nGo overshare. Nobody's watching.",
+	"feed.loading": "Loading your notes…",
 	"feed.noMatch": "No posts match that.",
 	"feed.fallbackBanner":
 		"Can't access your notes folder, so app storage is in use. Tap to choose a folder again.",

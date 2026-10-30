@@ -312,13 +312,13 @@ export default function FeedScreen({
 					/>
 				}
 				ListEmptyComponent={
-					loading ? undefined : (
-						<Text style={s.empty}>
-							{notes.length === 0
+					<Text style={s.empty}>
+						{loading
+							? t("feed.loading")
+							: notes.length === 0
 								? t("feed.empty")
 								: t("feed.noMatch")}
-						</Text>
-					)
+					</Text>
 				}
 				renderItem={({ item }) => {
 					const card = (

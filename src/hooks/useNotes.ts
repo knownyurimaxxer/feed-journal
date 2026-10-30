@@ -95,7 +95,9 @@ export function useNotes(folderUri: string | null, likesEnabled: boolean) {
 		}
 	}, [folderUri]);
 
+	// Starting (or switching folder): show "loading" until the first read ends.
 	useEffect(() => {
+		setLoading(true);
 		refresh();
 	}, [refresh]);
 

@@ -13,6 +13,7 @@ export const es: Messages = {
 	"feed.all": "Todas",
 	"feed.empty":
 		"Aquí no hay nada todavía.\nAnda, cuéntalo todo. Nadie te está mirando.",
+	"feed.loading": "Cargando tus notas…",
 	"feed.noMatch": "Ninguna publicación coincide.",
 	"feed.fallbackBanner":
 		"No se puede acceder a tu carpeta de notas, así que se está usando el almacenamiento de la app. Toca para elegir una carpeta de nuevo.",

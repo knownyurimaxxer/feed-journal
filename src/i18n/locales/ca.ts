@@ -13,6 +13,7 @@ export const ca: Messages = {
 	"feed.all": "Totes",
 	"feed.empty":
 		"Encara no hi ha res aquí.\nVinga, explica-ho tot. Ningú no t'està mirant.",
+	"feed.loading": "Carregant les teves notes…",
 	"feed.noMatch": "Cap publicació coincideix.",
 	"feed.fallbackBanner":
 		"No es pot accedir a la teva carpeta de notes, així que s'està fent servir l'emmagatzematge de l'app. Toca per triar una carpeta de nou.",
