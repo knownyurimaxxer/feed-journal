@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { buildVaultIndex } from "../storage/vault";
 import { ObsidianApi, ObsidianStatus } from "../theme/ObsidianContext";
-import { findInIndex, VaultIndex } from "../utils/vaultIndex";
+import { findInIndex, isObsidianActive, VaultIndex } from "../utils/vaultIndex";
 
 /**
  * Keeps the list of pictures of the Obsidian vault. It is rebuilt when the
- * vault changes, when Obsidian compatibility is turned on, and on `refresh()`
- * (pull to refresh). While it is rebuilding, the previous list stays in use.
+ * vault changes, when Obsidian is turned on, and on `refresh()` (pull to
+ * refresh). Obsidian only counts as active when it is turned on AND a vault
+ * folder is chosen; otherwise nothing Obsidian-related works. While it is rebuilding, the previous list stays in use.
  */
 export function useVault(enabled: boolean, vaultUri: string | null) {
 	// index is null when the folder couldn't be read
@@ -15,7 +16,8 @@ export function useVault(enabled: boolean, vaultUri: string | null) {
 		index: VaultIndex | null;
 	} | null>(null);
 	const [round, setRound] = useState(0);
-	const uri = enabled ? vaultUri : null;
+	const active = isObsidianActive(enabled, vaultUri);
+	const uri = active ? vaultUri : null;
 
 	useEffect(() => {
 		if (!uri) {
@@ -38,22 +40,20 @@ export function useVault(enabled: boolean, vaultUri: string | null) {
 
 	const api = useMemo<ObsidianApi>(() => {
 		const current = built && built.uri === uri ? built : null;
-		const status: ObsidianStatus = !enabled
+		const status: ObsidianStatus = !uri
 			? "off"
-			: !uri
-				? "no-vault"
-				: !current
-					? "indexing"
-					: current.index
-						? "ready"
-						: "unreadable";
+			: !current
+				? "indexing"
+				: current.index
+					? "ready"
+					: "unreadable";
 		const index = current?.index ?? null;
 		return {
-			enabled,
+			enabled: active,
 			status,
 			resolveImage: (path) => (index ? findInIndex(index, path) : null),
 		};
-	}, [enabled, uri, built]);
+	}, [active, uri, built]);
 
 	return { api, refresh };
 }

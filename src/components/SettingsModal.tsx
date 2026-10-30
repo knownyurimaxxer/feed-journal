@@ -1,5 +1,6 @@
-import { useMemo } from "react";
+import { Fragment, ReactNode, useMemo, useState } from "react";
 import {
+	Linking,
 	Modal,
 	Pressable,
 	ScrollView,
@@ -14,18 +15,18 @@ import { Ionicons } from "@expo/vector-icons";
 import {
 	AVATAR_ICONS,
 	LIMITS,
+	LINKS,
 	PRESET_LABELS,
 	PRESETS,
 	ROLE_LABELS,
 	SWATCHES,
 } from "../constants";
-import { LANGUAGES, SYSTEM_LANGUAGE } from "../i18n";
+import { LANGUAGES, makeTranslator, SYSTEM_LANGUAGE } from "../i18n";
 import { useI18n } from "../i18n/I18nContext";
 import { useTheme } from "../theme/ThemeContext";
 import { Settings, Theme, UpdateSetting } from "../types";
 import { folderLabel, readableOn } from "../utils/format";
 import Avatar from "./Avatar";
-import CreditsSection from "./CreditsSection";
 import NumberField from "./NumberField";
 
 type Props = {
@@ -40,6 +41,27 @@ type Props = {
 	onClose: () => void;
 };
 
+const open = (url: string) => {
+	Linking.openURL(url).catch((e) =>
+		console.warn("Could not open link", url, e),
+	);
+};
+
+/**
+ * Fills a translated sentence such as "Made by {developer}." with the links
+ * that belong in its {placeholders}, wherever the language puts them.
+ */
+function fill(template: string, parts: Record<string, ReactNode>): ReactNode[] {
+	return template.split(/(\{\w+\})/).map((chunk, i) => {
+		const name = chunk.match(/^\{(\w+)\}$/)?.[1];
+		return name && name in parts ? (
+			<Fragment key={i}>{parts[name]}</Fragment>
+		) : (
+			chunk
+		);
+	});
+}
+
 export default function SettingsModal({
 	visible,
 	settings,
@@ -52,9 +74,48 @@ export default function SettingsModal({
 	onClose,
 }: Props) {
 	const theme = useTheme();
-	const { t, language } = useI18n();
+	const { t, systemLanguage } = useI18n();
 	const s = useMemo(() => makeStyles(theme), [theme]);
 	const roles = Object.keys(SWATCHES) as (keyof Theme)[];
+	const [languagesOpen, setLanguagesOpen] = useState(false);
+
+	// "System default" is written in the phone's language (the one it would
+	// switch to), like every other option is written in its own language.
+	const systemLang =
+		LANGUAGES.find((l) => l.code === systemLanguage) ?? LANGUAGES[0];
+	const languageOptions = [
+		{
+			code: SYSTEM_LANGUAGE,
+			title: makeTranslator(systemLang.messages)(
+				"settings.languageSystem",
+			),
+			detail: systemLang.name,
+		},
+		...LANGUAGES.map((l) => ({
+			code: l.code,
+			title: l.name,
+			detail: undefined,
+		})),
+	];
+	// An unknown saved code (a removed language) counts as "system".
+	const chosenLanguage = LANGUAGES.some((l) => l.code === settings.language)
+		? settings.language
+		: SYSTEM_LANGUAGE;
+	const currentLanguage =
+		languageOptions.find((o) => o.code === chosenLanguage) ??
+		languageOptions[0];
+
+	const link = (label: string, url: string) => (
+		<Text style={s.link} accessibilityRole="link" onPress={() => open(url)}>
+			{label}
+		</Text>
+	);
+	const languageLabel = (option: (typeof languageOptions)[number]) => (
+		<View style={{ flex: 1 }}>
+			<Text style={s.rowTitle}>{option.title}</Text>
+			{option.detail && <Text style={s.rowHint}>{option.detail}</Text>}
+		</View>
+	);
 
 	return (
 		<Modal
@@ -76,65 +137,67 @@ export default function SettingsModal({
 					automaticallyAdjustKeyboardInsets
 					keyboardShouldPersistTaps="handled"
 				>
-					{/* language: new languages appear here by themselves (see src/i18n) */}
+					{/* language: new languages appear here by themselves (see src/i18n).
+					    Closed it is one row, so a long list never takes over the page. */}
 					<Text style={s.section}>{t("settings.language")}</Text>
 					<View style={s.langCard}>
-						{[
-							{
-								code: SYSTEM_LANGUAGE,
-								title: t("settings.languageSystem"),
-								// what "system" resolves to right now
-								detail: LANGUAGES.find(
-									(l) => l.code === language,
-								)?.name,
-							},
-							...LANGUAGES.map((l) => ({
-								code: l.code,
-								title: l.name,
-								detail: undefined,
-							})),
-						].map((option, i) => {
-							// An unknown saved code (a removed language) counts as "system".
-							const selected =
-								option.code === settings.language ||
-								(option.code === SYSTEM_LANGUAGE &&
-									!LANGUAGES.some(
-										(l) => l.code === settings.language,
-									));
-							return (
-								<Pressable
-									key={option.code}
-									accessibilityRole="radio"
-									accessibilityState={{ selected }}
-									onPress={() =>
-										update("language", option.code)
-									}
-									style={({ pressed }) => [
-										s.langRow,
-										i > 0 && s.langRowBorder,
-										pressed && s.langPressed,
-									]}
-								>
-									<View style={{ flex: 1 }}>
-										<Text style={s.rowTitle}>
-											{option.title}
-										</Text>
-										{option.detail && (
-											<Text style={s.rowHint}>
-												{option.detail}
-											</Text>
-										)}
-									</View>
-									{selected && (
-										<Ionicons
-											name="checkmark"
-											size={22}
-											color={theme.accent}
-										/>
-									)}
-								</Pressable>
-							);
-						})}
+						<Pressable
+							accessibilityRole="button"
+							accessibilityState={{ expanded: languagesOpen }}
+							onPress={() => setLanguagesOpen((o) => !o)}
+							style={({ pressed }) => [
+								s.langRow,
+								pressed && s.langPressed,
+							]}
+						>
+							{languageLabel(currentLanguage)}
+							<Ionicons
+								name={
+									languagesOpen
+										? "chevron-up"
+										: "chevron-down"
+								}
+								size={22}
+								color={theme.text}
+							/>
+						</Pressable>
+						{languagesOpen && (
+							<ScrollView
+								nestedScrollEnabled
+								style={s.langList}
+								keyboardShouldPersistTaps="handled"
+							>
+								{languageOptions.map((option) => {
+									const selected =
+										option.code === chosenLanguage;
+									return (
+										<Pressable
+											key={option.code}
+											accessibilityRole="radio"
+											accessibilityState={{ selected }}
+											onPress={() => {
+												update("language", option.code);
+												setLanguagesOpen(false);
+											}}
+											style={({ pressed }) => [
+												s.langRow,
+												s.langRowBorder,
+												pressed && s.langPressed,
+											]}
+										>
+											{languageLabel(option)}
+											{selected && (
+												<Ionicons
+													name="checkmark"
+													size={22}
+													color={theme.accent}
+												/>
+											)}
+										</Pressable>
+									);
+								})}
+							</ScrollView>
+						)}
 					</View>
 					<Text style={[s.rowHint, s.langHint]}>
 						{t("settings.languageHint")}
@@ -345,7 +408,7 @@ export default function SettingsModal({
 					<Text style={[s.section, { marginTop: 24 }]}>
 						{t("settings.ui")}
 					</Text>
-					<View style={[s.row, { marginTop: 12 }]}>
+					<View style={s.row}>
 						<View style={{ flex: 1, paddingRight: 12 }}>
 							<Text style={s.rowTitle}>
 								{t("settings.likes")}
@@ -507,20 +570,75 @@ export default function SettingsModal({
 						accessibilityRole="button"
 						onPress={onResetAll}
 						style={({ pressed }) => [
-							s.resetBtn,
-							pressed && s.resetPressed,
+							s.outlineBtn,
+							{ borderColor: DANGER },
+							pressed && s.pressed,
 						]}
 					>
-						<Text style={s.resetBtnText}>
+						<Text style={[s.outlineBtnText, { color: DANGER }]}>
 							{t("settings.resetButton")}
 						</Text>
 					</Pressable>
-					<CreditsSection />
+
+					{/* about / credits */}
+					<Text style={[s.section, { marginTop: 24 }]}>
+						{t("credits.about")}
+					</Text>
+					<View style={s.rowBlock}>
+						<Text style={s.body}>
+							{fill(t("credits.idea"), {
+								post: link(
+									t("credits.ideaPost"),
+									LINKS.ideaPost,
+								),
+								author: link("@rubensmuse", LINKS.ideaSocial),
+							})}
+						</Text>
+						<Text style={[s.body, { marginTop: 8 }]}>
+							{fill(t("credits.icons"), {
+								ionicons: link("Ionicons", LINKS.ionicons),
+								ionic: link("@ionic", LINKS.ionic),
+								mdi: link("Material Design Icons", LINKS.mdi),
+								pictogrammers: link(
+									"@pictogrammers",
+									LINKS.pictogrammers,
+								),
+							})}
+						</Text>
+						<Text style={[s.body, { marginTop: 8 }]}>
+							{fill(t("credits.madeBy"), {
+								developer: link(
+									"@knownyurimaxxer",
+									LINKS.developer,
+								),
+							})}
+						</Text>
+						<Text style={[s.rowHint, { marginTop: 12 }]}>
+							{t("credits.kofi")}
+						</Text>
+					</View>
+					<Pressable
+						accessibilityRole="link"
+						onPress={() => open(LINKS.kofi)}
+						style={({ pressed }) => [
+							s.outlineBtn,
+							{ borderColor: theme.accent },
+							pressed && s.pressed,
+						]}
+					>
+						<Text
+							style={[s.outlineBtnText, { color: theme.accent }]}
+						>
+							Ko-fi
+						</Text>
+					</Pressable>
 				</ScrollView>
 			</SafeAreaView>
 		</Modal>
 	);
 }
+
+const DANGER = "#FF4D4D";
 
 const makeStyles = (t: Theme) => {
 	const onBg = readableOn(t.background);
@@ -581,6 +699,7 @@ const makeStyles = (t: Theme) => {
 			borderTopWidth: StyleSheet.hairlineWidth,
 			borderTopColor: t.text + "33",
 		},
+		langList: { maxHeight: 280 },
 		langPressed: { backgroundColor: t.text + "14" },
 		langHint: { color: onBg, opacity: 0.7, marginTop: 8 },
 		rowTitle: { color: t.text, fontWeight: "700", fontSize: 15 },
@@ -590,8 +709,15 @@ const makeStyles = (t: Theme) => {
 			marginTop: 4,
 			lineHeight: 18,
 		},
-		btnRow: { flexDirection: "row", gap: 10, marginTop: 12 },
+		// Buttons wrap to the next line, and a long label wraps inside its button.
+		btnRow: {
+			flexDirection: "row",
+			flexWrap: "wrap",
+			gap: 10,
+			marginTop: 12,
+		},
 		btn: {
+			maxWidth: "100%",
 			backgroundColor: t.accent,
 			paddingHorizontal: 16,
 			paddingVertical: 9,
@@ -604,6 +730,7 @@ const makeStyles = (t: Theme) => {
 			color: readableOn(t.accent),
 			fontWeight: "700",
 			fontSize: 14,
+			textAlign: "center",
 		},
 		preset: {
 			width: 84,
@@ -632,20 +759,30 @@ const makeStyles = (t: Theme) => {
 			borderWidth: 1,
 			borderColor: "#88888855",
 		},
-		resetWrap: { marginTop: 32 },
 		resetCard: { backgroundColor: t.card, borderRadius: 8, padding: 14 },
 		resetText: { color: t.text, fontSize: 13, lineHeight: 18 },
-		resetBtn: {
+		// Full-width outlined button (reset, Ko-fi); the caller sets the color.
+		outlineBtn: {
 			alignSelf: "stretch",
 			alignItems: "center",
 			marginTop: 12,
 			paddingVertical: 12,
+			paddingHorizontal: 14,
 			borderRadius: 10,
 			borderWidth: 1,
-			borderColor: "#FF4D4D",
 		},
-		resetBtnText: { color: "#FF4D4D", fontWeight: "700", fontSize: 14 },
-		resetPressed: { opacity: 0.6 },
+		outlineBtnText: {
+			fontWeight: "700",
+			fontSize: 14,
+			textAlign: "center",
+		},
+		pressed: { opacity: 0.6 },
+		body: { color: t.text, fontSize: 14, lineHeight: 20 },
+		link: {
+			color: t.accent,
+			fontWeight: "600",
+			textDecorationLine: "underline",
+		},
 		avatarGrid: {
 			flexDirection: "row",
 			flexWrap: "wrap",

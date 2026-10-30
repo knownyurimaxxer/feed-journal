@@ -89,6 +89,8 @@ export function makeTranslator(messages: Messages): Translate {
 export type I18n = {
 	/** Code of the language in use. */
 	language: string;
+	/** Code of the language the phone's settings lead to (what "System default" means). */
+	systemLanguage: string;
 	/** Locale for dates and numbers. */
 	locale: string;
 	t: Translate;
@@ -99,6 +101,7 @@ export function buildI18n(setting: string, deviceTags: string[]): I18n {
 	const lang = LANGUAGES.find((l) => l.code === code) ?? LANGUAGES[0];
 	return {
 		language: lang.code,
+		systemLanguage: pickLanguage(deviceTags),
 		locale: lang.code,
 		t: makeTranslator(lang.messages),
 	};

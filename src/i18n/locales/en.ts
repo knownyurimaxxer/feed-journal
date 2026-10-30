@@ -61,8 +61,6 @@ export const en = {
 	"tool.checklist": "Checklist",
 
 	// images and links in posts
-	"image.needVault":
-		"Choose your vault folder in Settings to show this image.",
 	"image.vaultUnreadable":
 		"The vault folder can't be opened. Choose it again in Settings.",
 	"image.looking": "Looking for the image…",
@@ -87,10 +85,11 @@ export const en = {
 	"settings.chooseFolder": "Choose folder",
 	"settings.useAppStorage": "Use app storage",
 	"folder.appStorage": "App storage (default)",
-	"settings.obsidian": "Obsidian compatibility",
+	"settings.obsidian": "Obsidian",
 	"settings.obsidianHint":
-		"Shows images written as ![[photo.png]] from your vault, and turns “- [ ]” and “- [x]” lines into checkboxes you can tap (except in the Markdown view).",
-	"settings.noVault": "No vault chosen",
+		"Shows images written as ![[photo.png]] from your vault, and turns “- [ ]” and “- [x]” lines into checkboxes you can tap (except in the Markdown view). It needs a vault folder to work.",
+	"settings.noVault":
+		"No vault chosen. Obsidian stays off until you choose one.",
 	"settings.vaultHint":
 		"Choose your Obsidian vault (the folder that holds the .obsidian folder). Images are looked up there by name or path. Nothing in the vault is changed.",
 	"settings.clear": "Clear",

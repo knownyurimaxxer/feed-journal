@@ -1,4 +1,6 @@
-**TLDR**: it's a Notes taking app with a personalizable UI that reminds you of _Tumblr_.
+**TLDR**: it's a note-taking app with a personalizable UI that reminds you of _Tumblr_.
+
+If you have an issue, just open an [Issue](../../issues)!
 
 ## What it does
 
@@ -15,17 +17,13 @@
   the web, or use the image button in the toolbar. Add a size with
   `![description|300](https://address)`. The editor keeps the text visible and
   previews the picture under it.
-- **Obsidian compatibility (optional).** Turn it on in Settings > Folder and
-  pick your vault. Then `![[photo.png]]` (also `![[photo.png|300]]` and
+- **Obsidian (optional).** Turn it on in Settings > Folder and pick your
+  vault; it only works once both are done. Then `![[photo.png]]` (also `![[photo.png|300]]` and
   `![](Attachments/photo.png)`) shows the picture from the vault, and
   `- [ ]` / `- [x]` lines become checkboxes you can tap in the feed and in the
   editor (not in the Markdown view). The vault is only read, never changed.
 - **Languages.** Settings > Language: "System default" follows the phone (and
-  uses English when the phone's language isn't available), or pick one. Every
-  text lives in `src/i18n/locales/`. To add a language, copy `en.ts` to
-  `xx.ts`, translate the values (keep the keys and the `{placeholders}`), and
-  add one line to `LANGUAGES` in `src/i18n/index.ts`. The compiler and the
-  tests tell you if a text is missing. It then appears in Settings by itself.
+  uses English when the phone's language isn't available), or pick one.
 - **Search and tags.** Find an old post by a word from it, or tap a tag to
   see everything under it.
 - **Fake likes.** Each post picks up a like or two when it scrolls into view.

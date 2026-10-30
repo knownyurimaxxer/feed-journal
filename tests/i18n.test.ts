@@ -103,6 +103,14 @@ describe("buildI18n", () => {
 	});
 });
 
+describe("systemLanguage", () => {
+	it("is the phone's language, whatever language is chosen", () => {
+		expect(buildI18n("en", ["es-ES"]).systemLanguage).toBe("es");
+		expect(buildI18n("es", ["fr-FR"]).systemLanguage).toBe("en");
+		expect(buildI18n(SYSTEM_LANGUAGE, ["es-ES"]).systemLanguage).toBe("es");
+	});
+});
+
 describe("every language file", () => {
 	const keys = Object.keys(en);
 

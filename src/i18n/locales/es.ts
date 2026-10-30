@@ -58,8 +58,6 @@ export const es: Messages = {
 	"tool.checklist": "Lista de tareas",
 
 	// images and links in posts
-	"image.needVault":
-		"Elige la carpeta de tu bóveda en Ajustes para mostrar esta imagen.",
 	"image.vaultUnreadable":
 		"No se puede abrir la carpeta de la bóveda. Vuelve a elegirla en Ajustes.",
 	"image.looking": "Buscando la imagen…",
@@ -84,10 +82,11 @@ export const es: Messages = {
 	"settings.chooseFolder": "Elegir carpeta",
 	"settings.useAppStorage": "Usar almacenamiento de la app",
 	"folder.appStorage": "Almacenamiento de la app (predeterminado)",
-	"settings.obsidian": "Compatibilidad con Obsidian",
+	"settings.obsidian": "Obsidian",
 	"settings.obsidianHint":
-		"Muestra desde tu bóveda las imágenes escritas como ![[foto.png]], y convierte las líneas «- [ ]» y «- [x]» en casillas que puedes tocar (salvo en la vista Markdown).",
-	"settings.noVault": "Ninguna bóveda elegida",
+		"Muestra desde tu bóveda las imágenes escritas como ![[foto.png]], y convierte las líneas «- [ ]» y «- [x]» en casillas que puedes tocar (salvo en la vista Markdown). Necesita una carpeta de bóveda para funcionar.",
+	"settings.noVault":
+		"Ninguna bóveda elegida. Obsidian sigue desactivado hasta que elijas una.",
 	"settings.vaultHint":
 		"Elige tu bóveda de Obsidian (la carpeta que contiene la carpeta .obsidian). Las imágenes se buscan ahí por nombre o ruta. No se cambia nada de la bóveda.",
 	"settings.clear": "Quitar",
