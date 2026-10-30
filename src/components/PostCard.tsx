@@ -1,6 +1,7 @@
 import { ComponentRef, useMemo, useRef } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useI18n } from "../i18n/I18nContext";
 import { useTheme } from "../theme/ThemeContext";
 import { Anchor, Note, Theme } from "../types";
 import { timeAgo } from "../utils/format";
@@ -28,6 +29,7 @@ export default function PostCard({
 	onToggleTask,
 }: Props) {
 	const theme = useTheme();
+	const { t, locale } = useI18n();
 	const s = useMemo(() => makeStyles(theme), [theme]);
 	const edited = note.modifiedAt - note.createdAt > 60_000;
 	// The ref lives on a plain View (not on the Pressable) so its type is
@@ -50,8 +52,8 @@ export default function PostCard({
 						</Text>
 					)}
 					<Text style={s.meta}>
-						{timeAgo(note.createdAt)}
-						{edited ? " · edited" : ""}
+						{timeAgo(note.createdAt, t, locale)}
+						{edited ? t("post.edited") : ""}
 					</Text>
 				</View>
 				<View ref={menuRef} collapsable={false}>

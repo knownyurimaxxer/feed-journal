@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Alert, AppState } from "react-native";
+import { MessageKey, translate } from "../i18n";
 import { Directory } from "expo-file-system";
 import {
 	NoteMeta,
@@ -105,10 +106,12 @@ export function useNotes(folderUri: string | null, likesEnabled: boolean) {
 		return () => sub.remove();
 	}, [refresh]);
 
-	const fail = (what: string, e: unknown) => {
-		console.warn(what, e);
+	// The callbacks below keep an old copy of this function, so it reads the
+	// language in use when it runs (translate), not when it was created.
+	const fail = (title: MessageKey, e: unknown) => {
+		console.warn(title, e);
 		Alert.alert(
-			`Couldn't ${what}`,
+			translate(title),
 			String(e instanceof Error ? e.message : e),
 		);
 	};
@@ -147,7 +150,7 @@ export function useNotes(folderUri: string | null, likesEnabled: boolean) {
 				]);
 				return true;
 			} catch (e) {
-				fail("save the post", e);
+				fail("error.savePost", e);
 				return false;
 			}
 		},
@@ -210,7 +213,7 @@ export function useNotes(folderUri: string | null, likesEnabled: boolean) {
 				);
 				return true;
 			} catch (e) {
-				fail("save the changes", e);
+				fail("error.saveChanges", e);
 				return false;
 			}
 		},
@@ -235,7 +238,7 @@ export function useNotes(folderUri: string | null, likesEnabled: boolean) {
 				),
 			);
 		} catch (e) {
-			fail("save the changes", e);
+			fail("error.saveChanges", e);
 		}
 	}, []);
 
@@ -245,7 +248,7 @@ export function useNotes(folderUri: string | null, likesEnabled: boolean) {
 			deleteNoteData(note.id).catch(() => {});
 			setNotes((ns) => ns.filter((n) => n.id !== note.id));
 		} catch (e) {
-			fail("delete the post", e);
+			fail("error.deletePost", e);
 		}
 	}, []);
 

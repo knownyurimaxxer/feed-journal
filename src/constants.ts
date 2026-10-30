@@ -1,3 +1,4 @@
+import type { MessageKey } from "./i18n/locales/en";
 import { Settings, Theme } from "./types";
 
 /**
@@ -87,11 +88,21 @@ export const SWATCHES: Record<keyof Theme, string[]> = {
 	],
 };
 
-export const ROLE_LABELS: Record<keyof Theme, string> = {
-	background: "Background",
-	card: "Post card",
-	text: "Text",
-	accent: "Contrast / accent",
+/** Texts (see i18n) for the color rows in Settings. */
+export const ROLE_LABELS: Record<keyof Theme, MessageKey> = {
+	background: "role.background",
+	card: "role.card",
+	text: "role.text",
+	accent: "role.accent",
+};
+
+/** Texts (see i18n) for the preset names. A preset without one shows its own name. */
+export const PRESET_LABELS: Record<string, MessageKey> = {
+	Navy: "preset.navy",
+	Midnight: "preset.midnight",
+	Paper: "preset.paper",
+	Forest: "preset.forest",
+	Grape: "preset.grape",
 };
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -107,6 +118,7 @@ export const DEFAULT_SETTINGS: Settings = {
 	maxTags: LIMITS.tags.default,
 	obsidianEnabled: false,
 	vaultUri: null,
+	language: "system",
 };
 
 export const AVATAR_ICONS = [

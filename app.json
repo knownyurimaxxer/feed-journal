@@ -29,7 +29,8 @@
 				{
 					"photosPermission": "Allow $(PRODUCT_NAME) to access your photos to set your avatar."
 				}
-			]
+			],
+			"expo-localization"
 		]
 	}
 }

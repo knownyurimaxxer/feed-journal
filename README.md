@@ -1,11 +1,5 @@
 **TLDR**: it's a Notes taking app with a personalizable UI that reminds you of _Tumblr_.
 
-The idea for this app comes from
-[this post](https://www.tumblr.com/rubensmuse/831592820192280576/killer-new-startup-idea-phone-app-called-the)
-by [@rubensmuse](https://www.tumblr.com/rubensmuse) on _Tumblr_.
-
-If you ever feel like it, I have a [Ko-fi](https://ko-fi.com/knownyurimaxxer)!
-
 ## What it does
 
 - **Short posts.** 280 characters by default, and up to 10 tags if you feel
@@ -26,6 +20,12 @@ If you ever feel like it, I have a [Ko-fi](https://ko-fi.com/knownyurimaxxer)!
   `![](Attachments/photo.png)`) shows the picture from the vault, and
   `- [ ]` / `- [x]` lines become checkboxes you can tap in the feed and in the
   editor (not in the Markdown view). The vault is only read, never changed.
+- **Languages.** Settings > Language: "System default" follows the phone (and
+  uses English when the phone's language isn't available), or pick one. Every
+  text lives in `src/i18n/locales/`. To add a language, copy `en.ts` to
+  `xx.ts`, translate the values (keep the keys and the `{placeholders}`), and
+  add one line to `LANGUAGES` in `src/i18n/index.ts`. The compiler and the
+  tests tell you if a text is missing. It then appears in Settings by itself.
 - **Search and tags.** Find an old post by a word from it, or tap a tag to
   see everything under it.
 - **Fake likes.** Each post picks up a like or two when it scrolls into view.
@@ -76,3 +76,11 @@ it, and `npm run check` to run the type check and the tests.
 [Ionicons](https://ionic.io/ionicons) by [@ionic](https://ionic.io/) and
 [Material Design Icons](https://pictogrammers.com/library/mdi/) by
 [@pictogrammers](https://pictogrammers.com/).
+
+The idea for this app comes from
+[this post](https://www.tumblr.com/rubensmuse/831592820192280576/killer-new-startup-idea-phone-app-called-the)
+by [@rubensmuse](https://www.tumblr.com/rubensmuse) on _Tumblr_.
+
+Made by [@knownyurimaxxer](https://www.tumblr.com/knownyurimaxxer).
+
+If you ever feel like it, I have a [Ko-fi](https://ko-fi.com/knownyurimaxxer)!

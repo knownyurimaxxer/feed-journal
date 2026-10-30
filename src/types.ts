@@ -25,6 +25,8 @@ export type Settings = {
 	obsidianEnabled: boolean;
 	/** URI of the Obsidian vault folder (where embedded images are looked up), or null. */
 	vaultUri: string | null;
+	/** "system" (follow the phone), or the code of one of the languages in i18n/LANGUAGES. */
+	language: string;
 };
 
 export type UpdateSetting = <K extends keyof Settings>(

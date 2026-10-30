@@ -1,4 +1,9 @@
+import { makeTranslator, Translate } from "../i18n";
+import { en } from "../i18n/locales/en";
 import type { Theme } from "../types";
+
+/** What these helpers say when no translator is given. */
+const english = makeTranslator(en);
 
 /** Black or white, whichever is readable on top of `hex`. */
 export function readableOn(hex: string): "#000000" | "#FFFFFF" {
@@ -35,13 +40,18 @@ export function linkColor(t: Theme): string {
 	return contrastRatio(t.accent, t.card) >= 3 ? t.accent : t.text;
 }
 
-export function timeAgo(ts: number): string {
+/** "just now", "5m", "3h", "2d", then the date. `t` and `locale` come from useI18n(). */
+export function timeAgo(
+	ts: number,
+	t: Translate = english,
+	locale?: string,
+): string {
 	const s = Math.floor((Date.now() - ts) / 1000);
-	if (s < 60) return "just now";
-	if (s < 3600) return `${Math.floor(s / 60)}m`;
-	if (s < 86400) return `${Math.floor(s / 3600)}h`;
-	if (s < 604800) return `${Math.floor(s / 86400)}d`;
-	return new Date(ts).toLocaleDateString();
+	if (s < 60) return t("time.now");
+	if (s < 3600) return t("time.minutes", { n: Math.floor(s / 60) });
+	if (s < 86400) return t("time.hours", { n: Math.floor(s / 3600) });
+	if (s < 604800) return t("time.days", { n: Math.floor(s / 86400) });
+	return new Date(ts).toLocaleDateString(locale);
 }
 
 /* ---- note ids: "2026-10-28_14-03-22_ab12" (file name without .md) ---- */
@@ -64,8 +74,11 @@ export function parseIdDate(id: string): number | null {
 }
 
 /** Short human label for a folder URI. */
-export function folderLabel(uri: string | null): string {
-	if (!uri) return "App storage (default)";
+export function folderLabel(
+	uri: string | null,
+	t: Translate = english,
+): string {
+	if (!uri) return t("folder.appStorage");
 	try {
 		const last = decodeURIComponent(uri)
 			.split(/[/:]/)

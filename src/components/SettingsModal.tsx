@@ -10,13 +10,17 @@ import {
 	View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
 import {
 	AVATAR_ICONS,
 	LIMITS,
+	PRESET_LABELS,
 	PRESETS,
 	ROLE_LABELS,
 	SWATCHES,
 } from "../constants";
+import { LANGUAGES, SYSTEM_LANGUAGE } from "../i18n";
+import { useI18n } from "../i18n/I18nContext";
 import { useTheme } from "../theme/ThemeContext";
 import { Settings, Theme, UpdateSetting } from "../types";
 import { folderLabel, readableOn } from "../utils/format";
@@ -48,6 +52,7 @@ export default function SettingsModal({
 	onClose,
 }: Props) {
 	const theme = useTheme();
+	const { t, language } = useI18n();
 	const s = useMemo(() => makeStyles(theme), [theme]);
 	const roles = Object.keys(SWATCHES) as (keyof Theme)[];
 
@@ -60,9 +65,9 @@ export default function SettingsModal({
 		>
 			<SafeAreaView style={s.root}>
 				<View style={s.header}>
-					<Text style={s.title}>Settings</Text>
+					<Text style={s.title}>{t("settings.title")}</Text>
 					<Pressable onPress={onClose} style={s.doneBtn}>
-						<Text style={s.doneText}>Done</Text>
+						<Text style={s.doneText}>{t("common.done")}</Text>
 					</Pressable>
 				</View>
 
@@ -71,20 +76,86 @@ export default function SettingsModal({
 					automaticallyAdjustKeyboardInsets
 					keyboardShouldPersistTaps="handled"
 				>
+					{/* language: new languages appear here by themselves (see src/i18n) */}
+					<Text style={s.section}>{t("settings.language")}</Text>
+					<View style={s.langCard}>
+						{[
+							{
+								code: SYSTEM_LANGUAGE,
+								title: t("settings.languageSystem"),
+								// what "system" resolves to right now
+								detail: LANGUAGES.find(
+									(l) => l.code === language,
+								)?.name,
+							},
+							...LANGUAGES.map((l) => ({
+								code: l.code,
+								title: l.name,
+								detail: undefined,
+							})),
+						].map((option, i) => {
+							// An unknown saved code (a removed language) counts as "system".
+							const selected =
+								option.code === settings.language ||
+								(option.code === SYSTEM_LANGUAGE &&
+									!LANGUAGES.some(
+										(l) => l.code === settings.language,
+									));
+							return (
+								<Pressable
+									key={option.code}
+									accessibilityRole="radio"
+									accessibilityState={{ selected }}
+									onPress={() =>
+										update("language", option.code)
+									}
+									style={({ pressed }) => [
+										s.langRow,
+										i > 0 && s.langRowBorder,
+										pressed && s.langPressed,
+									]}
+								>
+									<View style={{ flex: 1 }}>
+										<Text style={s.rowTitle}>
+											{option.title}
+										</Text>
+										{option.detail && (
+											<Text style={s.rowHint}>
+												{option.detail}
+											</Text>
+										)}
+									</View>
+									{selected && (
+										<Ionicons
+											name="checkmark"
+											size={22}
+											color={theme.accent}
+										/>
+									)}
+								</Pressable>
+							);
+						})}
+					</View>
+					<Text style={[s.rowHint, s.langHint]}>
+						{t("settings.languageHint")}
+					</Text>
+
 					{/* folder */}
-					<Text style={s.section}>Folder</Text>
+					<Text style={[s.section, { marginTop: 24 }]}>
+						{t("settings.folder")}
+					</Text>
 					<View style={s.rowBlock}>
 						<Text style={s.rowTitle}>
-							{folderLabel(settings.folderUri)}
+							{folderLabel(settings.folderUri, t)}
 						</Text>
 						<Text style={s.rowHint}>
-							Each post is saved as a .md file named after its
-							title, with its tags at the top. Changing folders
-							doesn't move existing notes.
+							{t("settings.folderHint")}
 						</Text>
 						<View style={s.btnRow}>
 							<Pressable style={s.btn} onPress={onPickFolder}>
-								<Text style={s.btnText}>Choose folder</Text>
+								<Text style={s.btnText}>
+									{t("settings.chooseFolder")}
+								</Text>
 							</Pressable>
 							{settings.folderUri && (
 								<Pressable
@@ -97,7 +168,7 @@ export default function SettingsModal({
 											{ color: theme.accent },
 										]}
 									>
-										Use app storage
+										{t("settings.useAppStorage")}
 									</Text>
 								</Pressable>
 							)}
@@ -107,13 +178,10 @@ export default function SettingsModal({
 					<View style={[s.row, { marginTop: 12 }]}>
 						<View style={{ flex: 1, paddingRight: 12 }}>
 							<Text style={s.rowTitle}>
-								Obsidian compatibility
+								{t("settings.obsidian")}
 							</Text>
 							<Text style={s.rowHint}>
-								Shows images written as ![[photo.png]] from your
-								vault, and turns "- [ ]" and "- [x]" lines into
-								checkboxes you can tap (except in the Markdown
-								view).
+								{t("settings.obsidianHint")}
 							</Text>
 						</View>
 						<Switch
@@ -129,18 +197,17 @@ export default function SettingsModal({
 						<View style={[s.rowBlock, { marginTop: 12 }]}>
 							<Text style={s.rowTitle}>
 								{settings.vaultUri
-									? folderLabel(settings.vaultUri)
-									: "No vault chosen"}
+									? folderLabel(settings.vaultUri, t)
+									: t("settings.noVault")}
 							</Text>
 							<Text style={s.rowHint}>
-								Choose your Obsidian vault (the folder that
-								holds the .obsidian folder). Images are looked
-								up there by name or path. Nothing in the vault
-								is changed.
+								{t("settings.vaultHint")}
 							</Text>
 							<View style={s.btnRow}>
 								<Pressable style={s.btn} onPress={onPickVault}>
-									<Text style={s.btnText}>Choose folder</Text>
+									<Text style={s.btnText}>
+										{t("settings.chooseFolder")}
+									</Text>
 								</Pressable>
 								{settings.vaultUri && (
 									<Pressable
@@ -153,7 +220,7 @@ export default function SettingsModal({
 												{ color: theme.accent },
 											]}
 										>
-											Clear
+											{t("settings.clear")}
 										</Text>
 									</Pressable>
 								)}
@@ -162,12 +229,16 @@ export default function SettingsModal({
 					)}
 
 					{/* User */}
-					<Text style={[s.section, { marginTop: 24 }]}>User</Text>
+					<Text style={[s.section, { marginTop: 24 }]}>
+						{t("settings.user")}
+					</Text>
 					<View style={s.row}>
 						<View style={{ flex: 1, paddingRight: 12 }}>
-							<Text style={s.rowTitle}>Show nickname</Text>
+							<Text style={s.rowTitle}>
+								{t("settings.showNickname")}
+							</Text>
 							<Text style={s.rowHint}>
-								Hides the name on posts and in the editor.
+								{t("settings.showNicknameHint")}
 							</Text>
 						</View>
 						<Switch
@@ -184,7 +255,7 @@ export default function SettingsModal({
 							style={s.nicknameInput}
 							value={settings.nickname}
 							onChangeText={(v) => update("nickname", v)}
-							placeholder="Nickname"
+							placeholder={t("settings.nicknamePlaceholder")}
 							placeholderTextColor={theme.text + "77"}
 							maxLength={30}
 							autoCorrect={false}
@@ -193,9 +264,11 @@ export default function SettingsModal({
 					)}
 					<View style={[s.row, { marginTop: 12 }]}>
 						<View style={{ flex: 1, paddingRight: 12 }}>
-							<Text style={s.rowTitle}>Show avatar</Text>
+							<Text style={s.rowTitle}>
+								{t("settings.showAvatar")}
+							</Text>
 							<Text style={s.rowHint}>
-								Hides the avatar on posts and in the editor.
+								{t("settings.showAvatarHint")}
 							</Text>
 						</View>
 						<Switch
@@ -245,8 +318,8 @@ export default function SettingsModal({
 								<Pressable style={s.btn} onPress={onPickPhoto}>
 									<Text style={s.btnText}>
 										{settings.avatarImage
-											? "Change photo"
-											: "Choose photo"}
+											? t("settings.changePhoto")
+											: t("settings.choosePhoto")}
 									</Text>
 								</Pressable>
 								{settings.avatarImage && (
@@ -260,7 +333,7 @@ export default function SettingsModal({
 												{ color: theme.accent },
 											]}
 										>
-											Remove photo
+											{t("settings.removePhoto")}
 										</Text>
 									</Pressable>
 								)}
@@ -269,13 +342,16 @@ export default function SettingsModal({
 					)}
 
 					{/* UI */}
-					<Text style={[s.section, { marginTop: 24 }]}>UI</Text>
+					<Text style={[s.section, { marginTop: 24 }]}>
+						{t("settings.ui")}
+					</Text>
 					<View style={[s.row, { marginTop: 12 }]}>
 						<View style={{ flex: 1, paddingRight: 12 }}>
-							<Text style={s.rowTitle}>Fake likes</Text>
+							<Text style={s.rowTitle}>
+								{t("settings.likes")}
+							</Text>
 							<Text style={s.rowHint}>
-								Off hides the counter and stops new likes.
-								Existing counts are kept.
+								{t("settings.likesHint")}
 							</Text>
 						</View>
 						<Switch
@@ -289,8 +365,11 @@ export default function SettingsModal({
 					</View>
 					<View style={{ marginTop: 12 }}>
 						<NumberField
-							title="Characters per post"
-							hint={`From ${LIMITS.chars.min} to ${LIMITS.chars.max}. Posts you already wrote are never cut.`}
+							title={t("settings.maxChars")}
+							hint={t("settings.maxCharsHint", {
+								min: LIMITS.chars.min,
+								max: LIMITS.chars.max,
+							})}
 							value={settings.maxChars}
 							min={LIMITS.chars.min}
 							max={LIMITS.chars.max}
@@ -299,8 +378,11 @@ export default function SettingsModal({
 					</View>
 					<View style={{ marginTop: 12 }}>
 						<NumberField
-							title="Tags per post"
-							hint={`From ${LIMITS.tags.min} to ${LIMITS.tags.max}. 0 hides the tag box when writing.`}
+							title={t("settings.maxTags")}
+							hint={t("settings.maxTagsHint", {
+								min: LIMITS.tags.min,
+								max: LIMITS.tags.max,
+							})}
 							value={settings.maxTags}
 							min={LIMITS.tags.min}
 							max={LIMITS.tags.max}
@@ -309,29 +391,37 @@ export default function SettingsModal({
 					</View>
 
 					{/* theme */}
-					<Text style={[s.section, { marginTop: 24 }]}>Theme</Text>
-					<Text style={[s.sectionTitle]}>Presets</Text>
+					<Text style={[s.section, { marginTop: 24 }]}>
+						{t("settings.theme")}
+					</Text>
+					<Text style={[s.sectionTitle]}>
+						{t("settings.presets")}
+					</Text>
 					<ScrollView
 						horizontal
 						showsHorizontalScrollIndicator={false}
 						contentContainerStyle={{ gap: 8 }}
 					>
-						{Object.entries(PRESETS).map(([name, t]) => (
+						{Object.entries(PRESETS).map(([name, p]) => (
 							<Pressable
-								key={name}
-								onPress={() => update("theme", t)}
+								key={
+									PRESET_LABELS[name]
+										? t(PRESET_LABELS[name])
+										: name
+								}
+								onPress={() => update("theme", p)}
 								style={[
 									s.preset,
 									{
-										backgroundColor: t.background,
-										borderColor: t.accent,
+										backgroundColor: p.background,
+										borderColor: p.accent,
 									},
 								]}
 							>
 								<View
 									style={[
 										s.presetCard,
-										{ backgroundColor: t.card },
+										{ backgroundColor: p.card },
 									]}
 								>
 									<View
@@ -339,7 +429,7 @@ export default function SettingsModal({
 											height: 6,
 											width: 26,
 											borderRadius: 3,
-											backgroundColor: t.text,
+											backgroundColor: p.text,
 											marginBottom: 4,
 										}}
 									/>
@@ -348,18 +438,20 @@ export default function SettingsModal({
 											height: 6,
 											width: 16,
 											borderRadius: 3,
-											backgroundColor: t.accent,
+											backgroundColor: p.accent,
 										}}
 									/>
 								</View>
 								<Text
 									style={{
-										color: readableOn(t.background),
+										color: readableOn(p.background),
 										fontSize: 12,
 										marginTop: 4,
 									}}
 								>
-									{name}
+									{PRESET_LABELS[name]
+										? t(PRESET_LABELS[name])
+										: name}
 								</Text>
 							</Pressable>
 						))}
@@ -368,7 +460,7 @@ export default function SettingsModal({
 					{roles.map((role) => (
 						<View key={role} style={{ marginTop: 8 }}>
 							<Text style={s.sectionTitle}>
-								{ROLE_LABELS[role]}
+								{t(ROLE_LABELS[role])}
 							</Text>
 							<View style={s.swatchRow}>
 								{SWATCHES[role].map((c) => (
@@ -403,12 +495,12 @@ export default function SettingsModal({
 						</View>
 					))}
 
-					<Text style={[s.section, { marginTop: 24 }]}>Reset</Text>
+					<Text style={[s.section, { marginTop: 24 }]}>
+						{t("settings.reset")}
+					</Text>
 					<View style={s.resetCard}>
 						<Text style={s.resetText}>
-							Deletes every note in your notes folder, plus all
-							likes and settings, and puts the app back the way it
-							was on first launch. This can't be undone.
+							{t("settings.resetHint")}
 						</Text>
 					</View>
 					<Pressable
@@ -420,7 +512,7 @@ export default function SettingsModal({
 						]}
 					>
 						<Text style={s.resetBtnText}>
-							Delete all notes and reset app
+							{t("settings.resetButton")}
 						</Text>
 					</Pressable>
 					<CreditsSection />
@@ -474,6 +566,23 @@ const makeStyles = (t: Theme) => {
 			padding: 14,
 		},
 		rowBlock: { backgroundColor: t.card, borderRadius: 8, padding: 14 },
+		langCard: {
+			backgroundColor: t.card,
+			borderRadius: 8,
+			overflow: "hidden",
+		},
+		langRow: {
+			flexDirection: "row",
+			alignItems: "center",
+			paddingHorizontal: 14,
+			paddingVertical: 12,
+		},
+		langRowBorder: {
+			borderTopWidth: StyleSheet.hairlineWidth,
+			borderTopColor: t.text + "33",
+		},
+		langPressed: { backgroundColor: t.text + "14" },
+		langHint: { color: onBg, opacity: 0.7, marginTop: 8 },
 		rowTitle: { color: t.text, fontWeight: "700", fontSize: 15 },
 		rowHint: {
 			color: t.text + "99",

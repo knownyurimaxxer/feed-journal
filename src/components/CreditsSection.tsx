@@ -1,6 +1,7 @@
-import { useMemo } from "react";
+import { Fragment, ReactNode, useMemo } from "react";
 import { Linking, Pressable, StyleSheet, Text, View } from "react-native";
 import { LINKS } from "../constants";
+import { useT } from "../i18n/I18nContext";
 import { useTheme } from "../theme/ThemeContext";
 import { Theme } from "../types";
 import { readableOn } from "../utils/format";
@@ -11,82 +12,60 @@ const open = (url: string) => {
 	);
 };
 
+/**
+ * Fills a translated sentence such as "Made by {developer}." with the links
+ * that belong in its {placeholders}, wherever the language puts them.
+ */
+function fill(template: string, parts: Record<string, ReactNode>): ReactNode[] {
+	return template.split(/(\{\w+\})/).map((chunk, i) => {
+		const name = chunk.match(/^\{(\w+)\}$/)?.[1];
+		return name && name in parts ? (
+			<Fragment key={i}>{parts[name]}</Fragment>
+		) : (
+			chunk
+		);
+	});
+}
+
 export default function CreditsSection() {
 	const theme = useTheme();
+	const t = useT();
 	const s = useMemo(() => makeStyles(theme), [theme]);
+
+	const link = (label: string, url: string) => (
+		<Text style={s.link} accessibilityRole="link" onPress={() => open(url)}>
+			{label}
+		</Text>
+	);
 
 	return (
 		<View style={s.wrap}>
-			<Text style={s.section}>About</Text>
+			<Text style={s.section}>{t("credits.about")}</Text>
 
 			<View style={s.card}>
 				<Text style={s.body}>
-					The idea for this app comes from{" "}
-					<Text
-						style={s.link}
-						accessibilityRole="link"
-						onPress={() => open(LINKS.ideaPost)}
-					>
-						this post
-					</Text>{" "}
-					by{" "}
-					<Text
-						style={s.link}
-						accessibilityRole="link"
-						onPress={() => open(LINKS.ideaSocial)}
-					>
-						@rubensmuse
-					</Text>{" "}
-					on Tumblr.
+					{fill(t("credits.idea"), {
+						post: link(t("credits.ideaPost"), LINKS.ideaPost),
+						author: link("@rubensmuse", LINKS.ideaSocial),
+					})}
 				</Text>
 				<Text style={s.body}>
-					Made by{" "}
-					<Text
-						style={s.link}
-						accessibilityRole="link"
-						onPress={() => open(LINKS.developer)}
-					>
-						@knownyurimaxxer
-					</Text>
-					.
+					{fill(t("credits.icons"), {
+						ionicons: link("Ionicons", LINKS.ionicons),
+						ionic: link("@ionic", LINKS.ionic),
+						mdi: link("Material Design Icons", LINKS.mdi),
+						pictogrammers: link(
+							"@pictogrammers",
+							LINKS.pictogrammers,
+						),
+					})}
 				</Text>
 				<Text style={s.body}>
-					<Text
-						style={s.link}
-						accessibilityRole="link"
-						onPress={() => open(LINKS.ionicons)}
-					>
-						Ionicons
-					</Text>{" "}
-					by{" "}
-					<Text
-						style={s.link}
-						accessibilityRole="link"
-						onPress={() => open(LINKS.ionic)}
-					>
-						@ionic
-					</Text>{" "}
-					and{" "}
-					<Text
-						style={s.link}
-						accessibilityRole="link"
-						onPress={() => open(LINKS.mdi)}
-					>
-						Material Design Icons
-					</Text>{" "}
-					by{" "}
-					<Text
-						style={s.link}
-						accessibilityRole="link"
-						onPress={() => open(LINKS.pictogrammers)}
-					>
-						@pictogrammers
-					</Text>
-					.
+					{fill(t("credits.madeBy"), {
+						developer: link("@knownyurimaxxer", LINKS.developer),
+					})}
 				</Text>
-				<Text style={s.hint}>
-					If you ever feel like it, I have a Ko-fi page!
-				</Text>
+				<Text style={s.hint}>{t("credits.kofi")}</Text>
 			</View>
 
 			<Pressable
