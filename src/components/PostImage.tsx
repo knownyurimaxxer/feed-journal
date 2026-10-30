@@ -36,13 +36,11 @@ export default function PostImage({ image }: Props) {
 			<Note
 				s={s}
 				text={
-					status === "no-vault"
-						? t("image.needVault")
-						: status === "unreadable"
-							? t("image.vaultUnreadable")
-							: status === "indexing"
-								? t("image.looking")
-								: t("image.notFound", { name })
+					status === "unreadable"
+						? t("image.vaultUnreadable")
+						: status === "indexing"
+							? t("image.looking")
+							: t("image.notFound", { name })
 				}
 			/>
 		);

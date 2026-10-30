@@ -17,8 +17,8 @@ If you have an issue, just open an [Issue](../../issues)!
   the web, or use the image button in the toolbar. Add a size with
   `![description|300](https://address)`. The editor keeps the text visible and
   previews the picture under it.
-- **Obsidian compatibility (optional).** Turn it on in Settings > Folder and
-  pick your vault. Then `![[photo.png]]` (also `![[photo.png|300]]` and
+- **Obsidian (optional).** Turn it on in Settings > Folder and pick your
+  vault; it only works once both are done. Then `![[photo.png]]` (also `![[photo.png|300]]` and
   `![](Attachments/photo.png)`) shows the picture from the vault, and
   `- [ ]` / `- [x]` lines become checkboxes you can tap in the feed and in the
   editor (not in the Markdown view). The vault is only read, never changed.

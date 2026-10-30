@@ -29,6 +29,17 @@ export function addToIndex(index: VaultIndex, path: string, uri: string): void {
 	if (!known || depth < known.depth) index.names.set(name, { depth, uri });
 }
 
+/**
+ * Obsidian features (vault pictures, tappable checkboxes, the checklist
+ * buttons) work only when the setting is on AND a vault folder is chosen.
+ */
+export function isObsidianActive(
+	enabled: boolean,
+	vaultUri: string | null,
+): boolean {
+	return enabled && !!vaultUri;
+}
+
 /** The file URI an image reference points to, or null when the vault has no such picture. */
 export function findInIndex(index: VaultIndex, ref: string): string | null {
 	const clean = ref

@@ -58,8 +58,6 @@ export const ca: Messages = {
 	"tool.checklist": "Llista de tasques",
 
 	// images and links in posts
-	"image.needVault":
-		"Tria la carpeta del teu vault a Ajustos per mostrar aquesta imatge.",
 	"image.vaultUnreadable":
 		"No es pot obrir la carpeta del vault. Torna a triar-la a Ajustos.",
 	"image.looking": "Cercant la imatge…",
@@ -84,10 +82,11 @@ export const ca: Messages = {
 	"settings.chooseFolder": "Tria una carpeta",
 	"settings.useAppStorage": "Fes servir l'emmagatzematge de l'app",
 	"folder.appStorage": "Emmagatzematge de l'app (predeterminat)",
-	"settings.obsidian": "Compatibilitat amb Obsidian",
+	"settings.obsidian": "Obsidian",
 	"settings.obsidianHint":
-		"Mostra des del teu vault les imatges escrites com ![[foto.png]], i converteix les línies «- [ ]» i «- [x]» en caselles que pots tocar (excepte a la vista Markdown).",
-	"settings.noVault": "Cap vault triat",
+		"Mostra des del teu vault les imatges escrites com ![[foto.png]], i converteix les línies «- [ ]» i «- [x]» en caselles que pots tocar (excepte a la vista Markdown). Necessita una carpeta de vault per funcionar.",
+	"settings.noVault":
+		"Cap vault triat. Obsidian continua desactivat fins que en triïs un.",
 	"settings.vaultHint":
 		"Tria el teu vault d'Obsidian (la carpeta que conté la carpeta .obsidian). Les imatges es cerquen allà per nom o ruta. No es canvia res del vault.",
 	"settings.clear": "Treu",

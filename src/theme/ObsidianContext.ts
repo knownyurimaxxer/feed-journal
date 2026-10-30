@@ -1,15 +1,10 @@
 import { createContext, useContext } from "react";
 
 /**
- * off: Obsidian compatibility is off. no-vault: it is on but no vault folder is chosen.
+ * off: Obsidian is turned off, or no vault folder is chosen (it needs both).
  * indexing: looking for the pictures. unreadable: the vault folder can't be opened.
  */
-export type ObsidianStatus =
-	| "off"
-	| "no-vault"
-	| "indexing"
-	| "unreadable"
-	| "ready";
+export type ObsidianStatus = "off" | "indexing" | "unreadable" | "ready";
 
 export type ObsidianApi = {
 	enabled: boolean;
