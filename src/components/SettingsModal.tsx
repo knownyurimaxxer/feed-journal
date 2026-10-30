@@ -345,7 +345,7 @@ export default function SettingsModal({
 					<Text style={[s.section, { marginTop: 24 }]}>
 						{t("settings.ui")}
 					</Text>
-					<View style={[s.row, { marginTop: 12 }]}>
+					<View style={s.row}>
 						<View style={{ flex: 1, paddingRight: 12 }}>
 							<Text style={s.rowTitle}>
 								{t("settings.likes")}
