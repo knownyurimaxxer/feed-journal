@@ -10,7 +10,7 @@ import {
 	TextInput,
 	View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import {
 	AVATAR_ICONS,
@@ -96,6 +96,7 @@ export default function SettingsModal({
 	onClose,
 }: Props) {
 	const theme = useTheme();
+	const insets = useSafeAreaInsets(); // known from the first frame (see App)
 	const { t, systemLanguage } = useI18n();
 	const s = useMemo(() => makeStyles(theme), [theme]);
 	const roles = Object.keys(SWATCHES) as (keyof Theme)[];
@@ -145,9 +146,22 @@ export default function SettingsModal({
 			visible={visible}
 			animationType="slide"
 			onRequestClose={onClose}
+			// Draw under both system bars, so the insets below are exactly right.
+			statusBarTranslucent
+			navigationBarTranslucent
 			supportedOrientations={["portrait", "landscape"]}
 		>
-			<SafeAreaView style={s.root}>
+			<View
+				style={[
+					s.root,
+					{
+						paddingTop: insets.top,
+						paddingBottom: insets.bottom,
+						paddingLeft: insets.left,
+						paddingRight: insets.right,
+					},
+				]}
+			>
 				<View style={s.header}>
 					<Text style={s.title}>{t("settings.title")}</Text>
 					<Pressable
@@ -750,7 +764,7 @@ export default function SettingsModal({
 						</Text>
 					</Pressable>
 				</ScrollView>
-			</SafeAreaView>
+			</View>
 		</Modal>
 	);
 }
