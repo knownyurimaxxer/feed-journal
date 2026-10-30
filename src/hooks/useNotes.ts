@@ -19,7 +19,7 @@ import {
 	readAllNotes,
 	renameNote,
 	resolveDirectory,
-	updateNote,
+	rewriteNote,
 } from "../storage/notesFolder";
 import { Draft, Note } from "../types";
 import { newNoteId } from "../utils/format";
@@ -162,6 +162,7 @@ export function useNotes(folderUri: string | null, likesEnabled: boolean) {
 			try {
 				const title = cleanTitle(draft.title);
 				const text = composeNote(draft.body, draft.tags, note.extra);
+				const dir = dirRef.current ?? resolveDirectory(folderUri).dir;
 				let id = note.id;
 				let uri = note.uri;
 
@@ -178,14 +179,17 @@ export function useNotes(folderUri: string | null, likesEnabled: boolean) {
 						? uniqueName(base, taken)
 						: newNoteId(new Date(note.createdAt));
 					if (target.toLowerCase() !== note.id.toLowerCase()) {
-						const dir =
-							dirRef.current ?? resolveDirectory(folderUri).dir;
 						({ id, uri } = renameNote(dir, note.uri, target, text));
 					} else {
-						updateNote(note.uri, text);
+						({ id, uri } = rewriteNote(
+							dir,
+							note.uri,
+							note.text,
+							text,
+						));
 					}
 				} else {
-					updateNote(note.uri, text);
+					({ id, uri } = rewriteNote(dir, note.uri, note.text, text));
 				}
 
 				if (id !== note.id) {
@@ -224,23 +228,41 @@ export function useNotes(folderUri: string | null, likesEnabled: boolean) {
 	 * Ticks or unticks the checklist item on `line` (0-based) of a post's text,
 	 * straight from the feed. The file keeps its name, whatever it is called.
 	 */
-	const toggleTask = useCallback((note: Note, line: number) => {
-		try {
-			const body = toggleTaskLine(note.body, line);
-			if (body === note.body) return;
-			const text = composeNote(body, note.tags, note.extra);
-			updateNote(note.uri, text);
-			setNotes((ns) =>
-				ns.map((n) =>
-					n.id === note.id
-						? { ...n, text, body, modifiedAt: Date.now() }
-						: n,
-				),
-			);
-		} catch (e) {
-			fail("error.saveChanges", e);
-		}
-	}, []);
+	const toggleTask = useCallback(
+		(note: Note, line: number) => {
+			try {
+				const body = toggleTaskLine(note.body, line);
+				if (body === note.body) return;
+				const text = composeNote(body, note.tags, note.extra);
+				const dir = dirRef.current ?? resolveDirectory(folderUri).dir;
+				const { id, uri } = rewriteNote(dir, note.uri, note.text, text);
+				if (id !== note.id) {
+					seen.current.add(id);
+					moveNoteData(note.id, id).catch((e) =>
+						console.warn("Could not move note data", e),
+					);
+				}
+				setNotes((ns) =>
+					ns.map((n) =>
+						n.id === note.id
+							? {
+									...n,
+									id,
+									uri,
+									title: titleFromId(id),
+									text,
+									body,
+									modifiedAt: Date.now(),
+								}
+							: n,
+					),
+				);
+			} catch (e) {
+				fail("error.saveChanges", e);
+			}
+		},
+		[folderUri],
+	);
 
 	const removeNote = useCallback((note: Note) => {
 		try {

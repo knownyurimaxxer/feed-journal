@@ -118,8 +118,37 @@ export function renameNote(
 	return { id: file.name.replace(MD_RE, ""), uri: file.uri };
 }
 
-export function updateNote(uri: string, text: string): void {
-	new File(uri).write(text);
+/**
+ * Saves new text for a note, keeping its file name.
+ *
+ * It does NOT write over the existing file: on some phones (folders picked
+ * through the system picker especially) writing doesn't cut the file down
+ * first, so when the new text is shorter, the end of the old text stays
+ * behind and shows up as repeated characters. Starting from an empty file
+ * can't leave anything behind. If anything fails, the old text is put back.
+ * The file's address can change, so the caller must use the returned one.
+ */
+export function rewriteNote(
+	dir: Directory,
+	uri: string,
+	previousText: string,
+	text: string,
+): { id: string; uri: string } {
+	const name = new File(uri).name;
+	new File(uri).delete();
+	let file: File | null = null;
+	try {
+		file = dir.createFile(name, "text/markdown");
+		file.write(text);
+	} catch (e) {
+		try {
+			(file ?? dir.createFile(name, "text/markdown")).write(previousText);
+		} catch {
+			/* nothing more to do */
+		}
+		throw e;
+	}
+	return { id: file.name.replace(MD_RE, ""), uri: file.uri };
 }
 
 export function deleteNote(uri: string): void {
