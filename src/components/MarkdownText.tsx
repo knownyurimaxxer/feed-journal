@@ -11,6 +11,7 @@ import {
 	View,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { translate } from "../i18n";
 import { useObsidian } from "../theme/ObsidianContext";
 import { useTheme } from "../theme/ThemeContext";
 import { Theme } from "../types";
@@ -47,7 +48,11 @@ export default function MarkdownText({ text, onToggleTask }: Props) {
 								key={key}
 								style={[s.body, s.heading, heading]}
 							>
-								{renderInline(parseInline(b.text, opts), s, key)}
+								{renderInline(
+									parseInline(b.text, opts),
+									s,
+									key,
+								)}
 							</Text>
 						);
 					}
@@ -98,7 +103,11 @@ export default function MarkdownText({ text, onToggleTask }: Props) {
 									style={s.checkbox}
 								>
 									<Ionicons
-										name={b.checked ? "checkbox" : "square-outline"}
+										name={
+											b.checked
+												? "checkbox"
+												: "square-outline"
+										}
 										size={21}
 										color={
 											b.checked
@@ -134,7 +143,7 @@ export default function MarkdownText({ text, onToggleTask }: Props) {
 /** Opens a link in the browser (or mail app); tells the user when nothing can handle it. */
 function openLink(href: string) {
 	Linking.openURL(href).catch(() =>
-		Alert.alert("Couldn't open the link", href),
+		Alert.alert(translate("link.openFailed"), href),
 	);
 }
 
@@ -229,7 +238,10 @@ function renderInline(nodes: Inline[], s: Styles, key: string): ReactNode[] {
 				);
 			case "image":
 				// Only reached for a picture inside bold, a link, a heading...: those can't hold one.
-				return n.alt || (n.image.kind === "web" ? n.image.url : n.image.path);
+				return (
+					n.alt ||
+					(n.image.kind === "web" ? n.image.url : n.image.path)
+				);
 		}
 	});
 }

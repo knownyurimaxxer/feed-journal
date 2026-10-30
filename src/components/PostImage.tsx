@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useT } from "../i18n/I18nContext";
 import { readImageDataUri } from "../storage/vault";
 import { useObsidian } from "../theme/ObsidianContext";
 import { useTheme } from "../theme/ThemeContext";
@@ -15,6 +16,7 @@ type Props = { image: ImageInline };
  */
 export default function PostImage({ image }: Props) {
 	const theme = useTheme();
+	const t = useT();
 	const s = useMemo(() => makeStyles(theme), [theme]);
 	const { status, resolveImage } = useObsidian();
 
@@ -35,18 +37,18 @@ export default function PostImage({ image }: Props) {
 				s={s}
 				text={
 					status === "no-vault"
-						? "Choose your vault folder in Settings to show this image."
+						? t("image.needVault")
 						: status === "unreadable"
-							? "The vault folder can't be opened. Choose it again in Settings."
+							? t("image.vaultUnreadable")
 							: status === "indexing"
-								? "Looking for the image…"
-								: `Image not found in the vault: ${name}`
+								? t("image.looking")
+								: t("image.notFound", { name })
 				}
 			/>
 		);
 	}
 	if (failedUri === uri) {
-		return <Note s={s} text="Couldn't load the image." />;
+		return <Note s={s} text={t("image.loadFailed")} />;
 	}
 
 	const onError = () => {
@@ -93,7 +95,11 @@ function Note({ s, text }: { s: Styles; text: string }) {
 	const theme = useTheme();
 	return (
 		<View style={s.note}>
-			<Ionicons name="image-outline" size={18} color={theme.text + "99"} />
+			<Ionicons
+				name="image-outline"
+				size={18}
+				color={theme.text + "99"}
+			/>
 			<Text style={s.noteText}>{text}</Text>
 		</View>
 	);

@@ -19,6 +19,7 @@ import PostCard from "../components/PostCard";
 import PostMenu from "../components/PostMenu";
 import SettingsModal from "../components/SettingsModal";
 import { useNotes } from "../hooks/useNotes";
+import { useT } from "../i18n/I18nContext";
 import { pickDirectory } from "../storage/notesFolder";
 import { deleteAvatarImage, pickAvatarImage } from "../storage/avatarImage";
 import { useTheme } from "../theme/ThemeContext";
@@ -40,6 +41,7 @@ export default function FeedScreen({
 	refreshVault,
 }: Props) {
 	const theme = useTheme();
+	const t = useT();
 	const s = useMemo(() => makeStyles(theme), [theme]);
 	const { width } = useWindowDimensions();
 	const columns = width >= 900 ? 3 : width >= 600 ? 2 : 1; // re-evaluates on rotation
@@ -51,7 +53,7 @@ export default function FeedScreen({
 			: settings.avatar;
 	// null hides the name; an empty nickname falls back to "you".
 	const nicknameValue = settings.nicknameEnabled
-		? settings.nickname.trim() || "you"
+		? settings.nickname.trim() || t("feed.you")
 		: null;
 	const {
 		notes,
@@ -125,18 +127,14 @@ export default function FeedScreen({
 	};
 
 	const confirmDelete = (n: Note) =>
-		Alert.alert(
-			"Delete this post?",
-			"The .md file will be deleted. (Nobody saw it anyway.)",
-			[
-				{ text: "Cancel", style: "cancel" },
-				{
-					text: "Delete",
-					style: "destructive",
-					onPress: () => removeNote(n),
-				},
-			],
-		);
+		Alert.alert(t("feed.deleteTitle"), t("feed.deleteBody"), [
+			{ text: t("common.cancel"), style: "cancel" },
+			{
+				text: t("common.delete"),
+				style: "destructive",
+				onPress: () => removeNote(n),
+			},
+		]);
 
 	// The short delay lets the menu finish closing first. On iOS, presenting a new
 	// modal or alert while another one is dismissing can silently fail.
@@ -176,26 +174,22 @@ export default function FeedScreen({
 	};
 
 	const handleResetAll = () => {
-		Alert.alert(
-			"Delete everything?",
-			"This permanently deletes every note in your notes folder, plus all likes and settings, and resets the app. This can't be undone.",
-			[
-				{ text: "Cancel", style: "cancel" },
-				{
-					text: "Continue",
-					style: "destructive",
-					// Wait for this alert to close: iOS drops an alert shown while another is dismissing.
-					onPress: () => setTimeout(confirmResetAll, 300),
-				},
-			],
-		);
+		Alert.alert(t("feed.resetTitle"), t("feed.resetBody"), [
+			{ text: t("common.cancel"), style: "cancel" },
+			{
+				text: t("common.continue"),
+				style: "destructive",
+				// Wait for this alert to close: iOS drops an alert shown while another is dismissing.
+				onPress: () => setTimeout(confirmResetAll, 300),
+			},
+		]);
 	};
 
 	const confirmResetAll = () =>
-		Alert.alert("Are you absolutely sure?", "Every note will be deleted.", [
-			{ text: "Cancel", style: "cancel" },
+		Alert.alert(t("feed.resetSureTitle"), t("feed.resetSureBody"), [
+			{ text: t("common.cancel"), style: "cancel" },
 			{
-				text: "Delete everything",
+				text: t("feed.resetSureConfirm"),
 				style: "destructive",
 				onPress: resetAll,
 			},
@@ -211,7 +205,7 @@ export default function FeedScreen({
 			setSettingsOpen(false);
 		} catch (e) {
 			Alert.alert(
-				"Couldn't reset",
+				t("feed.resetFailed"),
 				String(e instanceof Error ? e.message : e),
 			);
 		}
@@ -224,17 +218,14 @@ export default function FeedScreen({
 					style={s.banner}
 					onPress={() => setSettingsOpen(true)}
 				>
-					<Text style={s.bannerText}>
-						Can't access your notes folder, so app storage is in
-						use. Tap to choose a folder again.
-					</Text>
+					<Text style={s.bannerText}>{t("feed.fallbackBanner")}</Text>
 				</Pressable>
 			)}
 
 			<View style={s.searchRow}>
 				<TextInput
 					style={s.search}
-					placeholder="Search your posts"
+					placeholder={t("feed.search")}
 					placeholderTextColor={theme.text + "88"}
 					value={query}
 					onChangeText={setQuery}
@@ -258,7 +249,7 @@ export default function FeedScreen({
 						contentContainerStyle={s.chipRow}
 					>
 						<Chip
-							label="All"
+							label={t("feed.all")}
 							active={!activeTag}
 							onPress={() => setActiveTag(null)}
 						/>
@@ -303,8 +294,8 @@ export default function FeedScreen({
 					loading ? undefined : (
 						<Text style={s.empty}>
 							{notes.length === 0
-								? "Nothing here yet.\nGo overshare. Nobody's watching."
-								: "No posts match that."}
+								? t("feed.empty")
+								: t("feed.noMatch")}
 						</Text>
 					)
 				}

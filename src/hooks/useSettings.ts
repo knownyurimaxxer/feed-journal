@@ -23,6 +23,7 @@ export function useSettings() {
 				maxTags,
 				obsidianEnabled,
 				vaultUri,
+				language,
 			] = await Promise.all([
 				getSetting("theme", DEFAULT_SETTINGS.theme),
 				getSetting("likesEnabled", DEFAULT_SETTINGS.likesEnabled),
@@ -45,6 +46,7 @@ export function useSettings() {
 					"vaultUri",
 					DEFAULT_SETTINGS.vaultUri,
 				),
+				getSetting("language", DEFAULT_SETTINGS.language),
 			]);
 			setSettings({
 				theme: { ...DEFAULT_SETTINGS.theme, ...theme },
@@ -69,6 +71,7 @@ export function useSettings() {
 				),
 				obsidianEnabled,
 				vaultUri,
+				language,
 			});
 			setReady(true);
 		})();

@@ -8,6 +8,7 @@ import {
 	View,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useT } from "../i18n/I18nContext";
 import { useTheme } from "../theme/ThemeContext";
 import { Anchor, Theme } from "../types";
 
@@ -34,6 +35,7 @@ export default function PostMenu({
 	onDelete,
 }: Props) {
 	const theme = useTheme();
+	const t = useT();
 	const s = useMemo(() => makeStyles(theme), [theme]);
 	const { width, height } = useWindowDimensions();
 
@@ -74,7 +76,7 @@ export default function PostMenu({
 							size={20}
 							color={theme.text}
 						/>
-						<Text style={s.itemText}>Edit</Text>
+						<Text style={s.itemText}>{t("common.edit")}</Text>
 					</Pressable>
 					<View style={s.divider} />
 					<Pressable
@@ -87,7 +89,7 @@ export default function PostMenu({
 							color={DANGER}
 						/>
 						<Text style={[s.itemText, { color: DANGER }]}>
-							Delete
+							{t("common.delete")}
 						</Text>
 					</Pressable>
 				</View>

@@ -19,6 +19,8 @@ import {
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MAX_TAG_LENGTH, MAX_TITLE } from "../constants";
+import { MessageKey } from "../i18n";
+import { useT } from "../i18n/I18nContext";
 import { useObsidian } from "../theme/ObsidianContext";
 import { useTheme } from "../theme/ThemeContext";
 import { Draft, Note, Selection, Theme } from "../types";
@@ -52,47 +54,48 @@ type Props = {
 
 type Tool = {
 	icon: ComponentProps<typeof MaterialCommunityIcons>["name"];
-	label: string;
+	/** Text (see i18n) for the button's accessibility label. */
+	label: MessageKey;
 	run: (text: string, sel: Selection) => EditResult;
 };
 
 const TOOLS: Tool[] = [
 	{
 		icon: "format-bold",
-		label: "Bold",
+		label: "tool.bold",
 		run: (t, s) => toggleWrap(t, s, "**"),
 	},
 	{
 		icon: "format-italic",
-		label: "Italic",
+		label: "tool.italic",
 		run: (t, s) => toggleWrap(t, s, "*"),
 	},
 	{
 		icon: "format-strikethrough",
-		label: "Strikethrough",
+		label: "tool.strike",
 		run: (t, s) => toggleWrap(t, s, "~~"),
 	},
-	{ icon: "link-variant", label: "Link", run: toggleLink },
-	{ icon: "image-outline", label: "Image", run: toggleImage },
+	{ icon: "link-variant", label: "tool.link", run: toggleLink },
+	{ icon: "image-outline", label: "tool.image", run: toggleImage },
 	{
 		icon: "format-header-pound",
-		label: "Heading",
+		label: "tool.heading",
 		run: (t, s) => toggleLinePrefix(t, s, "heading"),
 	},
 	{
 		icon: "format-quote-close",
-		label: "Quote",
+		label: "tool.quote",
 		run: (t, s) => toggleLinePrefix(t, s, "quote"),
 	},
-	{ icon: "code-braces", label: "Code block", run: toggleCodeBlock },
+	{ icon: "code-braces", label: "tool.code", run: toggleCodeBlock },
 	{
 		icon: "format-list-bulleted",
-		label: "Bulleted list",
+		label: "tool.bullets",
 		run: (t, s) => toggleLinePrefix(t, s, "bullet"),
 	},
 	{
 		icon: "format-list-numbered",
-		label: "Numbered list",
+		label: "tool.numbers",
 		run: (t, s) => toggleLinePrefix(t, s, "ordered"),
 	},
 ];
@@ -101,7 +104,7 @@ const TOOLS: Tool[] = [
 const TASK_TOOLS: Tool[] = [
 	{
 		icon: "format-list-checks",
-		label: "Checklist",
+		label: "tool.checklist",
 		run: (t, s) => toggleLinePrefix(t, s, "task"),
 	},
 ];
@@ -118,6 +121,7 @@ export default function Composer({
 	onSave,
 }: Props) {
 	const theme = useTheme();
+	const t = useT();
 	const s = useMemo(() => makeStyles(theme), [theme]);
 	const { enabled: obsidian } = useObsidian();
 	const opts = useMemo(() => ({ obsidian }), [obsidian]);
@@ -147,8 +151,8 @@ export default function Composer({
 	// address isn't fetched letter by letter while it is being typed).
 	const [previewText, setPreviewText] = useState(body);
 	useEffect(() => {
-		const t = setTimeout(() => setPreviewText(body), 700);
-		return () => clearTimeout(t);
+		const timer = setTimeout(() => setPreviewText(body), 700);
+		return () => clearTimeout(timer);
 	}, [body]);
 	const previews = useMemo(
 		() => collectImages(previewText, opts),
@@ -254,8 +258,8 @@ export default function Composer({
 							hitSlop={10}
 							accessibilityLabel={
 								raw
-									? "Switch to live formatting"
-									: "Show Markdown code"
+									? t("composer.showLive")
+									: t("composer.showMarkdown")
 							}
 							style={[s.codeToggle, raw && s.codeToggleOn]}
 						>
@@ -271,7 +275,9 @@ export default function Composer({
 							onPress={handleSave}
 						>
 							<Text style={s.postBtnText}>
-								{editing ? "Save" : "Post"}
+								{editing
+									? t("composer.save")
+									: t("composer.post")}
 							</Text>
 						</Pressable>
 					</View>
@@ -283,7 +289,7 @@ export default function Composer({
 					>
 						<TextInput
 							style={s.titleInput}
-							placeholder="Title (optional)"
+							placeholder={t("composer.titlePlaceholder")}
 							placeholderTextColor={theme.text + "77"}
 							value={title}
 							onChangeText={setTitle}
@@ -300,18 +306,22 @@ export default function Composer({
 							focused={bodyFocused}
 							selection={selection}
 							forcedSelection={forced}
-							placeholder="What's on your mind? (no one will see this)"
+							placeholder={t("composer.bodyPlaceholder")}
 							onChangeText={(v) => {
 								lastEdit.current = Date.now();
 								// Over the limit: what was just typed or pasted is cut to fit.
-								setBody((prev) => fitToLimit(prev, v, limit, opts));
+								setBody((prev) =>
+									fitToLimit(prev, v, limit, opts),
+								);
 								setForced(undefined);
 							}}
 							onSelectionChange={(sel) => {
 								// With Obsidian compatibility on, tapping a checklist box
 								// ticks it (not in the Markdown view, and never right after typing).
 								const tapped =
-									obsidian && !raw && Date.now() - lastEdit.current > 300
+									obsidian &&
+									!raw &&
+									Date.now() - lastEdit.current > 300
 										? toggleTaskAtTap(body, selection, sel)
 										: null;
 								if (tapped) {
@@ -358,7 +368,10 @@ export default function Composer({
 												tags.filter((x) => x !== tag),
 											)
 										}
-										accessibilityLabel={`Remove tag ${tag}`}
+										accessibilityLabel={t(
+											"composer.removeTag",
+											{ tag },
+										)}
 									>
 										<Text style={s.tagChipText}>
 											#{tag}
@@ -375,8 +388,8 @@ export default function Composer({
 										style={s.tagInput}
 										placeholder={
 											tags.length
-												? "Add another"
-												: "Add a tag"
+												? t("composer.tagAddAnother")
+												: t("composer.tagAdd")
 										}
 										placeholderTextColor={theme.text + "77"}
 										value={tagInput}
@@ -411,7 +424,7 @@ export default function Composer({
 											pressed && s.toolPressed,
 										]}
 										onPress={() => applyTool(tool)}
-										accessibilityLabel={tool.label}
+										accessibilityLabel={t(tool.label)}
 									>
 										<MaterialCommunityIcons
 											name={tool.icon}
