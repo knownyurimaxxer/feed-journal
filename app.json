@@ -11,7 +11,7 @@
 		},
 		"android": {
 			"adaptiveIcon": {
-				"backgroundColor": "#E6F4FE",
+				"backgroundColor": "#001935",
 				"foregroundImage": "./assets/android-icon-foreground.png",
 				"backgroundImage": "./assets/android-icon-background.png",
 				"monochromeImage": "./assets/android-icon-monochrome.png"
@@ -30,7 +30,15 @@
 					"photosPermission": "Allow $(PRODUCT_NAME) to access your photos to set your avatar."
 				}
 			],
-			"expo-localization"
+			"expo-localization",
+			[
+				"expo-splash-screen",
+				{
+					"image": "./assets/splash-icon.png",
+					"backgroundColor": "#001935",
+					"imageWidth": 288
+				}
+			]
 		]
 	}
 }
