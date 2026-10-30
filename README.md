@@ -1,5 +1,7 @@
 **TLDR**: it's a Notes taking app with a personalizable UI that reminds you of _Tumblr_.
 
+If you have an issue, just open an [Issue](../../issues)!
+
 ## What it does
 
 - **Short posts.** 280 characters by default, and up to 10 tags if you feel
