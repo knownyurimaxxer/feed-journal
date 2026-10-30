@@ -32,6 +32,11 @@ function getDb(): Promise<SQLite.SQLiteDatabase> {
 	return dbPromise;
 }
 
+/** Opens the database ahead of time so the first real query doesn't wait for it. */
+export function warmDb(): void {
+	getDb().catch((e) => console.warn("Could not open the database", e));
+}
+
 /* ---- likes ---- */
 
 export async function getAllLikes(): Promise<Record<string, number>> {
@@ -137,6 +142,27 @@ export async function getSetting<T>(key: string, fallback: T): Promise<T> {
 	} catch {
 		return fallback;
 	}
+}
+
+/** Every saved setting in one query (instead of one query per setting). */
+export async function getAllSettings(): Promise<Record<string, unknown>> {
+	const out: Record<string, unknown> = {};
+	try {
+		const db = await getDb();
+		const rows = await db.getAllAsync<{ key: string; value: string }>(
+			"SELECT key, value FROM settings",
+		);
+		rows.forEach((r) => {
+			try {
+				out[r.key] = JSON.parse(r.value);
+			} catch {
+				/* unreadable value: behaves as if it was never saved */
+			}
+		});
+	} catch {
+		/* no database: every setting falls back to its default */
+	}
+	return out;
 }
 
 export async function setSetting(key: string, value: unknown): Promise<void> {

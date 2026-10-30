@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
 	Alert,
 	FlatList,
@@ -11,7 +11,7 @@ import {
 	View,
 	useWindowDimensions,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import Chip from "../components/Chip";
 import Composer from "../components/Composer";
@@ -32,6 +32,8 @@ type Props = {
 	resetSettings: () => Promise<void>;
 	/** Looks for the vault's pictures again (pull to refresh). */
 	refreshVault: () => void;
+	/** Called once, when the notes have been read for the first time. */
+	onFirstLoad: () => void;
 };
 
 export default function FeedScreen({
@@ -39,10 +41,12 @@ export default function FeedScreen({
 	updateSetting,
 	resetSettings,
 	refreshVault,
+	onFirstLoad,
 }: Props) {
 	const theme = useTheme();
 	const t = useT();
 	const s = useMemo(() => makeStyles(theme), [theme]);
+	const insets = useSafeAreaInsets(); // known from the first frame (see App)
 	const { width } = useWindowDimensions();
 	const columns = width >= 900 ? 3 : width >= 600 ? 2 : 1; // re-evaluates on rotation
 	// What the avatar renders: null (hidden), an icon name, or a photo URI.
@@ -75,6 +79,14 @@ export default function FeedScreen({
 		editing: Note | null;
 	}>({ open: false, editing: null });
 	const [settingsOpen, setSettingsOpen] = useState(false);
+	// The settings window is only built the first time it is opened.
+	const [settingsBuilt, setSettingsBuilt] = useState(false);
+	if (settingsOpen && !settingsBuilt) setSettingsBuilt(true);
+
+	useEffect(() => {
+		if (!loading) onFirstLoad();
+	}, [loading, onFirstLoad]);
+
 	const [menu, setMenu] = useState<{ note: Note; anchor: Anchor } | null>(
 		null,
 	);
@@ -212,7 +224,16 @@ export default function FeedScreen({
 	};
 
 	return (
-		<SafeAreaView style={s.root} edges={["top", "left", "right"]}>
+		<View
+			style={[
+				s.root,
+				{
+					paddingTop: insets.top,
+					paddingLeft: insets.left,
+					paddingRight: insets.right,
+				},
+			]}
+		>
 			{usingFallback && (
 				<Pressable
 					style={s.banner}
@@ -350,18 +371,20 @@ export default function FeedScreen({
 				onSave={handleSave}
 			/>
 
-			<SettingsModal
-				visible={settingsOpen}
-				settings={settings}
-				update={updateSetting}
-				onPickFolder={handlePickFolder}
-				onPickVault={handlePickVault}
-				onPickPhoto={handlePickPhoto}
-				onRemovePhoto={handleRemovePhoto}
-				onResetAll={handleResetAll}
-				onClose={() => setSettingsOpen(false)}
-			/>
-		</SafeAreaView>
+			{settingsBuilt && (
+				<SettingsModal
+					visible={settingsOpen}
+					settings={settings}
+					update={updateSetting}
+					onPickFolder={handlePickFolder}
+					onPickVault={handlePickVault}
+					onPickPhoto={handlePickPhoto}
+					onRemovePhoto={handleRemovePhoto}
+					onResetAll={handleResetAll}
+					onClose={() => setSettingsOpen(false)}
+				/>
+			)}
+		</View>
 	);
 }
 
