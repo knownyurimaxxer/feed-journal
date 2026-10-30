@@ -23,6 +23,7 @@ import {
 } from "../storage/notesFolder";
 import { Draft, Note } from "../types";
 import { newNoteId } from "../utils/format";
+import { haptic } from "../utils/haptics";
 import { toggleTaskLine } from "../utils/markdownEdit";
 import {
 	cleanTitle,
@@ -95,7 +96,9 @@ export function useNotes(folderUri: string | null, likesEnabled: boolean) {
 		}
 	}, [folderUri]);
 
+	// Starting (or switching folder): show "loading" until the first read ends.
 	useEffect(() => {
+		setLoading(true);
 		refresh();
 	}, [refresh]);
 
@@ -110,6 +113,7 @@ export function useNotes(folderUri: string | null, likesEnabled: boolean) {
 	// language in use when it runs (translate), not when it was created.
 	const fail = (title: MessageKey, e: unknown) => {
 		console.warn(title, e);
+		haptic("error");
 		Alert.alert(
 			translate(title),
 			String(e instanceof Error ? e.message : e),

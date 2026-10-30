@@ -13,6 +13,7 @@ export const es: Messages = {
 	"feed.all": "Todas",
 	"feed.empty":
 		"Aquí no hay nada todavía.\nAnda, cuéntalo todo. Nadie te está mirando.",
+	"feed.loading": "Cargando tus notas…",
 	"feed.noMatch": "Ninguna publicación coincide.",
 	"feed.fallbackBanner":
 		"No se puede acceder a tu carpeta de notas, así que se está usando el almacenamiento de la app. Toca para elegir una carpeta de nuevo.",
@@ -76,6 +77,22 @@ export const es: Messages = {
 	"settings.languageHint":
 		"«Predeterminado del sistema» sigue el idioma de tu teléfono, y usa inglés si tu idioma no está disponible.",
 	"settings.languageSystem": "Predeterminado del sistema",
+	"settings.haptics": "Vibración",
+	"settings.hapticsToggle": "Respuesta háptica",
+	"settings.hapticsHint": "Vibraciones cortas al tocar botones.",
+	"settings.hapticsTriggers": "Elige qué vibra",
+	"haptics.done": "Botón Listo",
+	"haptics.save": "Botón Guardar / Publicar",
+	"haptics.cancel": "Cancelar (cerrar el editor)",
+	"haptics.menu": "Botón de menú ⋯",
+	"haptics.action": "Botones Editar y Eliminar",
+	"haptics.settings": "Botón de ajustes",
+	"haptics.refresh": "Tirar para actualizar",
+	"haptics.compose": "Botón de nueva publicación",
+	"haptics.checklist": "Marcar una tarea",
+	"haptics.tag": "Tocar una etiqueta",
+	"haptics.delete": "Confirmar un borrado",
+	"haptics.error": "Errores",
 	"settings.folder": "Carpeta",
 	"settings.folderHint":
 		"Cada publicación se guarda como un archivo .md con el nombre de su título y sus etiquetas al principio. Cambiar de carpeta no mueve las notas existentes.",

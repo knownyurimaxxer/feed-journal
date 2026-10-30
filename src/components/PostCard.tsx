@@ -5,6 +5,7 @@ import { useI18n } from "../i18n/I18nContext";
 import { useTheme } from "../theme/ThemeContext";
 import { Anchor, Note, Theme } from "../types";
 import { timeAgo } from "../utils/format";
+import { haptic } from "../utils/haptics";
 import Avatar from "./Avatar";
 import MarkdownText from "./MarkdownText";
 
@@ -36,10 +37,12 @@ export default function PostCard({
 	// exactly View, and collapsable={false} stops Android from flattening it
 	// away, which would make measureInWindow return nothing.
 	const menuRef = useRef<ComponentRef<typeof View>>(null);
-	const openMenu = () =>
+	const openMenu = () => {
+		haptic("menu");
 		menuRef.current?.measureInWindow((x, y, width, height) =>
 			onMenu({ x, y, width, height }),
 		);
+	};
 
 	return (
 		<View style={s.card}>

@@ -10,6 +10,18 @@ import { ImageInline } from "../utils/markdown";
 
 type Props = { image: ImageInline };
 
+// Picture shapes already seen, so a picture that comes back into view takes
+// its final height right away instead of jumping when it loads again.
+const RATIO_CACHE = new Map<string, number>();
+const RATIO_CACHE_MAX = 300;
+function rememberRatio(uri: string, ratio: number) {
+	if (RATIO_CACHE.size >= RATIO_CACHE_MAX) {
+		const oldest = RATIO_CACHE.keys().next().value;
+		if (oldest !== undefined) RATIO_CACHE.delete(oldest);
+	}
+	RATIO_CACHE.set(uri, ratio);
+}
+
 /**
  * A picture in a post or in the editor preview: from the web (http/https) or
  * from the Obsidian vault. When it can't be shown, a short note says why.
@@ -23,7 +35,8 @@ export default function PostImage({ image }: Props) {
 	const ref = image.image;
 	const uri = ref.kind === "web" ? ref.url : resolveImage(ref.path);
 
-	const [ratio, setRatio] = useState<number | null>(null);
+	const [, setRatioSeen] = useState(0); // re-renders once the shape is known
+	const ratio = uri ? (RATIO_CACHE.get(uri) ?? null) : null;
 	const [failedUri, setFailedUri] = useState<string | null>(null);
 	const [triedUri, setTriedUri] = useState<string | null>(null);
 	const [data, setData] = useState<{ uri: string; value: string } | null>(
@@ -74,7 +87,10 @@ export default function PostImage({ image }: Props) {
 			onError={onError}
 			onLoad={(e) => {
 				const { width, height } = e.nativeEvent.source;
-				if (width > 0 && height > 0) setRatio(width / height);
+				if (width > 0 && height > 0 && uri) {
+					rememberRatio(uri, width / height);
+					setRatioSeen((n) => n + 1);
+				}
 			}}
 			style={[
 				s.image,

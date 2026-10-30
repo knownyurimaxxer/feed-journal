@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { DEFAULT_SETTINGS, LIMITS } from "../constants";
-import { getSetting, resetDb, setSetting } from "../storage/db";
+import { getAllSettings, resetDb, setSetting } from "../storage/db";
 import { Settings, UpdateSetting } from "../types";
 import { clampLimit } from "../utils/limits";
 
@@ -10,44 +10,48 @@ export function useSettings() {
 
 	useEffect(() => {
 		(async () => {
-			const [
-				theme,
-				likesEnabled,
-				folderUri,
-				avatarEnabled,
-				avatar,
-				avatarImage,
-				nicknameEnabled,
-				nickname,
-				maxChars,
-				maxTags,
-				obsidianEnabled,
-				vaultUri,
-				language,
-			] = await Promise.all([
-				getSetting("theme", DEFAULT_SETTINGS.theme),
-				getSetting("likesEnabled", DEFAULT_SETTINGS.likesEnabled),
-				getSetting<string | null>(
-					"folderUri",
-					DEFAULT_SETTINGS.folderUri,
-				),
-				getSetting("avatarEnabled", DEFAULT_SETTINGS.avatarEnabled),
-				getSetting("avatar", DEFAULT_SETTINGS.avatar),
-				getSetting<string | null>(
-					"avatarImage",
-					DEFAULT_SETTINGS.avatarImage,
-				),
-				getSetting("nicknameEnabled", DEFAULT_SETTINGS.nicknameEnabled),
-				getSetting("nickname", DEFAULT_SETTINGS.nickname),
-				getSetting("maxChars", DEFAULT_SETTINGS.maxChars),
-				getSetting("maxTags", DEFAULT_SETTINGS.maxTags),
-				getSetting("obsidianEnabled", DEFAULT_SETTINGS.obsidianEnabled),
-				getSetting<string | null>(
-					"vaultUri",
-					DEFAULT_SETTINGS.vaultUri,
-				),
-				getSetting("language", DEFAULT_SETTINGS.language),
-			]);
+			const saved = await getAllSettings();
+			const get = <T>(key: string, fallback: T): T =>
+				key in saved ? (saved[key] as T) : fallback;
+			const theme = get("theme", DEFAULT_SETTINGS.theme);
+			const likesEnabled = get(
+				"likesEnabled",
+				DEFAULT_SETTINGS.likesEnabled,
+			);
+			const folderUri = get<string | null>(
+				"folderUri",
+				DEFAULT_SETTINGS.folderUri,
+			);
+			const avatarEnabled = get(
+				"avatarEnabled",
+				DEFAULT_SETTINGS.avatarEnabled,
+			);
+			const avatar = get("avatar", DEFAULT_SETTINGS.avatar);
+			const avatarImage = get<string | null>(
+				"avatarImage",
+				DEFAULT_SETTINGS.avatarImage,
+			);
+			const nicknameEnabled = get(
+				"nicknameEnabled",
+				DEFAULT_SETTINGS.nicknameEnabled,
+			);
+			const nickname = get("nickname", DEFAULT_SETTINGS.nickname);
+			const maxChars = get("maxChars", DEFAULT_SETTINGS.maxChars);
+			const maxTags = get("maxTags", DEFAULT_SETTINGS.maxTags);
+			const obsidianEnabled = get(
+				"obsidianEnabled",
+				DEFAULT_SETTINGS.obsidianEnabled,
+			);
+			const vaultUri = get<string | null>(
+				"vaultUri",
+				DEFAULT_SETTINGS.vaultUri,
+			);
+			const language = get("language", DEFAULT_SETTINGS.language);
+			const hapticsEnabled = get(
+				"hapticsEnabled",
+				DEFAULT_SETTINGS.hapticsEnabled,
+			);
+			const savedHaptics = get<unknown>("haptics", null);
 			setSettings({
 				theme: { ...DEFAULT_SETTINGS.theme, ...theme },
 				likesEnabled,
@@ -72,6 +76,14 @@ export function useSettings() {
 				obsidianEnabled,
 				vaultUri,
 				language,
+				hapticsEnabled,
+				// A trigger added in a later version starts on, like the others.
+				haptics: {
+					...DEFAULT_SETTINGS.haptics,
+					...(savedHaptics && typeof savedHaptics === "object"
+						? savedHaptics
+						: {}),
+				},
 			});
 			setReady(true);
 		})();

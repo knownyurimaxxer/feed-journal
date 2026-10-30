@@ -14,6 +14,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import {
 	AVATAR_ICONS,
+	HAPTIC_TRIGGERS,
 	LIMITS,
 	LINKS,
 	PRESET_LABELS,
@@ -21,11 +22,17 @@ import {
 	ROLE_LABELS,
 	SWATCHES,
 } from "../constants";
-import { LANGUAGES, makeTranslator, SYSTEM_LANGUAGE } from "../i18n";
+import {
+	LANGUAGES,
+	makeTranslator,
+	SYSTEM_LANGUAGE,
+	type MessageKey,
+} from "../i18n";
 import { useI18n } from "../i18n/I18nContext";
 import { useTheme } from "../theme/ThemeContext";
 import { Settings, Theme, UpdateSetting } from "../types";
 import { folderLabel, readableOn } from "../utils/format";
+import { haptic, playHaptic } from "../utils/haptics";
 import Avatar from "./Avatar";
 import NumberField from "./NumberField";
 
@@ -62,6 +69,21 @@ function fill(template: string, parts: Record<string, ReactNode>): ReactNode[] {
 	});
 }
 
+const HAPTIC_LABEL: Record<(typeof HAPTIC_TRIGGERS)[number], MessageKey> = {
+	done: "haptics.done",
+	save: "haptics.save",
+	cancel: "haptics.cancel",
+	menu: "haptics.menu",
+	action: "haptics.action",
+	settings: "haptics.settings",
+	refresh: "haptics.refresh",
+	compose: "haptics.compose",
+	checklist: "haptics.checklist",
+	tag: "haptics.tag",
+	delete: "haptics.delete",
+	error: "haptics.error",
+};
+
 export default function SettingsModal({
 	visible,
 	settings,
@@ -78,6 +100,7 @@ export default function SettingsModal({
 	const s = useMemo(() => makeStyles(theme), [theme]);
 	const roles = Object.keys(SWATCHES) as (keyof Theme)[];
 	const [languagesOpen, setLanguagesOpen] = useState(false);
+	const [hapticsOpen, setHapticsOpen] = useState(false);
 
 	// "System default" is written in the phone's language (the one it would
 	// switch to), like every other option is written in its own language.
@@ -127,7 +150,13 @@ export default function SettingsModal({
 			<SafeAreaView style={s.root}>
 				<View style={s.header}>
 					<Text style={s.title}>{t("settings.title")}</Text>
-					<Pressable onPress={onClose} style={s.doneBtn}>
+					<Pressable
+						onPress={() => {
+							haptic("done");
+							onClose();
+						}}
+						style={s.doneBtn}
+					>
 						<Text style={s.doneText}>{t("common.done")}</Text>
 					</Pressable>
 				</View>
@@ -202,6 +231,94 @@ export default function SettingsModal({
 					<Text style={[s.rowHint, s.langHint]}>
 						{t("settings.languageHint")}
 					</Text>
+
+					{/* haptics: one master switch; once on, a closed list of per-trigger switches */}
+					<Text style={[s.section, { marginTop: 24 }]}>
+						{t("settings.haptics")}
+					</Text>
+					<View style={s.row}>
+						<View style={{ flex: 1, paddingRight: 12 }}>
+							<Text style={s.rowTitle}>
+								{t("settings.hapticsToggle")}
+							</Text>
+							<Text style={s.rowHint}>
+								{t("settings.hapticsHint")}
+							</Text>
+						</View>
+						<Switch
+							value={settings.hapticsEnabled}
+							onValueChange={(v) => {
+								update("hapticsEnabled", v);
+								if (v)
+									playHaptic("done"); // a taste of it
+								else setHapticsOpen(false);
+							}}
+							trackColor={{
+								true: theme.accent,
+								false: "#88888888",
+							}}
+						/>
+					</View>
+					{settings.hapticsEnabled && (
+						<View style={[s.langCard, { marginTop: 12 }]}>
+							<Pressable
+								accessibilityRole="button"
+								accessibilityState={{ expanded: hapticsOpen }}
+								onPress={() => setHapticsOpen((o) => !o)}
+								style={({ pressed }) => [
+									s.langRow,
+									pressed && s.langPressed,
+								]}
+							>
+								<View style={{ flex: 1 }}>
+									<Text style={s.rowTitle}>
+										{t("settings.hapticsTriggers")}
+									</Text>
+								</View>
+								<Ionicons
+									name={
+										hapticsOpen
+											? "chevron-up"
+											: "chevron-down"
+									}
+									size={22}
+									color={theme.text}
+								/>
+							</Pressable>
+							{hapticsOpen &&
+								HAPTIC_TRIGGERS.map((id) => (
+									<View
+										key={id}
+										style={[s.langRow, s.langRowBorder]}
+									>
+										<View
+											style={{
+												flex: 1,
+												paddingRight: 12,
+											}}
+										>
+											<Text style={s.rowTitle}>
+												{t(HAPTIC_LABEL[id])}
+											</Text>
+										</View>
+										<Switch
+											value={settings.haptics[id]}
+											onValueChange={(v) => {
+												update("haptics", {
+													...settings.haptics,
+													[id]: v,
+												});
+												if (v) playHaptic(id); // preview
+											}}
+											trackColor={{
+												true: theme.accent,
+												false: "#88888888",
+											}}
+										/>
+									</View>
+								))}
+						</View>
+					)}
 
 					{/* folder */}
 					<Text style={[s.section, { marginTop: 24 }]}>

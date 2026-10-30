@@ -45,32 +45,40 @@ export async function pickDirectory(): Promise<string | null> {
 const toMs = (t: number) => (t < 1e12 ? t * 1000 : t); // tolerate seconds vs ms
 
 export async function readAllNotes(dir: Directory): Promise<RawNote[]> {
-	const notes: RawNote[] = [];
-	for (const entry of dir.list()) {
-		if (!(entry instanceof File) || !MD_RE.test(entry.name)) continue;
-		try {
-			const text = await entry.text();
-			const id = entry.name.replace(MD_RE, "");
-			let modifiedAt = Date.now();
+	const files = dir
+		.list()
+		.filter(
+			(entry): entry is File =>
+				entry instanceof File && MD_RE.test(entry.name),
+		);
+	// Every file is read at the same time instead of one after the other.
+	const read = await Promise.all(
+		files.map(async (entry): Promise<RawNote | null> => {
 			try {
-				const info = entry.info();
-				if (info.modificationTime)
-					modifiedAt = toMs(info.modificationTime);
-			} catch {
-				/* keep default */
+				const text = await entry.text();
+				const id = entry.name.replace(MD_RE, "");
+				let modifiedAt = Date.now();
+				try {
+					const info = entry.info();
+					if (info.modificationTime)
+						modifiedAt = toMs(info.modificationTime);
+				} catch {
+					/* keep default */
+				}
+				return {
+					id,
+					uri: entry.uri,
+					text,
+					createdAt: parseIdDate(id) ?? modifiedAt,
+					modifiedAt,
+				};
+			} catch (e) {
+				console.warn("Could not read", entry.name, e);
+				return null;
 			}
-			notes.push({
-				id,
-				uri: entry.uri,
-				text,
-				createdAt: parseIdDate(id) ?? modifiedAt,
-				modifiedAt,
-			});
-		} catch (e) {
-			console.warn("Could not read", entry.name, e);
-		}
-	}
-	return notes;
+		}),
+	);
+	return read.filter((n): n is RawNote => n !== null);
 }
 
 /** Creates `<name>.md`. The name is the note's title, or a date/time name for unnamed notes. */

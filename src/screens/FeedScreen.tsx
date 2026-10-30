@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
 	Alert,
 	FlatList,
@@ -11,7 +11,7 @@ import {
 	View,
 	useWindowDimensions,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import Chip from "../components/Chip";
 import Composer from "../components/Composer";
@@ -25,6 +25,7 @@ import { deleteAvatarImage, pickAvatarImage } from "../storage/avatarImage";
 import { useTheme } from "../theme/ThemeContext";
 import { Anchor, Draft, Note, Settings, Theme, UpdateSetting } from "../types";
 import { readableOn } from "../utils/format";
+import { haptic } from "../utils/haptics";
 
 type Props = {
 	settings: Settings;
@@ -32,6 +33,8 @@ type Props = {
 	resetSettings: () => Promise<void>;
 	/** Looks for the vault's pictures again (pull to refresh). */
 	refreshVault: () => void;
+	/** Called once, when the notes have been read for the first time. */
+	onFirstLoad: () => void;
 };
 
 export default function FeedScreen({
@@ -39,10 +42,12 @@ export default function FeedScreen({
 	updateSetting,
 	resetSettings,
 	refreshVault,
+	onFirstLoad,
 }: Props) {
 	const theme = useTheme();
 	const t = useT();
 	const s = useMemo(() => makeStyles(theme), [theme]);
+	const insets = useSafeAreaInsets(); // known from the first frame (see App)
 	const { width } = useWindowDimensions();
 	const columns = width >= 900 ? 3 : width >= 600 ? 2 : 1; // re-evaluates on rotation
 	// What the avatar renders: null (hidden), an icon name, or a photo URI.
@@ -75,6 +80,14 @@ export default function FeedScreen({
 		editing: Note | null;
 	}>({ open: false, editing: null });
 	const [settingsOpen, setSettingsOpen] = useState(false);
+	// The settings window is only built the first time it is opened.
+	const [settingsBuilt, setSettingsBuilt] = useState(false);
+	if (settingsOpen && !settingsBuilt) setSettingsBuilt(true);
+
+	useEffect(() => {
+		if (!loading) onFirstLoad();
+	}, [loading, onFirstLoad]);
+
 	const [menu, setMenu] = useState<{ note: Note; anchor: Anchor } | null>(
 		null,
 	);
@@ -123,7 +136,10 @@ export default function FeedScreen({
 		const ok = composer.editing
 			? editNote(composer.editing, draft)
 			: addNote(draft);
-		if (ok) closeComposer();
+		if (ok) {
+			haptic("save");
+			closeComposer();
+		}
 	};
 
 	const confirmDelete = (n: Note) =>
@@ -132,7 +148,10 @@ export default function FeedScreen({
 			{
 				text: t("common.delete"),
 				style: "destructive",
-				onPress: () => removeNote(n),
+				onPress: () => {
+					haptic("delete");
+					removeNote(n);
+				},
 			},
 		]);
 
@@ -140,11 +159,13 @@ export default function FeedScreen({
 	// modal or alert while another one is dismissing can silently fail.
 	const menuEdit = () => {
 		const n = menu?.note;
+		haptic("action");
 		setMenu(null);
 		if (n) setTimeout(() => setComposer({ open: true, editing: n }), 100);
 	};
 	const menuDelete = () => {
 		const n = menu?.note;
+		haptic("action");
 		setMenu(null);
 		if (n) setTimeout(() => confirmDelete(n), 100);
 	};
@@ -204,6 +225,7 @@ export default function FeedScreen({
 			setActiveTag(null);
 			setSettingsOpen(false);
 		} catch (e) {
+			haptic("error");
 			Alert.alert(
 				t("feed.resetFailed"),
 				String(e instanceof Error ? e.message : e),
@@ -212,7 +234,16 @@ export default function FeedScreen({
 	};
 
 	return (
-		<SafeAreaView style={s.root} edges={["top", "left", "right"]}>
+		<View
+			style={[
+				s.root,
+				{
+					paddingTop: insets.top,
+					paddingLeft: insets.left,
+					paddingRight: insets.right,
+				},
+			]}
+		>
 			{usingFallback && (
 				<Pressable
 					style={s.banner}
@@ -232,7 +263,13 @@ export default function FeedScreen({
 					returnKeyType="search"
 					clearButtonMode="while-editing"
 				/>
-				<Pressable onPress={() => setSettingsOpen(true)} hitSlop={10}>
+				<Pressable
+					onPress={() => {
+						haptic("settings");
+						setSettingsOpen(true);
+					}}
+					hitSlop={10}
+				>
 					<Ionicons
 						name="settings-outline"
 						size={24}
@@ -251,16 +288,20 @@ export default function FeedScreen({
 						<Chip
 							label={t("feed.all")}
 							active={!activeTag}
-							onPress={() => setActiveTag(null)}
+							onPress={() => {
+								haptic("tag");
+								setActiveTag(null);
+							}}
 						/>
 						{allTags.map((t) => (
 							<Chip
 								key={t}
 								label={`#${t}`}
 								active={activeTag === t}
-								onPress={() =>
-									setActiveTag(activeTag === t ? null : t)
-								}
+								onPress={() => {
+									haptic("tag");
+									setActiveTag(activeTag === t ? null : t);
+								}}
 							/>
 						))}
 					</ScrollView>
@@ -284,6 +325,7 @@ export default function FeedScreen({
 					<RefreshControl
 						refreshing={false}
 						onRefresh={() => {
+							haptic("refresh");
 							refresh();
 							refreshVault();
 						}}
@@ -291,13 +333,13 @@ export default function FeedScreen({
 					/>
 				}
 				ListEmptyComponent={
-					loading ? undefined : (
-						<Text style={s.empty}>
-							{notes.length === 0
+					<Text style={s.empty}>
+						{loading
+							? t("feed.loading")
+							: notes.length === 0
 								? t("feed.empty")
 								: t("feed.noMatch")}
-						</Text>
-					)
+					</Text>
 				}
 				renderItem={({ item }) => {
 					const card = (
@@ -307,8 +349,14 @@ export default function FeedScreen({
 							avatar={avatarValue}
 							nickname={nicknameValue}
 							onMenu={(anchor) => setMenu({ note: item, anchor })}
-							onTag={setActiveTag}
-							onToggleTask={(line) => toggleTask(item, line)}
+							onTag={(tag) => {
+								haptic("tag");
+								setActiveTag(tag);
+							}}
+							onToggleTask={(line) => {
+								haptic("checklist");
+								toggleTask(item, line);
+							}}
 						/>
 					);
 					return columns > 1 ? (
@@ -321,7 +369,10 @@ export default function FeedScreen({
 
 			<Pressable
 				style={s.fab}
-				onPress={() => setComposer({ open: true, editing: null })}
+				onPress={() => {
+					haptic("compose");
+					setComposer({ open: true, editing: null });
+				}}
 			>
 				<Ionicons
 					name="add"
@@ -350,18 +401,20 @@ export default function FeedScreen({
 				onSave={handleSave}
 			/>
 
-			<SettingsModal
-				visible={settingsOpen}
-				settings={settings}
-				update={updateSetting}
-				onPickFolder={handlePickFolder}
-				onPickVault={handlePickVault}
-				onPickPhoto={handlePickPhoto}
-				onRemovePhoto={handleRemovePhoto}
-				onResetAll={handleResetAll}
-				onClose={() => setSettingsOpen(false)}
-			/>
-		</SafeAreaView>
+			{settingsBuilt && (
+				<SettingsModal
+					visible={settingsOpen}
+					settings={settings}
+					update={updateSetting}
+					onPickFolder={handlePickFolder}
+					onPickVault={handlePickVault}
+					onPickPhoto={handlePickPhoto}
+					onRemovePhoto={handleRemovePhoto}
+					onResetAll={handleResetAll}
+					onClose={() => setSettingsOpen(false)}
+				/>
+			)}
+		</View>
 	);
 }
 
