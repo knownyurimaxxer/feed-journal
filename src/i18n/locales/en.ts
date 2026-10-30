@@ -136,7 +136,7 @@ export const en = {
 	"credits.ideaPost": "this post",
 	"credits.madeBy": "Made by {developer}.",
 	"credits.icons": "{ionicons} by {ionic} and {mdi} by {pictogrammers}.",
-	"credits.kofi": "If you ever feel like it, I have a Ko-fi page!",
+	"credits.kofi": "If you ever feel like it, I have a Ko-fi!",
 } as const;
 
 export type MessageKey = keyof typeof en;

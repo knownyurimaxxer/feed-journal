@@ -133,7 +133,7 @@ export const es: Messages = {
 	"credits.idea":
 		"La idea de esta app viene de {post} de {author} en Tumblr.",
 	"credits.ideaPost": "esta publicación",
-	"credits.madeBy": "Hecha por {developer}.",
+	"credits.madeBy": "Hecho por {developer}.",
 	"credits.icons": "{ionicons} de {ionic} y {mdi} de {pictogrammers}.",
-	"credits.kofi": "Si algún día te apetece, ¡tengo una página de Ko-fi!",
+	"credits.kofi": "Si algún día te apetece, ¡tengo Ko-fi!",
 };

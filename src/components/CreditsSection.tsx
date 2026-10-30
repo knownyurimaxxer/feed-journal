@@ -50,11 +50,6 @@ export default function CreditsSection() {
 					})}
 				</Text>
 				<Text style={s.body}>
-					{fill(t("credits.madeBy"), {
-						developer: link("@knownyurimaxxer", LINKS.developer),
-					})}
-				</Text>
-				<Text style={s.body}>
 					{fill(t("credits.icons"), {
 						ionicons: link("Ionicons", LINKS.ionicons),
 						ionic: link("@ionic", LINKS.ionic),
@@ -63,6 +58,11 @@ export default function CreditsSection() {
 							"@pictogrammers",
 							LINKS.pictogrammers,
 						),
+					})}
+				</Text>
+				<Text style={s.body}>
+					{fill(t("credits.madeBy"), {
+						developer: link("@knownyurimaxxer", LINKS.developer),
 					})}
 				</Text>
 				<Text style={s.hint}>{t("credits.kofi")}</Text>

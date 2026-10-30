@@ -1,11 +1,5 @@
 **TLDR**: it's a Notes taking app with a personalizable UI that reminds you of _Tumblr_.
 
-The idea for this app comes from
-[this post](https://www.tumblr.com/rubensmuse/831592820192280576/killer-new-startup-idea-phone-app-called-the)
-by [@rubensmuse](https://www.tumblr.com/rubensmuse) on _Tumblr_.
-
-If you ever feel like it, I have a [Ko-fi](https://ko-fi.com/knownyurimaxxer)!
-
 ## What it does
 
 - **Short posts.** 280 characters by default, and up to 10 tags if you feel
@@ -82,3 +76,11 @@ it, and `npm run check` to run the type check and the tests.
 [Ionicons](https://ionic.io/ionicons) by [@ionic](https://ionic.io/) and
 [Material Design Icons](https://pictogrammers.com/library/mdi/) by
 [@pictogrammers](https://pictogrammers.com/).
+
+The idea for this app comes from
+[this post](https://www.tumblr.com/rubensmuse/831592820192280576/killer-new-startup-idea-phone-app-called-the)
+by [@rubensmuse](https://www.tumblr.com/rubensmuse) on _Tumblr_.
+
+Made by [@knownyurimaxxer](https://www.tumblr.com/knownyurimaxxer).
+
+If you ever feel like it, I have a [Ko-fi](https://ko-fi.com/knownyurimaxxer)!
