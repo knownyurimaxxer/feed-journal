@@ -11,6 +11,9 @@
 import { en, MessageKey, Messages } from "./locales/en";
 import { es } from "./locales/es";
 import { ca } from "./locales/ca";
+import { gl } from "./locales/gl";
+import { eu } from "./locales/eu";
+import { pt } from "./locales/pt";
 
 export type { MessageKey, Messages };
 
@@ -26,6 +29,9 @@ export const LANGUAGES: Language[] = [
 	{ code: "en", name: "English", messages: en },
 	{ code: "es", name: "Español", messages: es },
 	{ code: "ca", name: "Català", messages: ca },
+	{ code: "gl", name: "Galego", messages: gl },
+	{ code: "eu", name: "Euskara", messages: eu },
+	{ code: "pt", name: "Português", messages: pt },
 ];
 
 /** Used when neither the chosen nor the phone's language is available. */
