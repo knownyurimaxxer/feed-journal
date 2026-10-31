@@ -1,23 +1,23 @@
 import * as Haptics from "expo-haptics";
 import { HapticTrigger } from "../constants";
 
+// Every trigger uses the faintest feel available.
+const tick = () => Haptics.selectionAsync();
+
 /** How each trigger feels. */
 const FEEL: Record<HapticTrigger, () => Promise<void>> = {
-	done: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light),
-	save: () =>
-		Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success),
-	cancel: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light),
-	menu: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light),
-	action: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium),
-	settings: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light),
-	refresh: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium),
-	compose: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light),
-	checklist: () => Haptics.selectionAsync(),
-	tag: () => Haptics.selectionAsync(),
-	delete: () =>
-		Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning),
-	error: () =>
-		Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error),
+	done: tick,
+	save: tick,
+	cancel: tick,
+	menu: tick,
+	action: tick,
+	settings: tick,
+	refresh: tick,
+	compose: tick,
+	checklist: tick,
+	tag: tick,
+	delete: tick,
+	error: tick,
 };
 
 // The current settings, kept here so any component can call haptic() without
