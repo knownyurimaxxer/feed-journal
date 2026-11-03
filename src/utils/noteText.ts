@@ -56,7 +56,7 @@ export function parseNote(text: string): ParsedNote {
 	}
 	return {
 		body: normalized.slice(m[0].length).replace(/^\n+/, ""),
-		tags: Array.from(new Set(tags)),
+		tags: uniqueTags(tags),
 		extra,
 	};
 }
@@ -116,13 +116,28 @@ export function uniqueName(base: string, taken: Set<string>): string {
 	return name;
 }
 
-/** Lower-case, no leading #, spaces become dashes. Empty string if nothing is left. */
+/** Keeps the capitals, no leading #, spaces become dashes. Empty string if nothing is left. */
 export function normalizeTag(raw: string, maxLength = 24): string {
 	return raw
 		.trim()
 		.replace(/^#+/, "")
 		.replace(/,+/g, "")
 		.replace(/\s+/g, "-")
-		.toLowerCase()
 		.slice(0, maxLength);
+}
+
+/** Tags are compared ignoring capitals: "Contact" and "contact" are the same tag. */
+export function sameTag(a: string, b: string): boolean {
+	return a.toLowerCase() === b.toLowerCase();
+}
+
+/** Removes repeated tags (ignoring capitals), keeping the first spelling found. */
+export function uniqueTags(tags: string[]): string[] {
+	const seen = new Set<string>();
+	return tags.filter((t) => {
+		const key = t.toLowerCase();
+		if (seen.has(key)) return false;
+		seen.add(key);
+		return true;
+	});
 }
