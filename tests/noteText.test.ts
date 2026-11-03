@@ -5,6 +5,8 @@ import {
 	fileNameFromTitle,
 	isDefaultName,
 	normalizeTag,
+	sameTag,
+	uniqueTags,
 	parseNote,
 	titleFromId,
 	uniqueName,
@@ -34,7 +36,20 @@ describe("parseNote", () => {
 
 	it("reads tags written as a YAML list (Obsidian style)", () => {
 		const r = parseNote("---\ntags:\n  - one\n  - Two Words\n---\nhi");
-		expect(r.tags).toEqual(["one", "two-words"]);
+		expect(r.tags).toEqual(["one", "Two-Words"]);
+	});
+
+	it("keeps the capitals of tags", () => {
+		expect(parseNote("---\ntags: [Contact, Work]\n---\nx").tags).toEqual([
+			"Contact",
+			"Work",
+		]);
+	});
+
+	it("removes duplicate tags, ignoring capitals", () => {
+		expect(
+			parseNote("---\ntags: [Contact, contact, b]\n---\nx").tags,
+		).toEqual(["Contact", "b"]);
 	});
 
 	it("removes duplicate tags", () => {
@@ -141,8 +156,8 @@ describe("note names", () => {
 });
 
 describe("normalizeTag", () => {
-	it("lowercases, strips # and turns spaces into dashes", () => {
-		expect(normalizeTag("#Hello World")).toBe("hello-world");
+	it("keeps capitals, strips # and turns spaces into dashes", () => {
+		expect(normalizeTag("#Hello World")).toBe("Hello-World");
 	});
 
 	it("removes commas", () => {
@@ -155,5 +170,21 @@ describe("normalizeTag", () => {
 
 	it("returns an empty string when nothing is left", () => {
 		expect(normalizeTag("  ## ")).toBe("");
+	});
+});
+
+describe("sameTag", () => {
+	it("ignores capitals", () => {
+		expect(sameTag("Contact", "contact")).toBe(true);
+		expect(sameTag("Contact", "work")).toBe(false);
+	});
+});
+
+describe("uniqueTags", () => {
+	it("keeps the first spelling of repeated tags", () => {
+		expect(uniqueTags(["Contact", "work", "contact", "WORK"])).toEqual([
+			"Contact",
+			"work",
+		]);
 	});
 });

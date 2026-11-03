@@ -37,7 +37,7 @@ import {
 	toggleTaskAtTap,
 	toggleWrap,
 } from "../utils/markdownEdit";
-import { cleanTitle, normalizeTag } from "../utils/noteText";
+import { cleanTitle, normalizeTag, sameTag } from "../utils/noteText";
 import Avatar from "./Avatar";
 import LiveInput from "./LiveInput";
 import PostImage from "./PostImage";
@@ -187,7 +187,11 @@ export default function Composer({
 
 	const commitTag = (rawTag: string) => {
 		const tag = normalizeTag(rawTag, MAX_TAG_LENGTH);
-		if (tag && !tags.includes(tag) && tags.length < maxTags) {
+		if (
+			tag &&
+			!tags.some((x) => sameTag(x, tag)) &&
+			tags.length < maxTags
+		) {
 			setTags([...tags, tag]);
 		}
 		setTagInput("");
@@ -202,7 +206,9 @@ export default function Composer({
 	const handleSave = () => {
 		const pending = normalizeTag(tagInput, MAX_TAG_LENGTH);
 		const finalTags =
-			pending && !tags.includes(pending) && tags.length < maxTags
+			pending &&
+			!tags.some((x) => sameTag(x, pending)) &&
+			tags.length < maxTags
 				? [...tags, pending]
 				: tags;
 		onSave({

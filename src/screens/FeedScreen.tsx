@@ -26,6 +26,7 @@ import { useTheme } from "../theme/ThemeContext";
 import { Anchor, Draft, Note, Settings, Theme, UpdateSetting } from "../types";
 import { readableOn } from "../utils/format";
 import { haptic } from "../utils/haptics";
+import { sameTag } from "../utils/noteText";
 
 type Props = {
 	settings: Settings;
@@ -105,27 +106,36 @@ export default function FeedScreen({
 	}).current;
 
 	const allTags = useMemo(() => {
-		const counts: Record<string, number> = {};
+		// Same tag with different capitals counts as one; the first spelling is shown.
+		const counts: Record<string, { label: string; n: number }> = {};
 		notes.forEach((n) =>
 			n.tags.forEach((t) => {
-				counts[t] = (counts[t] || 0) + 1;
+				const key = t.toLowerCase();
+				counts[key] = {
+					label: counts[key]?.label ?? t,
+					n: (counts[key]?.n ?? 0) + 1,
+				};
 			}),
 		);
-		return Object.entries(counts)
-			.sort((a, b) => b[1] - a[1])
-			.map(([t]) => t);
+		return Object.values(counts)
+			.sort((a, b) => b.n - a.n)
+			.map((c) => c.label);
 	}, [notes]);
 
 	const visible = useMemo(() => {
 		const q = query.trim().toLowerCase();
 		return notes
-			.filter((n) => !activeTag || n.tags.includes(activeTag))
+			.filter(
+				(n) => !activeTag || n.tags.some((x) => sameTag(x, activeTag)),
+			)
 			.filter(
 				(n) =>
 					!q ||
 					n.body.toLowerCase().includes(q) ||
 					(n.title ?? "").toLowerCase().includes(q) ||
-					n.tags.some((t) => t.includes(q.replace(/^#/, ""))),
+					n.tags.some((t) =>
+						t.toLowerCase().includes(q.replace(/^#/, "")),
+					),
 			)
 			.sort((a, b) => b.createdAt - a.createdAt);
 	}, [notes, query, activeTag]);
@@ -297,10 +307,14 @@ export default function FeedScreen({
 							<Chip
 								key={t}
 								label={`#${t}`}
-								active={activeTag === t}
+								active={!!activeTag && sameTag(activeTag, t)}
 								onPress={() => {
 									haptic("tag");
-									setActiveTag(activeTag === t ? null : t);
+									setActiveTag(
+										activeTag && sameTag(activeTag, t)
+											? null
+											: t,
+									);
 								}}
 							/>
 						))}
