@@ -140,6 +140,14 @@ export const ca: Messages = {
 	"color.lightness": "Lluminositat",
 	"color.hex": "Codi hex",
 	"color.apply": "Aplica",
+	"settings.themeTransfer": "Compartir temes",
+	"settings.exportTheme": "Exportar tema",
+	"settings.importTheme": "Importar tema",
+	"settings.importHint":
+		"Enganxa un tema exportat des d'aquesta app o des de qualsevol app que faci servir els mateixos noms de color: background, card, text i accent.",
+	"settings.importInvalid":
+		"Aquest no és un tema vàlid. Necessita background, card, text i accent, cadascun com a color #RRGGBB.",
+	"settings.importButton": "Importa",
 	"preset.navy": "Marí",
 	"preset.midnight": "Mitjanit",
 	"preset.paper": "Paper",

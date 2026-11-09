@@ -4,6 +4,7 @@ import {
 	Modal,
 	Pressable,
 	ScrollView,
+	Share,
 	StyleSheet,
 	Switch,
 	Text,
@@ -33,9 +34,11 @@ import { useTheme } from "../theme/ThemeContext";
 import { Settings, Theme, UpdateSetting } from "../types";
 import { folderLabel, readableOn } from "../utils/format";
 import { haptic, playHaptic } from "../utils/haptics";
+import { exportTheme } from "../utils/themeIO";
 import Avatar from "./Avatar";
 import ColorPicker from "./ColorPicker";
 import NumberField from "./NumberField";
+import ThemeImportModal from "./ThemeImportModal";
 
 type Props = {
 	visible: boolean;
@@ -105,6 +108,17 @@ export default function SettingsModal({
 	const [hapticsOpen, setHapticsOpen] = useState(false);
 	// Which color role the custom color picker is open for, if any.
 	const [pickerRole, setPickerRole] = useState<keyof Theme | null>(null);
+	const [importOpen, setImportOpen] = useState(false);
+
+	/** Hands the theme to the share sheet (copy it, send it, save it...). */
+	const onExportTheme = async () => {
+		haptic("action");
+		try {
+			await Share.share({ message: exportTheme(settings.theme) });
+		} catch (e) {
+			console.warn("Could not share the theme", e);
+		}
+	};
 
 	// "System default" is written in the phone's language (the one it would
 	// switch to), like every other option is written in its own language.
@@ -736,6 +750,29 @@ export default function SettingsModal({
 						</View>
 					))}
 
+					{/* share a theme with other apps that name their colors the same */}
+					<Text style={[s.sectionTitle, { marginTop: 16 }]}>
+						{t("settings.themeTransfer")}
+					</Text>
+					<View style={[s.btnRow, { marginTop: 0 }]}>
+						<Pressable style={s.btn} onPress={onExportTheme}>
+							<Text style={s.btnText}>
+								{t("settings.exportTheme")}
+							</Text>
+						</Pressable>
+						<Pressable
+							style={[s.btn, s.btnGhost]}
+							onPress={() => {
+								haptic("action");
+								setImportOpen(true);
+							}}
+						>
+							<Text style={[s.btnText, { color: theme.accent }]}>
+								{t("settings.importTheme")}
+							</Text>
+						</Pressable>
+					</View>
+
 					<Text style={[s.section, { marginTop: 24 }]}>
 						{t("settings.reset")}
 					</Text>
@@ -825,6 +862,14 @@ export default function SettingsModal({
 						setPickerRole(null);
 					}}
 					onClose={() => setPickerRole(null)}
+				/>
+				<ThemeImportModal
+					visible={importOpen}
+					onApply={(imported) => {
+						update("theme", imported);
+						setImportOpen(false);
+					}}
+					onClose={() => setImportOpen(false)}
 				/>
 			</View>
 		</Modal>

@@ -138,6 +138,14 @@ export const pt: Messages = {
 	"color.lightness": "Luminosidade",
 	"color.hex": "Código hex",
 	"color.apply": "Aplicar",
+	"settings.themeTransfer": "Compartilhar temas",
+	"settings.exportTheme": "Exportar tema",
+	"settings.importTheme": "Importar tema",
+	"settings.importHint":
+		"Cole um tema exportado deste app ou de qualquer app que use os mesmos nomes de cor: background, card, text e accent.",
+	"settings.importInvalid":
+		"Esse não é um tema válido. Ele precisa de background, card, text e accent, cada um como uma cor #RRGGBB.",
+	"settings.importButton": "Importar",
 	"preset.navy": "Marinho",
 	"preset.midnight": "Meia-noite",
 	"preset.paper": "Papel",

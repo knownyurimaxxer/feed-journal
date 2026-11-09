@@ -141,6 +141,14 @@ export const en = {
 	"color.lightness": "Lightness",
 	"color.hex": "Hex code",
 	"color.apply": "Apply",
+	"settings.themeTransfer": "Share themes",
+	"settings.exportTheme": "Export theme",
+	"settings.importTheme": "Import theme",
+	"settings.importHint":
+		"Paste a theme exported from this app or from any app that uses the same color names: background, card, text and accent.",
+	"settings.importInvalid":
+		"That isn't a valid theme. It needs background, card, text and accent, each as a #RRGGBB color.",
+	"settings.importButton": "Import",
 	"preset.navy": "Navy",
 	"preset.midnight": "Midnight",
 	"preset.paper": "Paper",

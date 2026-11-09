@@ -140,6 +140,14 @@ export const eu: Messages = {
 	"color.lightness": "Argitasuna",
 	"color.hex": "Hex kodea",
 	"color.apply": "Aplikatu",
+	"settings.themeTransfer": "Gaiak partekatu",
+	"settings.exportTheme": "Esportatu gaia",
+	"settings.importTheme": "Inportatu gaia",
+	"settings.importHint":
+		"Itsatsi aplikazio honetatik edo kolore-izen berdinak erabiltzen dituen edozein aplikaziotatik esportatutako gai bat: background, card, text eta accent.",
+	"settings.importInvalid":
+		"Hori ez da baliozko gai bat. background, card, text eta accent behar ditu, bakoitza #RRGGBB kolore gisa.",
+	"settings.importButton": "Inportatu",
 	"preset.navy": "Itsas urdina",
 	"preset.midnight": "Gauerdia",
 	"preset.paper": "Papera",
