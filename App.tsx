@@ -40,7 +40,11 @@ export default function App() {
 	const { settings, ready, update, reset } = useSettings();
 	const vault = useVault(settings.obsidianEnabled, settings.vaultUri);
 	const deviceLanguages = useDeviceLanguageTags();
-	configureHaptics(settings.hapticsEnabled, settings.haptics);
+	configureHaptics(
+		settings.hapticsEnabled,
+		settings.haptics,
+		settings.hapticLevel,
+	);
 	const [fontsReady, setFontsReady] = useState(false);
 	const [feedLoaded, setFeedLoaded] = useState(false);
 	const splashHidden = useRef(false);

@@ -122,6 +122,12 @@ export const HAPTIC_TRIGGERS = [
 ] as const;
 export type HapticTrigger = (typeof HAPTIC_TRIGGERS)[number];
 
+/**
+ * Steps of the vibration-strength slider. 0 is the softest (and the default);
+ * the top step is the app's original vibration.
+ */
+export const HAPTIC_STRENGTH = { min: 0, max: 5, default: 0 } as const;
+
 export const DEFAULT_SETTINGS: Settings = {
 	theme: PRESETS["Navy"],
 	likesEnabled: true,
@@ -140,6 +146,7 @@ export const DEFAULT_SETTINGS: Settings = {
 	haptics: Object.fromEntries(
 		HAPTIC_TRIGGERS.map((k) => [k, true]),
 	) as Record<HapticTrigger, boolean>,
+	hapticLevel: HAPTIC_STRENGTH.default,
 };
 
 export const AVATAR_ICONS = [

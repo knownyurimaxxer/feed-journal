@@ -84,6 +84,8 @@ export const en = {
 	"settings.hapticsToggle": "Haptic feedback",
 	"settings.hapticsHint": "Short vibrations when you tap buttons.",
 	"settings.hapticsTriggers": "Choose what vibrates",
+	"settings.hapticsStrength": "Vibration strength",
+	"settings.hapticsStrengthHint": "Swipe right for a more intense vibration.",
 	"haptics.done": "Done button",
 	"haptics.save": "Save / Post button",
 	"haptics.cancel": "Cancel (close the editor)",

@@ -81,6 +81,9 @@ export const eu: Messages = {
 	"settings.hapticsToggle": "Ukipen-erantzuna",
 	"settings.hapticsHint": "Bibrazio laburrak botoiak sakatzean.",
 	"settings.hapticsTriggers": "Aukeratu zerk egiten duen bibrazioa",
+	"settings.hapticsStrength": "Bibrazioaren indarra",
+	"settings.hapticsStrengthHint":
+		"Irristatu eskuinera bibrazio biziagoa lortzeko.",
 	"haptics.done": "Eginda botoia",
 	"haptics.save": "Gorde / Argitaratu botoia",
 	"haptics.cancel": "Utzi (editorea itxi)",

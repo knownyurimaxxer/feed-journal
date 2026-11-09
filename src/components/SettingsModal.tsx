@@ -2,6 +2,7 @@ import { Fragment, ReactNode, useMemo, useState } from "react";
 import {
 	Linking,
 	Modal,
+	Platform,
 	Pressable,
 	ScrollView,
 	Share,
@@ -15,6 +16,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import {
 	AVATAR_ICONS,
+	HAPTIC_STRENGTH,
 	HAPTIC_TRIGGERS,
 	LIMITS,
 	LINKS,
@@ -33,11 +35,12 @@ import { useI18n } from "../i18n/I18nContext";
 import { useTheme } from "../theme/ThemeContext";
 import { Settings, Theme, UpdateSetting } from "../types";
 import { folderLabel, readableOn } from "../utils/format";
-import { haptic, playHaptic } from "../utils/haptics";
+import { haptic, playHaptic, previewStrength } from "../utils/haptics";
 import { exportTheme } from "../utils/themeIO";
 import Avatar from "./Avatar";
 import ColorPicker from "./ColorPicker";
 import NumberField from "./NumberField";
+import StepSlider from "./StepSlider";
 import ThemeImportModal from "./ThemeImportModal";
 
 type Props = {
@@ -290,6 +293,26 @@ export default function SettingsModal({
 							}}
 						/>
 					</View>
+					{/* strength: Android only (the effects it uses don't exist elsewhere) */}
+					{settings.hapticsEnabled && Platform.OS === "android" && (
+						<View style={[s.rowBlock, { marginTop: 12 }]}>
+							<Text style={s.rowTitle}>
+								{t("settings.hapticsStrength")}
+							</Text>
+							<Text style={[s.rowHint, { marginBottom: 10 }]}>
+								{t("settings.hapticsStrengthHint")}
+							</Text>
+							<StepSlider
+								label={t("settings.hapticsStrength")}
+								value={settings.hapticLevel}
+								max={HAPTIC_STRENGTH.max}
+								onChange={(step) => {
+									update("hapticLevel", step);
+									previewStrength(step); // feel it as you drag
+								}}
+							/>
+						</View>
+					)}
 					{settings.hapticsEnabled && (
 						<View style={[s.langCard, { marginTop: 12 }]}>
 							<Pressable

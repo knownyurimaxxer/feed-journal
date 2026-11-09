@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { DEFAULT_SETTINGS, LIMITS } from "../constants";
+import { DEFAULT_SETTINGS, HAPTIC_STRENGTH, LIMITS } from "../constants";
 import { getAllSettings, resetDb, setSetting } from "../storage/db";
 import { Settings, UpdateSetting } from "../types";
 import { clampLimit } from "../utils/limits";
@@ -52,6 +52,10 @@ export function useSettings() {
 				DEFAULT_SETTINGS.hapticsEnabled,
 			);
 			const savedHaptics = get<unknown>("haptics", null);
+			const hapticLevel = get<unknown>(
+				"hapticLevel",
+				DEFAULT_SETTINGS.hapticLevel,
+			);
 			setSettings({
 				theme: { ...DEFAULT_SETTINGS.theme, ...theme },
 				likesEnabled,
@@ -84,6 +88,12 @@ export function useSettings() {
 						? savedHaptics
 						: {}),
 				},
+				hapticLevel: clampLimit(
+					hapticLevel,
+					HAPTIC_STRENGTH.min,
+					HAPTIC_STRENGTH.max,
+					HAPTIC_STRENGTH.default,
+				),
 			});
 			setReady(true);
 		})();

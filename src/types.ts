@@ -33,6 +33,9 @@ export type Settings = {
 	hapticsEnabled: boolean;
 	/** Which haptic triggers are on (only used while hapticsEnabled is on). */
 	haptics: Record<HapticTrigger, boolean>;
+	/** How strong the vibration is: 0 (softest) to HAPTIC_STRENGTH.max (the original strength). Android only.
+	 *  Saved under its own name so the scale of an earlier version isn't misread. */
+	hapticLevel: number;
 };
 
 export type UpdateSetting = <K extends keyof Settings>(

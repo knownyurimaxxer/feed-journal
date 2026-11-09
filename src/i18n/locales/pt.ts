@@ -81,6 +81,9 @@ export const pt: Messages = {
 	"settings.hapticsToggle": "Resposta háptica",
 	"settings.hapticsHint": "Vibrações curtas ao tocar em botões.",
 	"settings.hapticsTriggers": "Escolhe o que vibra",
+	"settings.hapticsStrength": "Intensidade da vibração",
+	"settings.hapticsStrengthHint":
+		"Deslize para a direita para uma vibração mais intensa.",
 	"haptics.done": "Botão Concluído",
 	"haptics.save": "Botão Guardar / Publicar",
 	"haptics.cancel": "Cancelar (fechar o editor)",

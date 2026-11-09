@@ -81,6 +81,9 @@ export const ca: Messages = {
 	"settings.hapticsToggle": "Resposta tàctil",
 	"settings.hapticsHint": "Vibracions curtes en tocar botons.",
 	"settings.hapticsTriggers": "Tria què vibra",
+	"settings.hapticsStrength": "Intensitat de la vibració",
+	"settings.hapticsStrengthHint":
+		"Llisca cap a la dreta per a una vibració més intensa.",
 	"haptics.done": "Botó Fet",
 	"haptics.save": "Botó Desa / Publica",
 	"haptics.cancel": "Cancel·la (tanca l'editor)",

@@ -81,6 +81,9 @@ export const gl: Messages = {
 	"settings.hapticsToggle": "Resposta táctil",
 	"settings.hapticsHint": "Vibracións curtas ao tocar botóns.",
 	"settings.hapticsTriggers": "Elixe que vibra",
+	"settings.hapticsStrength": "Intensidade da vibración",
+	"settings.hapticsStrengthHint":
+		"Desliza cara á dereita para unha vibración máis intensa.",
 	"haptics.done": "Botón Feito",
 	"haptics.save": "Botón Gardar / Publicar",
 	"haptics.cancel": "Cancelar (pechar o editor)",
