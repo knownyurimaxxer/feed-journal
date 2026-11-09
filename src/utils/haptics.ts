@@ -10,11 +10,11 @@ import { HAPTIC_STRENGTH, HapticTrigger } from "../constants";
  * round on your phone, just swap their lines here.
  */
 const ANDROID_STEPS = [
-	"Clock_Tick",
+	"Virtual_Key",
 	"Keyboard_Tap",
 	"Context_Click",
-	"Virtual_Key",
 	"Long_Press",
+	"Clock_Tick",
 ] as const;
 
 /** Plays one step of the strength scale. Other platforms always play the original tick. */
