@@ -1,4 +1,4 @@
-import { ReactNode, useMemo } from "react";
+import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import {
 	Alert,
 	Linking,
@@ -11,11 +11,13 @@ import {
 	View,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import * as Clipboard from "expo-clipboard";
 import { translate } from "../i18n";
 import { useObsidian } from "../theme/ObsidianContext";
 import { useTheme } from "../theme/ThemeContext";
 import { Theme } from "../types";
 import { linkColor } from "../utils/format";
+import { haptic } from "../utils/haptics";
 import { Inline, parseBlocks, parseInline } from "../utils/markdown";
 import PostImage from "./PostImage";
 
@@ -40,8 +42,8 @@ export default function MarkdownText({ text, onToggleTask }: Props) {
 				const key = `b${i}`;
 				switch (b.type) {
 					case "heading": {
-						const heading = [s.h1, s.h2, s.h3, s.h4][
-							Math.min(b.level, 4) - 1
+						const heading = [s.h1, s.h2, s.h3, s.h4, s.h5][
+							Math.min(b.level, 5) - 1
 						];
 						return (
 							<Text
@@ -70,11 +72,7 @@ export default function MarkdownText({ text, onToggleTask }: Props) {
 							</View>
 						);
 					case "code":
-						return (
-							<View key={key} style={s.codeBlock}>
-								<Text style={s.codeText}>{b.text}</Text>
-							</View>
-						);
+						return <CodeBlock key={key} text={b.text} s={s} />;
 					case "bullet":
 					case "ordered":
 						return (
@@ -136,6 +134,57 @@ export default function MarkdownText({ text, onToggleTask }: Props) {
 						return <View key={key} style={s.gap} />;
 				}
 			})}
+		</View>
+	);
+}
+
+/** A fenced code block with a button (top right) that copies its content. */
+function CodeBlock({ text, s }: { text: string; s: Styles }) {
+	const theme = useTheme();
+	const [copied, setCopied] = useState(false);
+	const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+	useEffect(
+		() => () => {
+			if (timer.current) clearTimeout(timer.current);
+		},
+		[],
+	);
+
+	const copy = async () => {
+		try {
+			await Clipboard.setStringAsync(text);
+		} catch (e) {
+			console.warn("Could not copy the code", e);
+			return;
+		}
+		haptic("action");
+		setCopied(true);
+		if (timer.current) clearTimeout(timer.current);
+		timer.current = setTimeout(() => setCopied(false), 1500);
+	};
+
+	return (
+		<View style={s.codeBlock}>
+			<Text style={s.codeText}>{text}</Text>
+			<Pressable
+				onPress={copy}
+				hitSlop={8}
+				accessibilityRole="button"
+				accessibilityLabel={translate(
+					copied ? "code.copied" : "code.copy",
+				)}
+				style={({ pressed }) => [
+					s.copyBtn,
+					pressed && { opacity: 0.6 },
+				]}
+			>
+				<Ionicons
+					name={copied ? "checkmark" : "copy-outline"}
+					size={16}
+					color={copied ? linkColor(theme) : theme.text + "AA"}
+				/>
+			</Pressable>
 		</View>
 	);
 }
@@ -256,6 +305,7 @@ const makeStyles = (t: Theme) =>
 		h2: { fontSize: 20, lineHeight: 26 },
 		h3: { fontSize: 18, lineHeight: 24 },
 		h4: { fontSize: 16, lineHeight: 23 },
+		h5: { fontSize: 14, lineHeight: 20 },
 		bold: { fontWeight: "700" },
 		italic: { fontStyle: "italic" },
 		strike: { textDecorationLine: "line-through" },
@@ -275,10 +325,19 @@ const makeStyles = (t: Theme) =>
 			marginVertical: 4,
 		},
 		codeText: {
+			paddingRight: 26, // room for the copy button
 			color: t.text,
 			fontFamily: MONO,
 			fontSize: 14,
 			lineHeight: 20,
+		},
+		copyBtn: {
+			position: "absolute",
+			top: 6,
+			right: 6,
+			padding: 4,
+			borderRadius: 6,
+			backgroundColor: t.background + "CC",
 		},
 		row: { flexDirection: "row" },
 		marker: { color: t.text, fontSize: 16, lineHeight: 23, minWidth: 22 },

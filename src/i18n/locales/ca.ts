@@ -148,6 +148,8 @@ export const ca: Messages = {
 	"settings.importInvalid":
 		"Aquest no és un tema vàlid. Necessita background, card, text i accent, cadascun com a color #RRGGBB.",
 	"settings.importButton": "Importa",
+	"code.copy": "Copia el codi",
+	"code.copied": "Copiat",
 	"preset.navy": "Marí",
 	"preset.midnight": "Mitjanit",
 	"preset.paper": "Paper",

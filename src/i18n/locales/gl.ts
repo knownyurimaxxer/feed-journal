@@ -146,6 +146,8 @@ export const gl: Messages = {
 	"settings.importInvalid":
 		"Ese non é un tema válido. Precisa background, card, text e accent, cada un como unha cor #RRGGBB.",
 	"settings.importButton": "Importar",
+	"code.copy": "Copiar código",
+	"code.copied": "Copiado",
 	"preset.navy": "Mariño",
 	"preset.midnight": "Medianoite",
 	"preset.paper": "Papel",

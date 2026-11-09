@@ -119,8 +119,8 @@ const ANY_PREFIX =
 
 /**
  * Toggles a line prefix on every line the selection touches.
- * Headings cycle "## " -> "### " -> none (the title has its own field, so the
- * toolbar never creates an H1).
+ * Headings cycle "## " -> "### " -> "#### " -> "##### " -> none (the title has
+ * its own field, so the toolbar never creates an H1).
  */
 export function toggleLinePrefix(
 	text: string,
@@ -147,7 +147,9 @@ export function toggleLinePrefix(
 			.map((l) => l.match(/^(#{1,6})\s+/)?.[1].length ?? 0);
 		const same = levels.length > 0 && levels.every((v) => v === levels[0]);
 		const current = same ? levels[0] : 0;
-		const next = current === 2 ? 3 : current === 3 ? 0 : 2;
+		// 2 -> 3 -> 4 -> 5 -> none; anything else (none, # or ######) starts at 2.
+		const next =
+			current >= 2 && current <= 4 ? current + 1 : current === 5 ? 0 : 2;
 		out = lines.map((l) =>
 			active(l) ? (next ? "#".repeat(next) + " " : "") + strip(l) : l,
 		);
@@ -318,7 +320,8 @@ function isTaskLine(lines: string[], i: number): boolean {
 /** Flips the box of the checklist item on line `line` (0-based). Anything else comes back unchanged. */
 export function toggleTaskLine(text: string, line: number): string {
 	const lines = text.split("\n");
-	if (line < 0 || line >= lines.length || !isTaskLine(lines, line)) return text;
+	if (line < 0 || line >= lines.length || !isTaskLine(lines, line))
+		return text;
 	lines[line] = lines[line].replace(
 		TASK_BOX,
 		(_all, open: string, mark: string, close: string) =>
@@ -342,7 +345,8 @@ export function toggleTaskAtTap(
 ): EditResult | null {
 	if (next.start !== next.end) return null;
 	const caret = next.start;
-	if (prev.start === prev.end && Math.abs(caret - prev.start) <= 1) return null;
+	if (prev.start === prev.end && Math.abs(caret - prev.start) <= 1)
+		return null;
 
 	const lineStart = caret === 0 ? 0 : text.lastIndexOf("\n", caret - 1) + 1;
 	const found = text.indexOf("\n", lineStart);

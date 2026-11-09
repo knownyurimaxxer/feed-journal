@@ -90,13 +90,24 @@ describe("toggleLinePrefix", () => {
 		expect(toggleLinePrefix("- a", sel(0), "ordered").text).toBe("1. a");
 	});
 
-	it("cycles headings: none -> ## -> ### -> none", () => {
+	it("cycles headings: none -> ## -> ### -> #### -> ##### -> none", () => {
 		const h2 = toggleLinePrefix("title", sel(0), "heading");
 		expect(h2.text).toBe("## title");
 		const h3 = toggleLinePrefix(h2.text, h2.selection, "heading");
 		expect(h3.text).toBe("### title");
-		expect(toggleLinePrefix(h3.text, h3.selection, "heading").text).toBe(
+		const h4 = toggleLinePrefix(h3.text, h3.selection, "heading");
+		expect(h4.text).toBe("#### title");
+		const h5 = toggleLinePrefix(h4.text, h4.selection, "heading");
+		expect(h5.text).toBe("##### title");
+		expect(toggleLinePrefix(h5.text, h5.selection, "heading").text).toBe(
 			"title",
+		);
+	});
+
+	it("starts a typed # or ###### heading over at ##", () => {
+		expect(toggleLinePrefix("# a", sel(0), "heading").text).toBe("## a");
+		expect(toggleLinePrefix("###### a", sel(0), "heading").text).toBe(
+			"## a",
 		);
 	});
 
@@ -163,12 +174,18 @@ describe("toggleLinePrefix: task", () => {
 	it("turns a line into an unchecked checklist item, and back", () => {
 		const on = toggleLinePrefix("buy milk", sel(3), "task");
 		expect(on.text).toBe("- [ ] buy milk");
-		expect(toggleLinePrefix(on.text, on.selection, "task").text).toBe("buy milk");
+		expect(toggleLinePrefix(on.text, on.selection, "task").text).toBe(
+			"buy milk",
+		);
 	});
 
 	it("replaces a bullet or number instead of stacking prefixes", () => {
-		expect(toggleLinePrefix("- milk", sel(0), "task").text).toBe("- [ ] milk");
-		expect(toggleLinePrefix("2. milk", sel(0), "task").text).toBe("- [ ] milk");
+		expect(toggleLinePrefix("- milk", sel(0), "task").text).toBe(
+			"- [ ] milk",
+		);
+		expect(toggleLinePrefix("2. milk", sel(0), "task").text).toBe(
+			"- [ ] milk",
+		);
 	});
 
 	it("keeps the box of items that already are checklist items", () => {
@@ -180,24 +197,33 @@ describe("toggleLinePrefix: task", () => {
 	it("removes the whole checklist prefix when switching to another list kind", () => {
 		expect(toggleLinePrefix("- [x] a", sel(0), "quote").text).toBe("> a");
 		expect(toggleLinePrefix("- [ ] a", sel(0), "bullet").text).toBe("a");
-		expect(toggleLinePrefix("- [ ] a", sel(0), "ordered").text).toBe("1. a");
+		expect(toggleLinePrefix("- [ ] a", sel(0), "ordered").text).toBe(
+			"1. a",
+		);
 	});
 });
 
 describe("toggleTaskLine", () => {
 	it("flips the box of the given line", () => {
-		expect(toggleTaskLine("a\n- [ ] b\n- [x] c", 1)).toBe("a\n- [x] b\n- [x] c");
-		expect(toggleTaskLine("a\n- [ ] b\n- [x] c", 2)).toBe("a\n- [ ] b\n- [ ] c");
+		expect(toggleTaskLine("a\n- [ ] b\n- [x] c", 1)).toBe(
+			"a\n- [x] b\n- [x] c",
+		);
+		expect(toggleTaskLine("a\n- [ ] b\n- [x] c", 2)).toBe(
+			"a\n- [ ] b\n- [ ] c",
+		);
 		expect(toggleTaskLine("- [X] b", 0)).toBe("- [ ] b");
 	});
 
 	it("leaves everything else alone", () => {
 		const text = "a\n- b\n```\n- [ ] code\n```";
-		for (const line of [-1, 0, 1, 3, 99]) expect(toggleTaskLine(text, line)).toBe(text);
+		for (const line of [-1, 0, 1, 3, 99])
+			expect(toggleTaskLine(text, line)).toBe(text);
 	});
 
 	it("keeps Windows line endings", () => {
-		expect(toggleTaskLine("- [ ] a\r\n- [ ] b", 1)).toBe("- [ ] a\r\n- [x] b");
+		expect(toggleTaskLine("- [ ] a\r\n- [ ] b", 1)).toBe(
+			"- [ ] a\r\n- [x] b",
+		);
 	});
 });
 
@@ -209,7 +235,9 @@ describe("toggleTaskAtTap", () => {
 		const r = toggleTaskAtTap(text, sel(0), sel(9));
 		expect(r?.text).toBe("intro\n- [x] one\n- [x] two");
 		expect(r?.selection).toEqual(sel(15)); // end of that line
-		expect(toggleTaskAtTap(text, sel(0), sel(10))?.text).toContain("- [x] one");
+		expect(toggleTaskAtTap(text, sel(0), sel(10))?.text).toContain(
+			"- [x] one",
+		);
 	});
 
 	it("unticks a checked box", () => {
@@ -238,7 +266,9 @@ describe("toggleTaskAtTap", () => {
 	});
 
 	it("counts a selection that was collapsed by the tap as a jump", () => {
-		expect(toggleTaskAtTap(text, sel(8, 9), sel(9))?.text).toContain("- [x] one");
+		expect(toggleTaskAtTap(text, sel(8, 9), sel(9))?.text).toContain(
+			"- [x] one",
+		);
 	});
 });
 
@@ -246,13 +276,17 @@ describe("toggleImage", () => {
 	it("inserts a template with the address selected", () => {
 		const r = toggleImage("ab", sel(1));
 		expect(r.text).toBe("a![](https://)b");
-		expect(r.text.slice(r.selection.start, r.selection.end)).toBe("https://");
+		expect(r.text.slice(r.selection.start, r.selection.end)).toBe(
+			"https://",
+		);
 	});
 
 	it("uses the selected text as the description", () => {
 		const r = toggleImage("my cat", sel(3, 6));
 		expect(r.text).toBe("my ![cat](https://)");
-		expect(r.text.slice(r.selection.start, r.selection.end)).toBe("https://");
+		expect(r.text.slice(r.selection.start, r.selection.end)).toBe(
+			"https://",
+		);
 	});
 
 	it("turns a selected address into the image", () => {

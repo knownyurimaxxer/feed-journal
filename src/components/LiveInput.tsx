@@ -85,7 +85,7 @@ export default function LiveInput({
 
 type Styles = ReturnType<typeof makeStyles>;
 
-const HEADING_SIZES = [26, 24, 21, 19];
+const HEADING_SIZES = [26, 24, 21, 19, 18];
 
 function spanStyle(span: Span, st: Styles) {
 	if (span.hidden) return st.hidden;
@@ -93,7 +93,7 @@ function spanStyle(span: Span, st: Styles) {
 	if (span.block) out.push(st.block);
 	if (span.heading) {
 		out.push(st.heading, {
-			fontSize: HEADING_SIZES[Math.min(span.heading, 4) - 1],
+			fontSize: HEADING_SIZES[Math.min(span.heading, 5) - 1],
 		});
 	}
 	if (span.bold) out.push(st.bold);

@@ -149,6 +149,8 @@ export const en = {
 	"settings.importInvalid":
 		"That isn't a valid theme. It needs background, card, text and accent, each as a #RRGGBB color.",
 	"settings.importButton": "Import",
+	"code.copy": "Copy code",
+	"code.copied": "Copied",
 	"preset.navy": "Navy",
 	"preset.midnight": "Midnight",
 	"preset.paper": "Paper",

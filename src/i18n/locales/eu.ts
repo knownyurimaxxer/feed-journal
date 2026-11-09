@@ -148,6 +148,8 @@ export const eu: Messages = {
 	"settings.importInvalid":
 		"Hori ez da baliozko gai bat. background, card, text eta accent behar ditu, bakoitza #RRGGBB kolore gisa.",
 	"settings.importButton": "Inportatu",
+	"code.copy": "Kopiatu kodea",
+	"code.copied": "Kopiatuta",
 	"preset.navy": "Itsas urdina",
 	"preset.midnight": "Gauerdia",
 	"preset.paper": "Papera",

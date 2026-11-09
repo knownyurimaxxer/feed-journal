@@ -148,6 +148,8 @@ export const es: Messages = {
 	"settings.importInvalid":
 		"Ese no es un tema válido. Necesita background, card, text y accent, cada uno como un color #RRGGBB.",
 	"settings.importButton": "Importar",
+	"code.copy": "Copiar código",
+	"code.copied": "Copiado",
 	"preset.navy": "Marino",
 	"preset.midnight": "Medianoche",
 	"preset.paper": "Papel",
