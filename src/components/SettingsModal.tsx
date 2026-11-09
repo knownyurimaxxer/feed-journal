@@ -34,6 +34,7 @@ import { Settings, Theme, UpdateSetting } from "../types";
 import { folderLabel, readableOn } from "../utils/format";
 import { haptic, playHaptic } from "../utils/haptics";
 import Avatar from "./Avatar";
+import ColorPicker from "./ColorPicker";
 import NumberField from "./NumberField";
 
 type Props = {
@@ -102,6 +103,8 @@ export default function SettingsModal({
 	const roles = Object.keys(SWATCHES) as (keyof Theme)[];
 	const [languagesOpen, setLanguagesOpen] = useState(false);
 	const [hapticsOpen, setHapticsOpen] = useState(false);
+	// Which color role the custom color picker is open for, if any.
+	const [pickerRole, setPickerRole] = useState<keyof Theme | null>(null);
 
 	// "System default" is written in the phone's language (the one it would
 	// switch to), like every other option is written in its own language.
@@ -685,6 +688,50 @@ export default function SettingsModal({
 										/>
 									</Pressable>
 								))}
+								{/* A color picked with the color picker isn't one of the
+								    ready-made swatches: show it (selected) in the row. */}
+								{!SWATCHES[role].some(
+									(c) =>
+										c.toUpperCase() ===
+										settings.theme[role].toUpperCase(),
+								) && (
+									<Pressable
+										accessibilityRole="button"
+										accessibilityState={{ selected: true }}
+										onPress={() => setPickerRole(role)}
+										style={[
+											s.swatchRing,
+											s.swatchRingActive,
+										]}
+									>
+										<View
+											style={[
+												s.swatch,
+												{
+													backgroundColor:
+														settings.theme[role],
+												},
+											]}
+										/>
+									</Pressable>
+								)}
+								<Pressable
+									accessibilityRole="button"
+									accessibilityLabel={t("color.custom")}
+									onPress={() => setPickerRole(role)}
+									style={({ pressed }) => [
+										s.swatchRing,
+										pressed && s.pressed,
+									]}
+								>
+									<View style={[s.swatch, s.pickerSwatch]}>
+										<Ionicons
+											name="color-palette"
+											size={20}
+											color={readableOn(theme.background)}
+										/>
+									</View>
+								</Pressable>
 							</View>
 						</View>
 					))}
@@ -764,6 +811,21 @@ export default function SettingsModal({
 						</Text>
 					</Pressable>
 				</ScrollView>
+
+				<ColorPicker
+					visible={pickerRole !== null}
+					title={pickerRole ? t(ROLE_LABELS[pickerRole]) : ""}
+					value={pickerRole ? settings.theme[pickerRole] : "#000000"}
+					onApply={(hex) => {
+						if (pickerRole)
+							update("theme", {
+								...settings.theme,
+								[pickerRole]: hex,
+							});
+						setPickerRole(null);
+					}}
+					onClose={() => setPickerRole(null)}
+				/>
 			</View>
 		</Modal>
 	);
@@ -889,6 +951,13 @@ const makeStyles = (t: Theme) => {
 			borderRadius: 20,
 			borderWidth: 1,
 			borderColor: "#88888855",
+		},
+		// The button that opens the color picker: an empty circle with a palette.
+		pickerSwatch: {
+			alignItems: "center",
+			justifyContent: "center",
+			borderStyle: "dashed",
+			borderColor: onBg + "88",
 		},
 		resetCard: { backgroundColor: t.card, borderRadius: 8, padding: 14 },
 		resetText: { color: t.text, fontSize: 13, lineHeight: 18 },
