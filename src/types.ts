@@ -7,6 +7,25 @@ export type Theme = {
 
 import type { HapticTrigger } from "./constants";
 
+/** The kinds of file the app can save into the Obsidian vault. */
+export type MediaKind = "image" | "audio" | "video";
+
+/** Vault folders (written from the vault folder, "Attachments/Audio") for each kind. */
+export type MediaFolders = Record<MediaKind, string>;
+
+export type ScreenCodec = "h264" | "hevc";
+
+/** How voice notes and screen recordings are encoded. */
+export type MediaQuality = {
+	/** Voice notes: 1 = mono, 2 = stereo. */
+	audioChannels: 1 | 2;
+	/** Voice notes: AAC bitrate in kbps (lower = smaller file). */
+	audioKbps: number;
+	screenCodec: ScreenCodec;
+	/** Screen recordings: video bitrate in Mbps (lower = smaller file). */
+	screenMbps: number;
+};
+
 export type Settings = {
 	theme: Theme;
 	likesEnabled: boolean;
@@ -27,6 +46,10 @@ export type Settings = {
 	obsidianEnabled: boolean;
 	/** URI of the Obsidian vault folder (where embedded images are looked up), or null. */
 	vaultUri: string | null;
+	/** Where pictures, voice notes and screen recordings are saved inside the vault. */
+	mediaFolders: MediaFolders;
+	/** Codec and compression of voice notes and screen recordings. */
+	mediaQuality: MediaQuality;
 	/** "system" (follow the phone), or the code of one of the languages in i18n/LANGUAGES. */
 	language: string;
 	/** Master switch for vibration feedback. */

@@ -21,13 +21,15 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { MAX_TAG_LENGTH, MAX_TITLE } from "../constants";
 import { MessageKey } from "../i18n";
 import { useT } from "../i18n/I18nContext";
+import { MediaConfig, useMediaCapture } from "../hooks/useMediaCapture";
 import { useObsidian } from "../theme/ObsidianContext";
 import { useTheme } from "../theme/ThemeContext";
 import { Draft, Note, Selection, Theme } from "../types";
 import { readableOn } from "../utils/format";
 import { haptic } from "../utils/haptics";
 import { fitToLimit, visibleLength } from "../utils/limits";
-import { collectImages } from "../utils/markdown";
+import { collectImages, collectMedia } from "../utils/markdown";
+import { embedFor, formatElapsed, insertEmbed } from "../utils/mediaNames";
 import {
 	EditResult,
 	toggleCodeBlock,
@@ -40,7 +42,9 @@ import {
 import { cleanTitle, normalizeTag, sameTag } from "../utils/noteText";
 import Avatar from "./Avatar";
 import LiveInput from "./LiveInput";
+import MediaPlayer from "./MediaPlayer";
 import PostImage from "./PostImage";
+import { supportedScreenCodecs } from "../storage/screenRecorder";
 
 type Props = {
 	visible: boolean;
@@ -49,6 +53,8 @@ type Props = {
 	nickname: string | null;
 	maxChars: number;
 	maxTags: number;
+	/** Where pictures, voice notes and screen recordings are saved; null when Obsidian is off (no media buttons then). */
+	media: MediaConfig | null;
 	onClose: () => void;
 	onSave: (draft: Draft) => void;
 };
@@ -110,6 +116,35 @@ const TASK_TOOLS: Tool[] = [
 	},
 ];
 
+/** Buttons for pictures, voice notes and screen recordings. Only with Obsidian active (see `media`). */
+const MEDIA_TOOLS: {
+	icon: ComponentProps<typeof MaterialCommunityIcons>["name"];
+	label: MessageKey;
+	/** Which function of useMediaCapture the button runs. */
+	run: "pickImages" | "toggleAudio" | "toggleScreen";
+	/** The capture mode in which this button is the one that stops. */
+	mode: "audio" | "screen" | null;
+}[] = [
+	{
+		icon: "image-plus",
+		label: "media.addImage",
+		run: "pickImages",
+		mode: null,
+	},
+	{
+		icon: "microphone",
+		label: "media.recordAudio",
+		run: "toggleAudio",
+		mode: "audio",
+	},
+	{
+		icon: "record-circle-outline",
+		label: "media.recordScreen",
+		run: "toggleScreen",
+		mode: "screen",
+	},
+];
+
 /** Mount with a `key` that changes per note so its state resets for each open. */
 export default function Composer({
 	visible,
@@ -118,6 +153,7 @@ export default function Composer({
 	nickname,
 	maxChars,
 	maxTags,
+	media,
 	onClose,
 	onSave,
 }: Props) {
@@ -148,6 +184,27 @@ export default function Composer({
 	const bodyRef = useRef<ComponentRef<typeof TextInput>>(null);
 	const lastEdit = useRef(0); // when the text was last typed, to tell a tap from typing
 
+	// Pictures, voice notes and screen recordings saved in the vault are written
+	// into the note as ![[embeds]], each on its own line at the cursor. A ref holds
+	// the newest text and cursor, so several files arriving in a row line up.
+	const latest = useRef({ body, selection });
+	latest.current = { body, selection };
+	const onMediaSaved = (path: string) => {
+		const r = insertEmbed(
+			latest.current.body,
+			latest.current.selection,
+			embedFor(path),
+		);
+		latest.current = { body: r.text, selection: r.selection };
+		lastEdit.current = Date.now();
+		setBody(r.text);
+		setSelection(r.selection);
+		setForced(r.selection);
+	};
+	const capture = useMediaCapture(media, onMediaSaved);
+	const recording = capture.mode === "audio" || capture.mode === "screen";
+	const busy = capture.mode !== "idle";
+
 	// Pictures in the text are shown under it once typing pauses (so a web
 	// address isn't fetched letter by letter while it is being typed).
 	const [previewText, setPreviewText] = useState(body);
@@ -159,6 +216,13 @@ export default function Composer({
 		() => collectImages(previewText, opts),
 		[previewText, opts],
 	);
+	// Voice notes and videos in the text can be played right here too.
+	const mediaPreviews = useMemo(
+		() => collectMedia(previewText, opts),
+		[previewText, opts],
+	);
+	// Screen recording only exists where the phone has a recorder (Android dev build).
+	const screenOk = useMemo(() => supportedScreenCodecs().length > 0, []);
 
 	// The limit counts what you can read: Markdown syntax (**, [](url), ...)
 	// is free (see visibleLength). Lowering it never cuts a post you already
@@ -172,7 +236,7 @@ export default function Composer({
 	const left = limit - used;
 	// With tags set to 0 the box is hidden, unless this post already has some.
 	const showTags = maxTags > 0 || tags.length > 0;
-	const canPost = body.trim().length > 0;
+	const canPost = body.trim().length > 0 && !busy;
 
 	const applyTool = (tool: Tool) => {
 		const r = tool.run(body, selection);
@@ -356,13 +420,21 @@ export default function Composer({
 							onBlur={() => setBodyFocused(false)}
 						/>
 
-						{!raw && previews.length > 0 && (
-							<View style={s.previews}>
-								{previews.map((img, i) => (
-									<PostImage key={`${i}`} image={img} />
-								))}
-							</View>
-						)}
+						{!raw &&
+							(previews.length > 0 ||
+								mediaPreviews.length > 0) && (
+								<View style={s.previews}>
+									{previews.map((img, i) => (
+										<PostImage key={`${i}`} image={img} />
+									))}
+									{mediaPreviews.map((m, i) => (
+										<MediaPlayer
+											key={`m${i}:${m.path}`}
+											media={m}
+										/>
+									))}
+								</View>
+							)}
 
 						{showTags && (
 							<View style={s.tagRow}>
@@ -420,6 +492,48 @@ export default function Composer({
 						)}
 					</ScrollView>
 
+					{busy && (
+						<View style={s.recordBar}>
+							<View
+								style={[
+									s.recordDot,
+									capture.mode === "saving" && {
+										backgroundColor: onBg + "88",
+									},
+								]}
+							/>
+							<Text style={s.recordText} numberOfLines={1}>
+								{capture.mode === "saving"
+									? t("media.saving")
+									: `${t(
+											capture.mode === "audio"
+												? "media.recordingAudio"
+												: "media.recordingScreen",
+										)} ${formatElapsed(capture.elapsed)}`}
+							</Text>
+							{recording && (
+								<Pressable
+									style={s.recordStop}
+									onPress={
+										capture.mode === "audio"
+											? capture.toggleAudio
+											: capture.toggleScreen
+									}
+									accessibilityLabel={t("media.stop")}
+								>
+									<MaterialCommunityIcons
+										name="stop-circle-outline"
+										size={20}
+										color={readableOn(theme.accent)}
+									/>
+									<Text style={s.recordStopText}>
+										{t("media.stop")}
+									</Text>
+								</Pressable>
+							)}
+						</View>
+					)}
+
 					{bodyFocused && (
 						<View style={s.toolbar}>
 							<ScrollView
@@ -445,6 +559,54 @@ export default function Composer({
 										/>
 									</Pressable>
 								))}
+								{media && (
+									<>
+										<View style={s.toolGap} />
+										{MEDIA_TOOLS.filter(
+											(tool) =>
+												tool.run !== "toggleScreen" ||
+												screenOk,
+										).map((tool) => {
+											const on =
+												capture.mode === tool.mode;
+											const locked = busy && !on;
+											return (
+												<Pressable
+													key={tool.label}
+													disabled={locked}
+													style={({ pressed }) => [
+														s.tool,
+														(pressed || on) &&
+															s.toolPressed,
+														locked && {
+															opacity: 0.35,
+														},
+													]}
+													onPress={() =>
+														capture[tool.run]()
+													}
+													accessibilityLabel={t(
+														tool.label,
+													)}
+												>
+													<MaterialCommunityIcons
+														name={
+															on
+																? "stop-circle-outline"
+																: tool.icon
+														}
+														size={22}
+														color={
+															on
+																? "#FF4D4D"
+																: onBg
+														}
+													/>
+												</Pressable>
+											);
+										})}
+									</>
+								)}
 							</ScrollView>
 						</View>
 					)}
@@ -550,5 +712,41 @@ const makeStyles = (t: Theme) => {
 			borderRadius: 8,
 		},
 		toolPressed: { backgroundColor: onBg + "22" },
+		toolGap: {
+			width: StyleSheet.hairlineWidth,
+			backgroundColor: onBg + "33",
+			marginHorizontal: 4,
+			marginVertical: 8,
+		},
+		recordBar: {
+			flexDirection: "row",
+			alignItems: "center",
+			gap: 10,
+			paddingHorizontal: 14,
+			paddingVertical: 8,
+			borderTopWidth: StyleSheet.hairlineWidth,
+			borderTopColor: onBg + "33",
+		},
+		recordDot: {
+			width: 10,
+			height: 10,
+			borderRadius: 5,
+			backgroundColor: "#FF4D4D",
+		},
+		recordText: { flex: 1, color: onBg, fontWeight: "600", fontSize: 14 },
+		recordStop: {
+			flexDirection: "row",
+			alignItems: "center",
+			gap: 4,
+			backgroundColor: t.accent,
+			paddingHorizontal: 12,
+			paddingVertical: 6,
+			borderRadius: 16,
+		},
+		recordStopText: {
+			color: readableOn(t.accent),
+			fontWeight: "800",
+			fontSize: 14,
+		},
 	});
 };

@@ -108,8 +108,46 @@ export const es: Messages = {
 	"settings.noVault":
 		"Ninguna bóveda elegida. Obsidian sigue desactivado hasta que elijas una.",
 	"settings.vaultHint":
-		"Elige tu bóveda de Obsidian (la carpeta que contiene la carpeta .obsidian). Las imágenes se buscan ahí por nombre o ruta. No se cambia nada de la bóveda.",
+		"Elige tu bóveda de Obsidian (la carpeta que contiene la carpeta .obsidian). Las imágenes se buscan ahí por nombre o ruta. La app solo añade archivos a la bóveda (imágenes, notas de voz, grabaciones de pantalla); nunca cambia ni borra lo que ya hay.",
 	"settings.clear": "Quitar",
+
+	// pictures, voice notes and screen recordings saved in the vault
+	"media.addImage": "Añadir imagen",
+	"media.recordAudio": "Grabar nota de voz",
+	"media.recordScreen": "Grabar pantalla",
+	"media.recordingAudio": "Grabando nota de voz",
+	"media.recordingScreen": "Grabando pantalla",
+	"media.saving": "Guardando en la bóveda…",
+	"media.stop": "Parar",
+	"media.failed": "No se pudo guardar en la bóveda",
+	"media.needVault": "Elige primero tu bóveda en Ajustes.",
+	"media.micDenied":
+		"El micrófono no está permitido. Actívalo en los ajustes del teléfono.",
+	"media.nothingRecorded": "No se grabó nada.",
+	"settings.media": "Imágenes, notas de voz y vídeos",
+	"settings.mediaHint":
+		"Carpetas dentro de tu bóveda donde se guardan los archivos nuevos, escritas desde la carpeta de la bóveda (por ejemplo Attachments/Audio). Las carpetas que falten se crean. Los archivos se nombran por fecha y hora, como 20261107125555. Las imágenes se guardan en WebP al 100 % de calidad, las notas de voz en AAC comprimido (.m4a) y las grabaciones de pantalla en MP4 comprimido.",
+	"settings.mediaImages": "Carpeta de imágenes",
+	"settings.mediaAudio": "Carpeta de notas de voz",
+	"settings.mediaVideo": "Carpeta de grabaciones de pantalla",
+	"settings.mediaRoot": "La propia carpeta de la bóveda",
+
+	// quality of voice notes and screen recordings, and the player
+	"settings.voice": "Notas de voz",
+	"settings.voiceHint":
+		"Los números más bajos dan archivos más pequeños. Mono a 64 kbps se oye claro para hablar; usa estéreo y 128 kbps o más para música.",
+	"settings.channels": "Canales",
+	"settings.mono": "Mono",
+	"settings.stereo": "Estéreo",
+	"settings.compression": "Compresión",
+	"settings.screen": "Grabaciones de pantalla",
+	"settings.screenHint":
+		"H.265 (HEVC) da archivos un tercio más pequeños que H.264 con la misma calidad, pero algunos ordenadores no lo reproducen. Solo se muestran los códecs que tu teléfono puede grabar. 2 Mbps se ve claro para texto en un teléfono.",
+	"settings.codec": "Códec",
+	"player.play": "Reproducir",
+	"player.pause": "Pausar",
+	"player.playVideo": "Reproducir vídeo",
+	"player.notFound": "no está en la bóveda",
 	"settings.user": "Usuario",
 	"settings.showNickname": "Mostrar apodo",
 	"settings.showNicknameHint":

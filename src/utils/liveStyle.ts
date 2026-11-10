@@ -10,6 +10,7 @@
 import {
 	FENCE,
 	imageFromMatch,
+	isMediaEmbed,
 	INLINE_RE,
 	ParseOptions,
 	safeHref,
@@ -39,7 +40,7 @@ export type Span = {
 	task?: boolean;
 	/** Text of a checked checklist item. */
 	done?: boolean;
-	/** A Markdown image or ![[embed]]: kept visible as a chip (the editor can't draw pictures). */
+	/** A Markdown image or ![[embed]] (picture, voice note, video): kept visible as a chip (the editor can't draw pictures). */
 	image?: boolean;
 };
 
@@ -128,8 +129,16 @@ export function liveSpans(
 					push(syntax("*", flags));
 				} else if (m[8] !== undefined || m[10] !== undefined) {
 					// Images stay visible, in full: free of the character count, never hidden.
-					if (imageFromMatch(m, obsidian))
-						push({ ...flags, text: m[0], marker: true, image: true });
+					if (
+						imageFromMatch(m, obsidian) ||
+						(obsidian && m[8] !== undefined && isMediaEmbed(m[8]))
+					)
+						push({
+							...flags,
+							text: m[0],
+							marker: true,
+							image: true,
+						});
 					else push({ ...flags, text: m[0] });
 				} else if (safeHref(m[7])) {
 					// [text](url): only the text stays visible (as a link) off the active line.

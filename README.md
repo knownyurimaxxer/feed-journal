@@ -17,12 +17,12 @@ If you have an issue, just open an [Issue](../../issues)!
   the web, or use the image button in the toolbar. Add a size with
   `![description|300](https://address)`. The editor keeps the text visible and
   previews the picture under it.
-- **Obsidian (optional).** Turn it on in Settings > Folder and pick your
+- **Obsidian (optional).** Turn it on and pick your
   vault; it only works once both are done. Then `![[photo.png]]` (also `![[photo.png|300]]` and
   `![](Attachments/photo.png)`) shows the picture from the vault, and
   `- [ ]` / `- [x]` lines become checkboxes you can tap in the feed and in the
-  editor (not in the Markdown view). The vault is only read, never changed.
-- **Languages.** Settings > Language: "System default" follows the phone (and
+  editor (not in the Markdown view). Also adds support for **Voice Notes** and **Screen Recordings**. The vault is only read, never changed.
+- **Languages.** "System default" follows the phone (and
   uses English when the phone's language isn't available), or pick one.
 - **Search and tags.** Find an old post by a word from it, or tap a tag to
   see everything under it.
@@ -35,7 +35,7 @@ If you have an issue, just open an [Issue](../../issues)!
   refresh here, and it shows up.
 - **Make it yours.** Pick a nickname, an avatar (an icon or your own photo),
   and a theme. There are a few ready-made ones, or you can choose each color
-  yourself.
+  yourself. Theme import and export included!
 - **Edit and delete.** The little dots on a post do exactly what you think.
 - **Big screens too.** Tablets and landscape get a multi-column feed (in theory, don't have a Tablet to test it).
 

@@ -11,11 +11,14 @@ export type ObsidianApi = {
 	status: ObsidianStatus;
 	/** File URI of a vault picture ("photo.png", "Attachments/photo.png"), or null if there is none. */
 	resolveImage: (path: string) => string | null;
+	/** Tells the picture list about a file the app just saved in the vault, so it shows without a rescan. */
+	registerFile: (path: string, uri: string) => void;
 };
 
 export const ObsidianContext = createContext<ObsidianApi>({
 	enabled: false,
 	status: "off",
 	resolveImage: () => null,
+	registerFile: () => {},
 });
 export const useObsidian = () => useContext(ObsidianContext);

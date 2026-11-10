@@ -110,8 +110,46 @@ export const en = {
 	"settings.noVault":
 		"No vault chosen. Obsidian stays off until you choose one.",
 	"settings.vaultHint":
-		"Choose your Obsidian vault (the folder that holds the .obsidian folder). Images are looked up there by name or path. Nothing in the vault is changed.",
+		"Choose your Obsidian vault (the folder that holds the .obsidian folder). Images are looked up there by name or path. The app only adds files to the vault (pictures, voice notes, screen recordings); it never changes or deletes what is already there.",
 	"settings.clear": "Clear",
+
+	// pictures, voice notes and screen recordings saved in the vault
+	"media.addImage": "Add image",
+	"media.recordAudio": "Record voice note",
+	"media.recordScreen": "Record screen",
+	"media.recordingAudio": "Recording voice note",
+	"media.recordingScreen": "Recording screen",
+	"media.saving": "Saving to the vault…",
+	"media.stop": "Stop",
+	"media.failed": "Couldn't save to the vault",
+	"media.needVault": "Choose your vault in Settings first.",
+	"media.micDenied":
+		"The microphone isn't allowed. Turn it on in your phone's settings.",
+	"media.nothingRecorded": "Nothing was recorded.",
+	"settings.media": "Pictures, voice notes and videos",
+	"settings.mediaHint":
+		"Folders inside your vault where new files are saved, written from the vault folder (for example Attachments/Audio). Missing folders are created. Files are named by date and time, like 20261107125555. Pictures are saved as WebP at 100% quality, voice notes as compressed AAC (.m4a) and screen recordings as compressed MP4.",
+	"settings.mediaImages": "Pictures folder",
+	"settings.mediaAudio": "Voice notes folder",
+	"settings.mediaVideo": "Screen recordings folder",
+	"settings.mediaRoot": "Vault folder itself",
+
+	// quality of voice notes and screen recordings, and the player
+	"settings.voice": "Voice notes",
+	"settings.voiceHint":
+		"Lower numbers make smaller files. Mono at 64 kbps is clear for speech; use stereo and 128 kbps or more for music.",
+	"settings.channels": "Channels",
+	"settings.mono": "Mono",
+	"settings.stereo": "Stereo",
+	"settings.compression": "Compression",
+	"settings.screen": "Screen recordings",
+	"settings.screenHint":
+		"H.265 (HEVC) makes files about a third smaller than H.264 at the same quality, but some computers can't play it. Only the codecs your phone can record are shown. 2 Mbps is clear for text on a phone.",
+	"settings.codec": "Codec",
+	"player.play": "Play",
+	"player.pause": "Pause",
+	"player.playVideo": "Play video",
+	"player.notFound": "not found in the vault",
 	"settings.user": "User",
 	"settings.showNickname": "Show nickname",
 	"settings.showNicknameHint": "Hides the name on posts and in the editor.",

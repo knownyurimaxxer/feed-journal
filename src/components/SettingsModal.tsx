@@ -33,8 +33,12 @@ import {
 } from "../i18n";
 import { useI18n } from "../i18n/I18nContext";
 import { useTheme } from "../theme/ThemeContext";
-import { Settings, Theme, UpdateSetting } from "../types";
+import { MediaKind, Settings, Theme, UpdateSetting } from "../types";
+import { MEDIA_QUALITY_CHOICES } from "../constants";
+import { supportedScreenCodecs } from "../storage/screenRecorder";
+import Chip from "./Chip";
 import { folderLabel, readableOn } from "../utils/format";
+import { normalizeFolder } from "../utils/mediaNames";
 import { haptic, playHaptic, previewStrength } from "../utils/haptics";
 import { exportTheme } from "../utils/themeIO";
 import Avatar from "./Avatar";
@@ -76,6 +80,13 @@ function fill(template: string, parts: Record<string, ReactNode>): ReactNode[] {
 	});
 }
 
+/** The kinds of media saved in the vault, with the text of the label above each folder box. */
+const MEDIA_FOLDER_ROWS: { kind: MediaKind; label: MessageKey }[] = [
+	{ kind: "image", label: "settings.mediaImages" },
+	{ kind: "audio", label: "settings.mediaAudio" },
+	{ kind: "video", label: "settings.mediaVideo" },
+];
+
 const HAPTIC_LABEL: Record<(typeof HAPTIC_TRIGGERS)[number], MessageKey> = {
 	done: "haptics.done",
 	save: "haptics.save",
@@ -104,6 +115,11 @@ export default function SettingsModal({
 }: Props) {
 	const theme = useTheme();
 	const insets = useSafeAreaInsets(); // known from the first frame (see App)
+	// Voice note and screen recording quality; only the codecs the phone can record are offered.
+	const q = settings.mediaQuality;
+	const setQuality = (change: Partial<typeof q>) =>
+		update("mediaQuality", { ...q, ...change });
+	const screenCodecs = useMemo(() => supportedScreenCodecs(), []);
 	const { t, systemLanguage } = useI18n();
 	const s = useMemo(() => makeStyles(theme), [theme]);
 	const roles = Object.keys(SWATCHES) as (keyof Theme)[];
@@ -459,6 +475,147 @@ export default function SettingsModal({
 									</Pressable>
 								)}
 							</View>
+						</View>
+					)}
+					{settings.obsidianEnabled && (
+						<View style={[s.rowBlock, { marginTop: 12 }]}>
+							<Text style={s.rowTitle}>
+								{t("settings.media")}
+							</Text>
+							<Text style={s.rowHint}>
+								{t("settings.mediaHint")}
+							</Text>
+							{MEDIA_FOLDER_ROWS.map(({ kind, label }) => (
+								<View key={kind} style={{ marginTop: 12 }}>
+									<Text style={s.mediaLabel}>{t(label)}</Text>
+									<TextInput
+										style={s.mediaInput}
+										value={settings.mediaFolders[kind]}
+										onChangeText={(v) =>
+											update("mediaFolders", {
+												...settings.mediaFolders,
+												[kind]: v,
+											})
+										}
+										onEndEditing={() =>
+											update("mediaFolders", {
+												...settings.mediaFolders,
+												[kind]: normalizeFolder(
+													settings.mediaFolders[kind],
+												),
+											})
+										}
+										placeholder={t("settings.mediaRoot")}
+										placeholderTextColor={theme.text + "77"}
+										autoCapitalize="none"
+										autoCorrect={false}
+										returnKeyType="done"
+									/>
+								</View>
+							))}
+						</View>
+					)}
+					{settings.obsidianEnabled && (
+						<View style={[s.rowBlock, { marginTop: 12 }]}>
+							<Text style={s.rowTitle}>
+								{t("settings.voice")}
+							</Text>
+							<Text style={s.rowHint}>
+								{t("settings.voiceHint")}
+							</Text>
+							<Text style={s.mediaLabel}>
+								{t("settings.channels")}
+							</Text>
+							<View style={s.chipRow}>
+								{MEDIA_QUALITY_CHOICES.audioChannels.map(
+									(n) => (
+										<Chip
+											key={n}
+											label={t(
+												n === 1
+													? "settings.mono"
+													: "settings.stereo",
+											)}
+											active={q.audioChannels === n}
+											onPress={() =>
+												setQuality({ audioChannels: n })
+											}
+										/>
+									),
+								)}
+							</View>
+							<Text style={s.mediaLabel}>
+								{t("settings.compression")}
+							</Text>
+							<View style={s.chipRow}>
+								{MEDIA_QUALITY_CHOICES.audioKbps.map((n) => (
+									<Chip
+										key={n}
+										label={`${n} kbps`}
+										active={q.audioKbps === n}
+										onPress={() =>
+											setQuality({ audioKbps: n })
+										}
+									/>
+								))}
+							</View>
+
+							{screenCodecs.length > 0 && (
+								<>
+									<Text
+										style={[s.rowTitle, { marginTop: 16 }]}
+									>
+										{t("settings.screen")}
+									</Text>
+									<Text style={s.rowHint}>
+										{t("settings.screenHint")}
+									</Text>
+									<Text style={s.mediaLabel}>
+										{t("settings.codec")}
+									</Text>
+									<View style={s.chipRow}>
+										{MEDIA_QUALITY_CHOICES.screenCodec
+											.filter((c) =>
+												screenCodecs.includes(c),
+											)
+											.map((c) => (
+												<Chip
+													key={c}
+													label={
+														c === "h264"
+															? "H.264"
+															: "H.265 (HEVC)"
+													}
+													active={q.screenCodec === c}
+													onPress={() =>
+														setQuality({
+															screenCodec: c,
+														})
+													}
+												/>
+											))}
+									</View>
+									<Text style={s.mediaLabel}>
+										{t("settings.compression")}
+									</Text>
+									<View style={s.chipRow}>
+										{MEDIA_QUALITY_CHOICES.screenMbps.map(
+											(n) => (
+												<Chip
+													key={n}
+													label={`${n} Mbps`}
+													active={q.screenMbps === n}
+													onPress={() =>
+														setQuality({
+															screenMbps: n,
+														})
+													}
+												/>
+											),
+										)}
+									</View>
+								</>
+							)}
 						</View>
 					)}
 
@@ -1064,6 +1221,28 @@ const makeStyles = (t: Theme) => {
 			borderColor: "transparent",
 		},
 		avatarOptionActive: { borderColor: t.accent },
+		chipRow: {
+			flexDirection: "row",
+			flexWrap: "wrap",
+			gap: 8,
+			marginTop: 6,
+		},
+		mediaLabel: {
+			color: t.text,
+			fontWeight: "600",
+			fontSize: 13,
+			marginTop: 12,
+		},
+		mediaInput: {
+			borderWidth: StyleSheet.hairlineWidth,
+			borderColor: t.text + "55",
+			color: t.text,
+			borderRadius: 8,
+			paddingHorizontal: 12,
+			paddingVertical: 8,
+			fontSize: 15,
+			marginTop: 4,
+		},
 		nicknameInput: {
 			backgroundColor: t.card,
 			color: t.text,

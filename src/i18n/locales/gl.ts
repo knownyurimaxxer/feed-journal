@@ -108,8 +108,46 @@ export const gl: Messages = {
 	"settings.noVault":
 		"Non hai ningunha bóveda elixida. Obsidian queda desactivado ata que elixas unha.",
 	"settings.vaultHint":
-		"Elixe a túa bóveda de Obsidian (o cartafol que contén o cartafol .obsidian). As imaxes búscanse alí polo nome ou pola ruta. Non se cambia nada na bóveda.",
+		"Elixe a túa bóveda de Obsidian (o cartafol que contén o cartafol .obsidian). As imaxes búscanse alí polo nome ou pola ruta. A app só engade ficheiros á bóveda (imaxes, notas de voz, gravacións de pantalla); nunca cambia nin borra o que xa hai.",
 	"settings.clear": "Quitar",
+
+	// pictures, voice notes and screen recordings saved in the vault
+	"media.addImage": "Engadir imaxe",
+	"media.recordAudio": "Gravar nota de voz",
+	"media.recordScreen": "Gravar a pantalla",
+	"media.recordingAudio": "Gravando nota de voz",
+	"media.recordingScreen": "Gravando a pantalla",
+	"media.saving": "Gardando na bóveda…",
+	"media.stop": "Parar",
+	"media.failed": "Non se puido gardar na bóveda",
+	"media.needVault": "Elixe primeiro a túa bóveda en Axustes.",
+	"media.micDenied":
+		"O micrófono non está permitido. Actívao nos axustes do teléfono.",
+	"media.nothingRecorded": "Non se gravou nada.",
+	"settings.media": "Imaxes, notas de voz e vídeos",
+	"settings.mediaHint":
+		"Cartafoles dentro da túa bóveda onde se gardan os ficheiros novos, escritos desde o cartafol da bóveda (por exemplo Attachments/Audio). Os cartafoles que faltan créanse. Os ficheiros chámanse pola data e a hora, como 20261107125555. As imaxes gárdanse en WebP ao 100 % de calidade, as notas de voz en AAC comprimido (.m4a) e as gravacións de pantalla en MP4 comprimido.",
+	"settings.mediaImages": "Cartafol de imaxes",
+	"settings.mediaAudio": "Cartafol de notas de voz",
+	"settings.mediaVideo": "Cartafol de gravacións de pantalla",
+	"settings.mediaRoot": "O propio cartafol da bóveda",
+
+	// quality of voice notes and screen recordings, and the player
+	"settings.voice": "Notas de voz",
+	"settings.voiceHint":
+		"Os números máis baixos dan ficheiros máis pequenos. Mono a 64 kbps óese claro para falar; usa estéreo e 128 kbps ou máis para música.",
+	"settings.channels": "Canles",
+	"settings.mono": "Mono",
+	"settings.stereo": "Estéreo",
+	"settings.compression": "Compresión",
+	"settings.screen": "Gravacións de pantalla",
+	"settings.screenHint":
+		"H.265 (HEVC) dá ficheiros un terzo máis pequenos ca H.264 coa mesma calidade, pero algúns ordenadores non o reproducen. Só se amosan os códecs que o teu teléfono pode gravar. 2 Mbps vese claro para texto nun teléfono.",
+	"settings.codec": "Códec",
+	"player.play": "Reproducir",
+	"player.pause": "Pausar",
+	"player.playVideo": "Reproducir vídeo",
+	"player.notFound": "non está na bóveda",
 	"settings.user": "Usuario",
 	"settings.showNickname": "Mostrar o alcume",
 	"settings.showNicknameHint": "Oculta o nome nas publicacións e no editor.",

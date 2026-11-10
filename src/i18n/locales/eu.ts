@@ -108,8 +108,46 @@ export const eu: Messages = {
 	"settings.noVault":
 		"Ez da gordailurik aukeratu. Obsidian desaktibatuta egongo da bat aukeratu arte.",
 	"settings.vaultHint":
-		"Aukeratu zure Obsidian gordailua (.obsidian karpeta daukan karpeta). Irudiak bertan bilatzen dira, izenaren edo bidearen arabera. Gordailuan ez da ezer aldatzen.",
+		"Aukeratu zure Obsidian gordailua (.obsidian karpeta daukan karpeta). Irudiak bertan bilatzen dira, izenaren edo bidearen arabera. Aplikazioak fitxategiak gehitzen ditu gordailura soilik (irudiak, ahots-oharrak, pantaila-grabaketak); ez du inoiz lehendik dagoena aldatzen edo ezabatzen.",
 	"settings.clear": "Garbitu",
+
+	// pictures, voice notes and screen recordings saved in the vault
+	"media.addImage": "Gehitu irudia",
+	"media.recordAudio": "Grabatu ahots-oharra",
+	"media.recordScreen": "Grabatu pantaila",
+	"media.recordingAudio": "Ahots-oharra grabatzen",
+	"media.recordingScreen": "Pantaila grabatzen",
+	"media.saving": "Gordailuan gordetzen…",
+	"media.stop": "Gelditu",
+	"media.failed": "Ezin izan da gordailuan gorde",
+	"media.needVault": "Aukeratu lehenik zure gordailua Ezarpenetan.",
+	"media.micDenied":
+		"Mikrofonoa ez dago baimenduta. Aktibatu telefonoaren ezarpenetan.",
+	"media.nothingRecorded": "Ez da ezer grabatu.",
+	"settings.media": "Irudiak, ahots-oharrak eta bideoak",
+	"settings.mediaHint":
+		"Zure gordailuaren barruko karpetak, fitxategi berriak gordetzeko, gordailuaren karpetatik idatziak (adibidez Attachments/Audio). Falta diren karpetak sortzen dira. Fitxategiek data eta orduaren izena dute, 20261107125555 bezala. Irudiak WebP formatuan gordetzen dira %100eko kalitatearekin, ahots-oharrak AAC konprimituan (.m4a) eta pantaila-grabaketak MP4 konprimituan.",
+	"settings.mediaImages": "Irudien karpeta",
+	"settings.mediaAudio": "Ahots-oharren karpeta",
+	"settings.mediaVideo": "Pantaila-grabaketen karpeta",
+	"settings.mediaRoot": "Gordailuaren karpeta bera",
+
+	// quality of voice notes and screen recordings, and the player
+	"settings.voice": "Ahots-oharrak",
+	"settings.voiceHint":
+		"Zenbaki txikiagoek fitxategi txikiagoak sortzen dituzte. 64 kbps-ko monoa argia da hitz egiteko; erabili estereoa eta 128 kbps edo gehiago musikarako.",
+	"settings.channels": "Kanalak",
+	"settings.mono": "Mono",
+	"settings.stereo": "Estereo",
+	"settings.compression": "Konpresioa",
+	"settings.screen": "Pantaila-grabaketak",
+	"settings.screenHint":
+		"H.265 (HEVC) formatuak H.264 baino heren bat txikiagoak diren fitxategiak sortzen ditu kalitate berarekin, baina ordenagailu batzuek ezin dute erreproduzitu. Zure telefonoak grabatu ditzakeen kodekak bakarrik erakusten dira. 2 Mbps-k testua argi erakusten du telefono batean.",
+	"settings.codec": "Kodeka",
+	"player.play": "Erreproduzitu",
+	"player.pause": "Pausatu",
+	"player.playVideo": "Erreproduzitu bideoa",
+	"player.notFound": "ez dago gordailuan",
 	"settings.user": "Erabiltzailea",
 	"settings.showNickname": "Erakutsi ezizena",
 	"settings.showNicknameHint":
