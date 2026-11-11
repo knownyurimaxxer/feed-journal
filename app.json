@@ -7,7 +7,9 @@
 		"icon": "./assets/icon.png",
 		"userInterfaceStyle": "light",
 		"ios": {
-			"supportsTablet": true
+			"supportsTablet": true,
+			"infoPlist": {},
+			"bundleIdentifier": "com.knownyurimaxxer.feedjournal"
 		},
 		"android": {
 			"adaptiveIcon": {
@@ -19,9 +21,11 @@
 			"predictiveBackGestureEnabled": false,
 			"package": "com.knownyurimaxxer.feedjournal",
 			"permissions": [
-				"RECORD_AUDIO",
-				"FOREGROUND_SERVICE",
-				"FOREGROUND_SERVICE_MEDIA_PROJECTION"
+				"android.permission.RECORD_AUDIO",
+				"android.permission.FOREGROUND_SERVICE",
+				"android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION",
+				"android.permission.MODIFY_AUDIO_SETTINGS",
+				"android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
 			]
 		},
 		"web": {

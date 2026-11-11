@@ -58,7 +58,9 @@ object Recorder {
     val args = current.args
     try {
       val manager = service.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+      // With the newest Android SDK this can be null, so it is checked here once.
       val proj = manager.getMediaProjection(current.resultCode, current.data)
+        ?: throw IllegalStateException("The system did not give access to the screen")
 
       // Screen size, even numbers, longest side at most 1920 (what encoders handle everywhere).
       val metrics = service.resources.displayMetrics
