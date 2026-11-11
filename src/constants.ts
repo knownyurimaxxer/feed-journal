@@ -161,6 +161,8 @@ export const DEFAULT_SETTINGS: Settings = {
 	folderUri: null,
 	maxChars: LIMITS.chars.default,
 	maxTags: LIMITS.tags.default,
+	unlimitedChars: false,
+	unlimitedTags: false,
 	obsidianEnabled: false,
 	vaultUri: null,
 	deleteAttachments: false,

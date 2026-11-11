@@ -582,14 +582,16 @@ export default function SettingsModal({
 								))}
 							</View>
 
-							<Text style={[s.rowTitle, { marginTop: 16 }]}>
-								{t("settings.screen")}
-							</Text>
-							<Text style={s.rowHint}>
-								{t("settings.screenHint")}
-							</Text>
 							{screenCodecs.length > 0 && (
 								<>
+									<Text
+										style={[s.rowTitle, { marginTop: 16 }]}
+									>
+										{t("settings.screen")}
+									</Text>
+									<Text style={s.rowHint}>
+										{t("settings.screenHint")}
+									</Text>
 									<Text style={s.mediaLabel}>
 										{t("settings.codec")}
 									</Text>
@@ -615,23 +617,27 @@ export default function SettingsModal({
 												/>
 											))}
 									</View>
+									<Text style={s.mediaLabel}>
+										{t("settings.compression")}
+									</Text>
+									<View style={s.chipRow}>
+										{MEDIA_QUALITY_CHOICES.screenMbps.map(
+											(n) => (
+												<Chip
+													key={n}
+													label={`${n} Mbps`}
+													active={q.screenMbps === n}
+													onPress={() =>
+														setQuality({
+															screenMbps: n,
+														})
+													}
+												/>
+											),
+										)}
+									</View>
 								</>
 							)}
-							<Text style={s.mediaLabel}>
-								{t("settings.compression")}
-							</Text>
-							<View style={s.chipRow}>
-								{MEDIA_QUALITY_CHOICES.screenMbps.map((n) => (
-									<Chip
-										key={n}
-										label={`${n} Mbps`}
-										active={q.screenMbps === n}
-										onPress={() =>
-											setQuality({ screenMbps: n })
-										}
-									/>
-								))}
-							</View>
 						</View>
 					)}
 
@@ -770,30 +776,70 @@ export default function SettingsModal({
 							}}
 						/>
 					</View>
-					<View style={{ marginTop: 12 }}>
-						<NumberField
-							title={t("settings.maxChars")}
-							hint={t("settings.maxCharsHint", {
-								min: LIMITS.chars.min,
-								max: LIMITS.chars.max,
-							})}
-							value={settings.maxChars}
-							min={LIMITS.chars.min}
-							max={LIMITS.chars.max}
-							onChange={(n) => update("maxChars", n)}
+					{!settings.unlimitedChars && (
+						<View style={{ marginTop: 12 }}>
+							<NumberField
+								title={t("settings.maxChars")}
+								hint={t("settings.maxCharsHint", {
+									min: LIMITS.chars.min,
+									max: LIMITS.chars.max,
+								})}
+								value={settings.maxChars}
+								min={LIMITS.chars.min}
+								max={LIMITS.chars.max}
+								onChange={(n) => update("maxChars", n)}
+							/>
+						</View>
+					)}
+					<View style={[s.row, { marginTop: 12 }]}>
+						<View style={{ flex: 1, paddingRight: 12 }}>
+							<Text style={s.rowTitle}>
+								{t("settings.noCharLimit")}
+							</Text>
+							<Text style={s.rowHint}>
+								{t("settings.noCharLimitHint")}
+							</Text>
+						</View>
+						<Switch
+							value={settings.unlimitedChars}
+							onValueChange={(v) => update("unlimitedChars", v)}
+							trackColor={{
+								true: theme.accent,
+								false: "#88888888",
+							}}
 						/>
 					</View>
-					<View style={{ marginTop: 12 }}>
-						<NumberField
-							title={t("settings.maxTags")}
-							hint={t("settings.maxTagsHint", {
-								min: LIMITS.tags.min,
-								max: LIMITS.tags.max,
-							})}
-							value={settings.maxTags}
-							min={LIMITS.tags.min}
-							max={LIMITS.tags.max}
-							onChange={(n) => update("maxTags", n)}
+					{!settings.unlimitedTags && (
+						<View style={{ marginTop: 12 }}>
+							<NumberField
+								title={t("settings.maxTags")}
+								hint={t("settings.maxTagsHint", {
+									min: LIMITS.tags.min,
+									max: LIMITS.tags.max,
+								})}
+								value={settings.maxTags}
+								min={LIMITS.tags.min}
+								max={LIMITS.tags.max}
+								onChange={(n) => update("maxTags", n)}
+							/>
+						</View>
+					)}
+					<View style={[s.row, { marginTop: 12 }]}>
+						<View style={{ flex: 1, paddingRight: 12 }}>
+							<Text style={s.rowTitle}>
+								{t("settings.noTagLimit")}
+							</Text>
+							<Text style={s.rowHint}>
+								{t("settings.noTagLimitHint")}
+							</Text>
+						</View>
+						<Switch
+							value={settings.unlimitedTags}
+							onValueChange={(v) => update("unlimitedTags", v)}
+							trackColor={{
+								true: theme.accent,
+								false: "#88888888",
+							}}
 						/>
 					</View>
 

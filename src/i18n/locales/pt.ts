@@ -135,7 +135,7 @@ export const pt: Messages = {
 	"settings.mediaRoot": "A própria pasta do cofre",
 	"settings.deleteFiles": "Apagar também os ficheiros da publicação",
 	"settings.deleteFilesHint":
-		"Ao apagar uma publicação também são apagadas as imagens, notas de voz e vídeos que esta app guardou para ela, a menos que outra publicação ainda os mostre. Os ficheiros que já estavam no teu cofre nunca são tocados.",
+		"Ao apagar uma publicação também são apagadas as imagens, notas de voz e vídeos que esta app guardou para ela, a menos que outra publicação ainda os mostre. Os ficheiros que já estavam no teu cofre nunca são tocados. Não se pode desfazer.",
 
 	// quality of voice notes and screen recordings, and the player
 	"settings.voice": "Notas de voz",
@@ -172,6 +172,11 @@ export const pt: Messages = {
 	"settings.maxTags": "Etiquetas por publicação",
 	"settings.maxTagsHint":
 		"De {min} a {max}. 0 esconde a caixa de etiquetas ao escrever.",
+	"settings.noCharLimit": "Sem limite de caracteres",
+	"settings.noCharLimitHint": "As publicações podem ter qualquer tamanho.",
+	"settings.noTagLimit": "Sem limite de etiquetas",
+	"settings.noTagLimitHint":
+		"As publicações podem ter qualquer número de etiquetas.",
 	"settings.theme": "Tema",
 	"settings.presets": "Predefinições",
 	"role.background": "Fundo",

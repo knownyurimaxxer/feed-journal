@@ -42,6 +42,10 @@ export type Settings = {
 	maxChars: number;
 	/** Most tags a post can have (see LIMITS for the allowed range). */
 	maxTags: number;
+	/** On: posts have no character limit (maxChars is ignored and its field hidden). */
+	unlimitedChars: boolean;
+	/** On: posts have no tag limit (maxTags is ignored and its field hidden). */
+	unlimitedTags: boolean;
 	/** Obsidian compatibility: ![[image]] embeds from the vault and - [ ] checklists. */
 	obsidianEnabled: boolean;
 	/** URI of the Obsidian vault folder (where embedded images are looked up), or null. */

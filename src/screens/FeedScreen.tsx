@@ -450,8 +450,11 @@ export default function FeedScreen({
 				editing={composer.editing}
 				avatar={avatarValue}
 				nickname={nicknameValue}
-				maxChars={settings.maxChars}
-				maxTags={settings.maxTags}
+				// With "no limit" on, the editor gets an endless limit.
+				maxChars={
+					settings.unlimitedChars ? Infinity : settings.maxChars
+				}
+				maxTags={settings.unlimitedTags ? Infinity : settings.maxTags}
 				media={media}
 				onClose={closeComposer}
 				onSave={handleSave}

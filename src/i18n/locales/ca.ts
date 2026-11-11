@@ -174,6 +174,12 @@ export const ca: Messages = {
 	"settings.maxTags": "Etiquetes per publicació",
 	"settings.maxTagsHint":
 		"De {min} a {max}. Amb 0 s'amaga el quadre d'etiquetes en escriure.",
+	"settings.noCharLimit": "Sense límit de caràcters",
+	"settings.noCharLimitHint":
+		"Les publicacions poden tenir qualsevol longitud.",
+	"settings.noTagLimit": "Sense límit d'etiquetes",
+	"settings.noTagLimitHint":
+		"Les publicacions poden tenir qualsevol nombre d'etiquetes.",
 	"settings.theme": "Tema",
 	"settings.presets": "Predefinits",
 	"role.background": "Fons",
