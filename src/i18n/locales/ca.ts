@@ -21,6 +21,8 @@ export const ca: Messages = {
 	"feed.deleteTitle": "Vols eliminar aquesta publicació?",
 	"feed.deleteBody":
 		"S'eliminarà el fitxer .md. (De tota manera, ningú no la va veure.)",
+	"feed.deleteBodyFiles":
+		"S'esborrarà el fitxer .md i {n} fitxer(s) adjunt(s) del vault. No es pot desfer.",
 	"feed.resetTitle": "Vols eliminar-ho tot?",
 	"feed.resetBody":
 		"Això elimina per sempre totes les notes de la teva carpeta de notes, a més de tots els likes i ajustos, i restableix l'app. No es pot desfer.",
@@ -131,6 +133,9 @@ export const ca: Messages = {
 	"settings.mediaAudio": "Carpeta de notes de veu",
 	"settings.mediaVideo": "Carpeta de gravacions de pantalla",
 	"settings.mediaRoot": "La carpeta del vault mateixa",
+	"settings.deleteFiles": "Esborra també els fitxers de la publicació",
+	"settings.deleteFilesHint":
+		"En esborrar una publicació també s'esborren les imatges, notes de veu i vídeos que aquesta app ha desat per a ella, tret que una altra publicació encara els mostri. Els fitxers que ja eren al teu vault mai no es toquen.",
 
 	// quality of voice notes and screen recordings, and the player
 	"settings.voice": "Notes de veu",

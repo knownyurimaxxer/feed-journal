@@ -163,6 +163,7 @@ export const DEFAULT_SETTINGS: Settings = {
 	maxTags: LIMITS.tags.default,
 	obsidianEnabled: false,
 	vaultUri: null,
+	deleteAttachments: false,
 	mediaFolders: DEFAULT_MEDIA_FOLDERS,
 	mediaQuality: DEFAULT_MEDIA_QUALITY,
 	language: "system",

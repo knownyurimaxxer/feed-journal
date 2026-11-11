@@ -53,6 +53,10 @@ export function useSettings() {
 				"vaultUri",
 				DEFAULT_SETTINGS.vaultUri,
 			);
+			const deleteAttachments = get(
+				"deleteAttachments",
+				DEFAULT_SETTINGS.deleteAttachments,
+			);
 			const savedFolders = get<unknown>("mediaFolders", null);
 			const savedQuality = get<Record<string, unknown> | null>(
 				"mediaQuality",
@@ -91,6 +95,7 @@ export function useSettings() {
 				),
 				obsidianEnabled,
 				vaultUri,
+				deleteAttachments,
 				// A folder missing from an older save keeps its default.
 				mediaFolders: {
 					...DEFAULT_MEDIA_FOLDERS,

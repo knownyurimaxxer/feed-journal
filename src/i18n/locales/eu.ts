@@ -21,6 +21,8 @@ export const eu: Messages = {
 	"feed.deleteTitle": "Argitalpen hau ezabatu?",
 	"feed.deleteBody":
 		".md fitxategia ezabatuko da. (Inork ez zuen ikusi, hala ere.)",
+	"feed.deleteBodyFiles":
+		".md fitxategia eta gordailuko {n} eranskin ezabatuko dira. Ezin da desegin.",
 	"feed.resetTitle": "Dena ezabatu?",
 	"feed.resetBody":
 		"Honek zure oharren karpetako ohar guztiak betiko ezabatzen ditu, baita like eta ezarpen guztiak ere, eta aplikazioa berrezartzen du. Ezin da desegin.",
@@ -131,6 +133,9 @@ export const eu: Messages = {
 	"settings.mediaAudio": "Ahots-oharren karpeta",
 	"settings.mediaVideo": "Pantaila-grabaketen karpeta",
 	"settings.mediaRoot": "Gordailuaren karpeta bera",
+	"settings.deleteFiles": "Ezabatu argitalpenaren fitxategiak ere",
+	"settings.deleteFilesHint":
+		"Argitalpen bat ezabatzean aplikazio honek berarentzat gorde dituen irudiak, ahots-oharrak eta bideoak ere ezabatzen dira, beste argitalpen batek oraindik erakusten ez baditu. Zure gordailuan lehendik zeuden fitxategiei ez zaie inoiz ukitzen.",
 
 	// quality of voice notes and screen recordings, and the player
 	"settings.voice": "Ahots-oharrak",

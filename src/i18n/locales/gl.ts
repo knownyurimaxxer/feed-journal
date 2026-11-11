@@ -21,6 +21,8 @@ export const gl: Messages = {
 	"feed.deleteTitle": "Eliminar esta publicación?",
 	"feed.deleteBody":
 		"Eliminarase o ficheiro .md. (Ninguén a viu, de todos os xeitos.)",
+	"feed.deleteBodyFiles":
+		"Borrarase o ficheiro .md e {n} ficheiro(s) adxunto(s) da bóveda. Non se pode desfacer.",
 	"feed.resetTitle": "Eliminar todo?",
 	"feed.resetBody":
 		"Isto elimina para sempre todas as notas do teu cartafol de notas, ademais de todos os likes e axustes, e restablece a app. Non se pode desfacer.",
@@ -131,6 +133,9 @@ export const gl: Messages = {
 	"settings.mediaAudio": "Cartafol de notas de voz",
 	"settings.mediaVideo": "Cartafol de gravacións de pantalla",
 	"settings.mediaRoot": "O propio cartafol da bóveda",
+	"settings.deleteFiles": "Borrar tamén os ficheiros da publicación",
+	"settings.deleteFilesHint":
+		"Ao borrar unha publicación bórranse tamén as imaxes, notas de voz e vídeos que esta app gardou para ela, salvo que outra publicación aínda os amose. Os ficheiros que xa estaban na túa bóveda nunca se tocan.",
 
 	// quality of voice notes and screen recordings, and the player
 	"settings.voice": "Notas de voz",

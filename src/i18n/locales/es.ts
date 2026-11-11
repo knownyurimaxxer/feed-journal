@@ -21,6 +21,8 @@ export const es: Messages = {
 	"feed.deleteTitle": "¿Eliminar esta publicación?",
 	"feed.deleteBody":
 		"Se eliminará el archivo .md. (De todos modos, nadie la vio.)",
+	"feed.deleteBodyFiles":
+		"Se borrará el archivo .md y {n} archivo(s) adjunto(s) de la bóveda. No se puede deshacer.",
 	"feed.resetTitle": "¿Eliminar todo?",
 	"feed.resetBody":
 		"Esto elimina para siempre todas las notas de tu carpeta de notas, además de todos los likes y ajustes, y restablece la app. No se puede deshacer.",
@@ -131,6 +133,9 @@ export const es: Messages = {
 	"settings.mediaAudio": "Carpeta de notas de voz",
 	"settings.mediaVideo": "Carpeta de grabaciones de pantalla",
 	"settings.mediaRoot": "La propia carpeta de la bóveda",
+	"settings.deleteFiles": "Borrar también los archivos de la publicación",
+	"settings.deleteFilesHint":
+		"Al borrar una publicación también se borran las imágenes, notas de voz y vídeos que esta app guardó para ella, salvo que otra publicación aún los muestre. Los archivos que ya estaban en tu bóveda nunca se tocan.",
 
 	// quality of voice notes and screen recordings, and the player
 	"settings.voice": "Notas de voz",

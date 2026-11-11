@@ -137,3 +137,31 @@ describe("pickAllowed", () => {
 		);
 	});
 });
+
+import { attachmentsToDelete } from "../src/utils/attachments";
+
+describe("attachmentsToDelete", () => {
+	const mine =
+		"hi\n![[Attachments/Images/20261107125555.webp]]\n![[Attachments/Audio/20261107125600.m4a]]";
+	it("lists the files the app saved for the note", () => {
+		expect(attachmentsToDelete(mine, [])).toEqual([
+			"Attachments/Images/20261107125555.webp",
+			"Attachments/Audio/20261107125600.m4a",
+		]);
+	});
+	it("keeps files another note still shows", () => {
+		expect(attachmentsToDelete(mine, ["![[20261107125555.webp]]"])).toEqual(
+			["Attachments/Audio/20261107125600.m4a"],
+		);
+	});
+	it("never touches pictures that were already in the vault", () => {
+		expect(
+			attachmentsToDelete("![[holiday.png]] ![[Pics/20261107.png]]", []),
+		).toEqual([]);
+	});
+	it("ignores web pictures", () => {
+		expect(
+			attachmentsToDelete("![x](https://a.b/20261107125555.png)", []),
+		).toEqual([]);
+	});
+});

@@ -73,3 +73,13 @@ export async function saveToVault(args: {
 	// Trust the name the file system actually gave us (some providers rename).
 	return { path: [...segments, dest.name].join("/"), uri: dest.uri };
 }
+
+/** Deletes one file of the vault. Returns false when it couldn't (already gone, no permission). */
+export function deleteVaultFile(uri: string): boolean {
+	try {
+		new File(uri).delete();
+		return true;
+	} catch {
+		return false;
+	}
+}

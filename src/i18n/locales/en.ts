@@ -24,6 +24,8 @@ export const en = {
 	"feed.you": "you",
 	"feed.deleteTitle": "Delete this post?",
 	"feed.deleteBody": "The .md file will be deleted. (Nobody saw it anyway.)",
+	"feed.deleteBodyFiles":
+		"The .md file and {n} attached file(s) in the vault will be deleted. This can't be undone.",
 	"feed.resetTitle": "Delete everything?",
 	"feed.resetBody":
 		"This permanently deletes every note in your notes folder, plus all likes and settings, and resets the app. This can't be undone.",
@@ -133,6 +135,9 @@ export const en = {
 	"settings.mediaAudio": "Voice notes folder",
 	"settings.mediaVideo": "Screen recordings folder",
 	"settings.mediaRoot": "Vault folder itself",
+	"settings.deleteFiles": "Delete a post's files too",
+	"settings.deleteFilesHint":
+		"Deleting a post also deletes the pictures, voice notes and videos this app saved for it, unless another post still shows them. Files that were already in your vault are never touched.",
 
 	// quality of voice notes and screen recordings, and the player
 	"settings.voice": "Voice notes",

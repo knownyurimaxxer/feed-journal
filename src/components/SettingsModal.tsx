@@ -516,6 +516,28 @@ export default function SettingsModal({
 						</View>
 					)}
 					{settings.obsidianEnabled && (
+						<View style={[s.row, { marginTop: 12 }]}>
+							<View style={{ flex: 1, paddingRight: 12 }}>
+								<Text style={s.rowTitle}>
+									{t("settings.deleteFiles")}
+								</Text>
+								<Text style={s.rowHint}>
+									{t("settings.deleteFilesHint")}
+								</Text>
+							</View>
+							<Switch
+								value={settings.deleteAttachments}
+								onValueChange={(v) =>
+									update("deleteAttachments", v)
+								}
+								trackColor={{
+									true: theme.accent,
+									false: "#88888888",
+								}}
+							/>
+						</View>
+					)}
+					{settings.obsidianEnabled && (
 						<View style={[s.rowBlock, { marginTop: 12 }]}>
 							<Text style={s.rowTitle}>
 								{t("settings.voice")}
@@ -559,13 +581,13 @@ export default function SettingsModal({
 									/>
 								))}
 							</View>
+
 							<Text style={[s.rowTitle, { marginTop: 16 }]}>
 								{t("settings.screen")}
 							</Text>
 							<Text style={s.rowHint}>
 								{t("settings.screenHint")}
 							</Text>
-
 							{screenCodecs.length > 0 && (
 								<>
 									<Text style={s.mediaLabel}>

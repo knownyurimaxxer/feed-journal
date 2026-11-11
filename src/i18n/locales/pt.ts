@@ -21,6 +21,8 @@ export const pt: Messages = {
 	"feed.deleteTitle": "Eliminar esta publicação?",
 	"feed.deleteBody":
 		"O ficheiro .md será eliminado. (De qualquer forma, ninguém a viu.)",
+	"feed.deleteBodyFiles":
+		"O ficheiro .md e {n} ficheiro(s) anexo(s) do cofre serão apagados. Não se pode desfazer.",
 	"feed.resetTitle": "Eliminar tudo?",
 	"feed.resetBody":
 		"Isto elimina permanentemente todas as notas da tua pasta de notas, além de todos os likes e definições, e repõe a app. Não pode ser desfeito.",
@@ -131,6 +133,9 @@ export const pt: Messages = {
 	"settings.mediaAudio": "Pasta das notas de voz",
 	"settings.mediaVideo": "Pasta das gravações de ecrã",
 	"settings.mediaRoot": "A própria pasta do cofre",
+	"settings.deleteFiles": "Apagar também os ficheiros da publicação",
+	"settings.deleteFilesHint":
+		"Ao apagar uma publicação também são apagadas as imagens, notas de voz e vídeos que esta app guardou para ela, a menos que outra publicação ainda os mostre. Os ficheiros que já estavam no teu cofre nunca são tocados.",
 
 	// quality of voice notes and screen recordings, and the player
 	"settings.voice": "Notas de voz",

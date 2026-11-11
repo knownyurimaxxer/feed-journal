@@ -46,6 +46,8 @@ export type Settings = {
 	obsidianEnabled: boolean;
 	/** URI of the Obsidian vault folder (where embedded images are looked up), or null. */
 	vaultUri: string | null;
+	/** With Obsidian on: deleting a note also deletes the pictures, voice notes and videos the app saved for it. */
+	deleteAttachments: boolean;
 	/** Where pictures, voice notes and screen recordings are saved inside the vault. */
 	mediaFolders: MediaFolders;
 	/** Codec and compression of voice notes and screen recordings. */

@@ -22,6 +22,8 @@ import { useNotes } from "../hooks/useNotes";
 import { useT } from "../i18n/I18nContext";
 import { pickDirectory } from "../storage/notesFolder";
 import { deleteAvatarImage, pickAvatarImage } from "../storage/avatarImage";
+import { deleteVaultFile } from "../storage/mediaStore";
+import { attachmentsToDelete } from "../utils/attachments";
 import { useObsidian } from "../theme/ObsidianContext";
 import { useTheme } from "../theme/ThemeContext";
 import { Anchor, Draft, Note, Settings, Theme, UpdateSetting } from "../types";
@@ -50,7 +52,7 @@ export default function FeedScreen({
 	const t = useT();
 	const s = useMemo(() => makeStyles(theme), [theme]);
 	const insets = useSafeAreaInsets(); // known from the first frame (see App)
-	const { enabled: obsidianActive } = useObsidian();
+	const { enabled: obsidianActive, resolveImage } = useObsidian();
 	// Pictures, voice notes and screen recordings need Obsidian on AND a vault folder.
 	const media = useMemo(
 		() =>
@@ -171,18 +173,38 @@ export default function FeedScreen({
 		}
 	};
 
-	const confirmDelete = (n: Note) =>
-		Alert.alert(t("feed.deleteTitle"), t("feed.deleteBody"), [
-			{ text: t("common.cancel"), style: "cancel" },
-			{
-				text: t("common.delete"),
-				style: "destructive",
-				onPress: () => {
-					haptic("delete");
-					removeNote(n);
+	const confirmDelete = (n: Note) => {
+		// With the toggle on (and Obsidian active) the files the app saved for this
+		// note go too, unless another note still shows them. Found before the note is gone.
+		const files =
+			obsidianActive && settings.deleteAttachments
+				? attachmentsToDelete(
+						n.body,
+						notes.filter((o) => o.id !== n.id).map((o) => o.body),
+					).flatMap((p) => {
+						const uri = resolveImage(p);
+						return uri ? [uri] : [];
+					})
+				: [];
+		Alert.alert(
+			t("feed.deleteTitle"),
+			files.length > 0
+				? t("feed.deleteBodyFiles", { n: files.length })
+				: t("feed.deleteBody"),
+			[
+				{ text: t("common.cancel"), style: "cancel" },
+				{
+					text: t("common.delete"),
+					style: "destructive",
+					onPress: () => {
+						haptic("delete");
+						removeNote(n);
+						files.forEach(deleteVaultFile);
+					},
 				},
-			},
-		]);
+			],
+		);
+	};
 
 	// The short delay lets the menu finish closing first. On iOS, presenting a new
 	// modal or alert while another one is dismissing can silently fail.
