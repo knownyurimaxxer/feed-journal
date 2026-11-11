@@ -45,6 +45,14 @@ export function useSettings() {
 			const nickname = get("nickname", DEFAULT_SETTINGS.nickname);
 			const maxChars = get("maxChars", DEFAULT_SETTINGS.maxChars);
 			const maxTags = get("maxTags", DEFAULT_SETTINGS.maxTags);
+			const unlimitedChars = get(
+				"unlimitedChars",
+				DEFAULT_SETTINGS.unlimitedChars,
+			);
+			const unlimitedTags = get(
+				"unlimitedTags",
+				DEFAULT_SETTINGS.unlimitedTags,
+			);
 			const obsidianEnabled = get(
 				"obsidianEnabled",
 				DEFAULT_SETTINGS.obsidianEnabled,
@@ -96,6 +104,8 @@ export function useSettings() {
 				obsidianEnabled,
 				vaultUri,
 				deleteAttachments,
+				unlimitedChars,
+				unlimitedTags,
 				// A folder missing from an older save keeps its default.
 				mediaFolders: {
 					...DEFAULT_MEDIA_FOLDERS,

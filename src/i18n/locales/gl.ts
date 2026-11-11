@@ -135,7 +135,7 @@ export const gl: Messages = {
 	"settings.mediaRoot": "O propio cartafol da bóveda",
 	"settings.deleteFiles": "Borrar tamén os ficheiros da publicación",
 	"settings.deleteFilesHint":
-		"Ao borrar unha publicación bórranse tamén as imaxes, notas de voz e vídeos que esta app gardou para ela, salvo que outra publicación aínda os amose. Os ficheiros que xa estaban na túa bóveda nunca se tocan.",
+		"Ao borrar unha publicación bórranse tamén as imaxes, notas de voz e vídeos que esta app gardou para ela, salvo que outra publicación aínda os amose. Os ficheiros que xa estaban na túa bóveda nunca se tocan. Non se pode desfacer.",
 
 	// quality of voice notes and screen recordings, and the player
 	"settings.voice": "Notas de voz",
@@ -172,6 +172,11 @@ export const gl: Messages = {
 	"settings.maxTags": "Etiquetas por publicación",
 	"settings.maxTagsHint":
 		"De {min} a {max}. 0 oculta a caixa de etiquetas ao escribir.",
+	"settings.noCharLimit": "Sen límite de caracteres",
+	"settings.noCharLimitHint": "As publicacións poden ter calquera lonxitude.",
+	"settings.noTagLimit": "Sen límite de etiquetas",
+	"settings.noTagLimitHint":
+		"As publicacións poden ter calquera número de etiquetas.",
 	"settings.theme": "Tema",
 	"settings.presets": "Predefinidos",
 	"role.background": "Fondo",

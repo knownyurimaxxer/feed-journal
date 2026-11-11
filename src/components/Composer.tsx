@@ -324,7 +324,8 @@ export default function Composer({
 								left <= 20 && { color: "#FF4D4D" },
 							]}
 						>
-							{left}
+							{/* No limit: nothing to count. The empty text keeps the header layout as it is. */}
+							{Number.isFinite(left) ? left : ""}
 						</Text>
 						<Pressable
 							onPress={() => {

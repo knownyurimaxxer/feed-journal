@@ -137,7 +137,7 @@ export const en = {
 	"settings.mediaRoot": "Vault folder itself",
 	"settings.deleteFiles": "Delete a post's files too",
 	"settings.deleteFilesHint":
-		"Deleting a post also deletes the pictures, voice notes and videos this app saved for it, unless another post still shows them. Files that were already in your vault are never touched.",
+		"Deleting a post also deletes the pictures, voice notes and videos this app saved for it, unless another post still shows them. Files that were already in your vault are never touched. This can't be undone.",
 
 	// quality of voice notes and screen recordings, and the player
 	"settings.voice": "Voice notes",
@@ -174,6 +174,10 @@ export const en = {
 	"settings.maxTags": "Tags per post",
 	"settings.maxTagsHint":
 		"From {min} to {max}. 0 hides the tag box when writing.",
+	"settings.noCharLimit": "No character limit",
+	"settings.noCharLimitHint": "Posts can be any length.",
+	"settings.noTagLimit": "No tag limit",
+	"settings.noTagLimitHint": "Posts can have any number of tags.",
 	"settings.theme": "Theme",
 	"settings.presets": "Presets",
 	"role.background": "Background",

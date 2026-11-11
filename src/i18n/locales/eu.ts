@@ -135,7 +135,7 @@ export const eu: Messages = {
 	"settings.mediaRoot": "Gordailuaren karpeta bera",
 	"settings.deleteFiles": "Ezabatu argitalpenaren fitxategiak ere",
 	"settings.deleteFilesHint":
-		"Argitalpen bat ezabatzean aplikazio honek berarentzat gorde dituen irudiak, ahots-oharrak eta bideoak ere ezabatzen dira, beste argitalpen batek oraindik erakusten ez baditu. Zure gordailuan lehendik zeuden fitxategiei ez zaie inoiz ukitzen.",
+		"Argitalpen bat ezabatzean aplikazio honek berarentzat gorde dituen irudiak, ahots-oharrak eta bideoak ere ezabatzen dira, beste argitalpen batek oraindik erakusten ez baditu. Zure gordailuan lehendik zeuden fitxategiei ez zaie inoiz ukitzen. Ezin da desegin.",
 
 	// quality of voice notes and screen recordings, and the player
 	"settings.voice": "Ahots-oharrak",
@@ -174,6 +174,11 @@ export const eu: Messages = {
 	"settings.maxTags": "Etiketak argitalpen bakoitzeko",
 	"settings.maxTagsHint":
 		"{min} eta {max} artean. 0 jartzean etiketen kutxa ezkutatzen da idaztean.",
+	"settings.noCharLimit": "Karaktere-mugarik ez",
+	"settings.noCharLimitHint": "Argitalpenek edozein luzera izan dezakete.",
+	"settings.noTagLimit": "Etiketa-mugarik ez",
+	"settings.noTagLimitHint":
+		"Argitalpenek edozein etiketa kopuru izan dezakete.",
 	"settings.theme": "Gaia",
 	"settings.presets": "Aurrezarpenak",
 	"role.background": "Atzeko planoa",
