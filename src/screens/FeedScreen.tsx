@@ -420,6 +420,9 @@ export default function FeedScreen({
 						card
 					);
 				}}
+				style={{
+					paddingHorizontal: 2,
+				}}
 			/>
 
 			<Pressable
@@ -494,8 +497,9 @@ const makeStyles = (t: Theme) => {
 			flexDirection: "row",
 			alignItems: "center",
 			gap: 12,
-			paddingHorizontal: 12,
-			paddingTop: 16,
+			paddingHorizontal: 14,
+			paddingRight: 14.25,
+			paddingTop: 7.75,
 			paddingBottom: 8,
 		},
 		search: {
@@ -507,7 +511,7 @@ const makeStyles = (t: Theme) => {
 			paddingVertical: 10,
 			fontSize: 15,
 		},
-		chipRow: { paddingHorizontal: 12, paddingBottom: 8, gap: 8 },
+		chipRow: { paddingHorizontal: 14, paddingBottom: 8, gap: 8 },
 		empty: {
 			color: onBg,
 			opacity: 0.7,

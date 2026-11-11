@@ -1161,7 +1161,8 @@ const makeStyles = (t: Theme) => {
 			alignItems: "center",
 			backgroundColor: t.card,
 			borderRadius: 8,
-			padding: 14,
+			paddingVertical: 11,
+			paddingHorizontal: 14,
 		},
 		rowBlock: { backgroundColor: t.card, borderRadius: 8, padding: 14 },
 		langCard: {
