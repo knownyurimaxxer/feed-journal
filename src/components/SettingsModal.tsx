@@ -559,17 +559,15 @@ export default function SettingsModal({
 									/>
 								))}
 							</View>
+							<Text style={[s.rowTitle, { marginTop: 16 }]}>
+								{t("settings.screen")}
+							</Text>
+							<Text style={s.rowHint}>
+								{t("settings.screenHint")}
+							</Text>
 
 							{screenCodecs.length > 0 && (
 								<>
-									<Text
-										style={[s.rowTitle, { marginTop: 16 }]}
-									>
-										{t("settings.screen")}
-									</Text>
-									<Text style={s.rowHint}>
-										{t("settings.screenHint")}
-									</Text>
 									<Text style={s.mediaLabel}>
 										{t("settings.codec")}
 									</Text>
@@ -595,27 +593,23 @@ export default function SettingsModal({
 												/>
 											))}
 									</View>
-									<Text style={s.mediaLabel}>
-										{t("settings.compression")}
-									</Text>
-									<View style={s.chipRow}>
-										{MEDIA_QUALITY_CHOICES.screenMbps.map(
-											(n) => (
-												<Chip
-													key={n}
-													label={`${n} Mbps`}
-													active={q.screenMbps === n}
-													onPress={() =>
-														setQuality({
-															screenMbps: n,
-														})
-													}
-												/>
-											),
-										)}
-									</View>
 								</>
 							)}
+							<Text style={s.mediaLabel}>
+								{t("settings.compression")}
+							</Text>
+							<View style={s.chipRow}>
+								{MEDIA_QUALITY_CHOICES.screenMbps.map((n) => (
+									<Chip
+										key={n}
+										label={`${n} Mbps`}
+										active={q.screenMbps === n}
+										onPress={() =>
+											setQuality({ screenMbps: n })
+										}
+									/>
+								))}
+							</View>
 						</View>
 					)}
 

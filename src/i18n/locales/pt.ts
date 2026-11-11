@@ -108,7 +108,7 @@ export const pt: Messages = {
 	"settings.noVault":
 		"Nenhum cofre escolhido. O Obsidian fica desligado até escolheres um.",
 	"settings.vaultHint":
-		"Escolhe o teu cofre do Obsidian (a pasta que contém a pasta .obsidian). As imagens são procuradas aí pelo nome ou caminho. A app só adiciona ficheiros ao cofre (imagens, notas de voz, gravações de ecrã); nunca altera nem apaga o que já lá está.",
+		"Escolhe o teu cofre do Obsidian (a pasta que contém a pasta .obsidian). As imagens são procuradas aí pelo nome ou caminho. A app só adiciona ficheiros ao cofre; nunca altera nem apaga o que já lá está.",
 	"settings.clear": "Limpar",
 
 	// pictures, voice notes and screen recordings saved in the vault
@@ -126,7 +126,7 @@ export const pt: Messages = {
 	"media.nothingRecorded": "Nada foi gravado.",
 	"settings.media": "Imagens, notas de voz e vídeos",
 	"settings.mediaHint":
-		"Pastas dentro do teu cofre onde os ficheiros novos são guardados, escritas a partir da pasta do cofre (por exemplo Attachments/Audio). As pastas em falta são criadas. Os ficheiros têm o nome da data e hora, como 20261107125555. As imagens são guardadas em WebP com 100 % de qualidade, as notas de voz em AAC comprimido (.m4a) e as gravações de ecrã em MP4 comprimido.",
+		"Pastas dentro do teu cofre onde os ficheiros novos são guardados, escritas a partir da pasta do cofre. As pastas em falta são criadas. Os ficheiros têm o nome da data e hora, como 20261107125555.",
 	"settings.mediaImages": "Pasta das imagens",
 	"settings.mediaAudio": "Pasta das notas de voz",
 	"settings.mediaVideo": "Pasta das gravações de ecrã",
@@ -135,14 +135,14 @@ export const pt: Messages = {
 	// quality of voice notes and screen recordings, and the player
 	"settings.voice": "Notas de voz",
 	"settings.voiceHint":
-		"Números mais baixos dão ficheiros mais pequenos. Mono a 64 kbps ouve-se bem para falar; usa estéreo e 128 kbps ou mais para música.",
+		"Mono a 64 kbps ouve-se bem para falar; usa estéreo e 128 kbps ou mais para música.",
 	"settings.channels": "Canais",
 	"settings.mono": "Mono",
 	"settings.stereo": "Estéreo",
 	"settings.compression": "Compressão",
 	"settings.screen": "Gravações de ecrã",
 	"settings.screenHint":
-		"O H.265 (HEVC) dá ficheiros cerca de um terço mais pequenos do que o H.264 com a mesma qualidade, mas alguns computadores não o reproduzem. Só são mostrados os codecs que o teu telemóvel consegue gravar. 2 Mbps vê-se bem para texto num telemóvel.",
+		"Só são mostrados os codecs que o teu telemóvel consegue gravar. 2 Mbps vê-se bem para texto num telemóvel.",
 	"settings.codec": "Codec",
 	"player.play": "Reproduzir",
 	"player.pause": "Pausar",
