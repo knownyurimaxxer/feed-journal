@@ -21,6 +21,15 @@ export function clampLimit(
 	return Math.min(max, Math.max(min, Math.round(n)));
 }
 
+/** `value` when it is one of the `allowed` choices, otherwise `fallback` (for saved settings that are picked from a short list). */
+export function pickAllowed<T>(
+	value: unknown,
+	allowed: readonly T[],
+	fallback: T,
+): T {
+	return allowed.includes(value as T) ? (value as T) : fallback;
+}
+
 /**
  * How many characters of a post count toward the limit: only what you can
  * read. Markdown syntax is free: the *, **, ~~ and ` around text, the "[" and

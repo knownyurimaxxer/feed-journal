@@ -1,5 +1,5 @@
 import type { MessageKey } from "./i18n/locales/en";
-import { Settings, Theme } from "./types";
+import { MediaFolders, MediaQuality, Settings, Theme } from "./types";
 
 /**
  * What the user can set in Settings: characters per post and tags per post.
@@ -128,6 +128,28 @@ export type HapticTrigger = (typeof HAPTIC_TRIGGERS)[number];
  */
 export const HAPTIC_STRENGTH = { min: 0, max: 5, default: 0 } as const;
 
+/** Where new pictures, voice notes and screen recordings go in the vault (until changed in Settings). */
+export const DEFAULT_MEDIA_FOLDERS: MediaFolders = {
+	image: "Attachments/Images",
+	audio: "Attachments/Audio",
+	video: "Attachments/Video",
+};
+
+/** The choices offered in Settings for voice notes and screen recordings. */
+export const MEDIA_QUALITY_CHOICES = {
+	audioChannels: [1, 2] as const,
+	audioKbps: [32, 64, 96, 128, 192] as const,
+	screenCodec: ["h264", "hevc"] as const,
+	screenMbps: [1, 2, 4, 8] as const,
+};
+
+export const DEFAULT_MEDIA_QUALITY: MediaQuality = {
+	audioChannels: 1,
+	audioKbps: 64,
+	screenCodec: "h264",
+	screenMbps: 2,
+};
+
 export const DEFAULT_SETTINGS: Settings = {
 	theme: PRESETS["Navy"],
 	likesEnabled: true,
@@ -141,6 +163,9 @@ export const DEFAULT_SETTINGS: Settings = {
 	maxTags: LIMITS.tags.default,
 	obsidianEnabled: false,
 	vaultUri: null,
+	deleteAttachments: false,
+	mediaFolders: DEFAULT_MEDIA_FOLDERS,
+	mediaQuality: DEFAULT_MEDIA_QUALITY,
 	language: "system",
 	hapticsEnabled: false,
 	haptics: Object.fromEntries(

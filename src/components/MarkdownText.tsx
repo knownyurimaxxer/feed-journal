@@ -19,6 +19,7 @@ import { Theme } from "../types";
 import { linkColor } from "../utils/format";
 import { haptic } from "../utils/haptics";
 import { Inline, parseBlocks, parseInline } from "../utils/markdown";
+import MediaPlayer from "./MediaPlayer";
 import PostImage from "./PostImage";
 
 type Props = {
@@ -209,7 +210,7 @@ function renderRich(
 	style: StyleProp<TextStyle>,
 	box?: StyleProp<TextStyle>,
 ): ReactNode {
-	if (!nodes.some((n) => n.type === "image")) {
+	if (!nodes.some((n) => n.type === "image" || n.type === "media")) {
 		return (
 			<Text key={key} style={[style, box]}>
 				{renderInline(nodes, s, key)}
@@ -234,6 +235,11 @@ function renderRich(
 		if (n.type === "image") {
 			flush();
 			parts.push(<PostImage key={`${key}.${parts.length}`} image={n} />);
+		} else if (n.type === "media") {
+			flush();
+			parts.push(
+				<MediaPlayer key={`${key}.${parts.length}`} media={n} />,
+			);
 		} else run.push(n);
 	}
 	flush();
@@ -285,6 +291,9 @@ function renderInline(nodes: Inline[], s: Styles, key: string): ReactNode[] {
 						{renderInline(n.children, s, k)}
 					</Text>
 				);
+			case "media":
+				// Same: inside bold, a link or a heading it stays as the file name.
+				return n.path;
 			case "image":
 				// Only reached for a picture inside bold, a link, a heading...: those can't hold one.
 				return (

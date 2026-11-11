@@ -1,8 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
-import { DEFAULT_SETTINGS, HAPTIC_STRENGTH, LIMITS } from "../constants";
+import {
+	DEFAULT_MEDIA_FOLDERS,
+	DEFAULT_MEDIA_QUALITY,
+	DEFAULT_SETTINGS,
+	HAPTIC_STRENGTH,
+	LIMITS,
+	MEDIA_QUALITY_CHOICES,
+} from "../constants";
 import { getAllSettings, resetDb, setSetting } from "../storage/db";
 import { Settings, UpdateSetting } from "../types";
-import { clampLimit } from "../utils/limits";
+import { clampLimit, pickAllowed } from "../utils/limits";
 
 export function useSettings() {
 	const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
@@ -46,6 +53,15 @@ export function useSettings() {
 				"vaultUri",
 				DEFAULT_SETTINGS.vaultUri,
 			);
+			const deleteAttachments = get(
+				"deleteAttachments",
+				DEFAULT_SETTINGS.deleteAttachments,
+			);
+			const savedFolders = get<unknown>("mediaFolders", null);
+			const savedQuality = get<Record<string, unknown> | null>(
+				"mediaQuality",
+				null,
+			);
 			const language = get("language", DEFAULT_SETTINGS.language);
 			const hapticsEnabled = get(
 				"hapticsEnabled",
@@ -79,6 +95,37 @@ export function useSettings() {
 				),
 				obsidianEnabled,
 				vaultUri,
+				deleteAttachments,
+				// A folder missing from an older save keeps its default.
+				mediaFolders: {
+					...DEFAULT_MEDIA_FOLDERS,
+					...(savedFolders && typeof savedFolders === "object"
+						? savedFolders
+						: {}),
+				},
+				// Each choice must still be one Settings offers; otherwise its default.
+				mediaQuality: {
+					audioChannels: pickAllowed(
+						savedQuality?.audioChannels,
+						MEDIA_QUALITY_CHOICES.audioChannels,
+						DEFAULT_MEDIA_QUALITY.audioChannels,
+					),
+					audioKbps: pickAllowed(
+						savedQuality?.audioKbps,
+						MEDIA_QUALITY_CHOICES.audioKbps,
+						DEFAULT_MEDIA_QUALITY.audioKbps,
+					),
+					screenCodec: pickAllowed(
+						savedQuality?.screenCodec,
+						MEDIA_QUALITY_CHOICES.screenCodec,
+						DEFAULT_MEDIA_QUALITY.screenCodec,
+					),
+					screenMbps: pickAllowed(
+						savedQuality?.screenMbps,
+						MEDIA_QUALITY_CHOICES.screenMbps,
+						DEFAULT_MEDIA_QUALITY.screenMbps,
+					),
+				},
 				language,
 				hapticsEnabled,
 				// A trigger added in a later version starts on, like the others.

@@ -99,8 +99,7 @@ export function parseBlocks(md: string, opts: ParseOptions = {}): Block[] {
 
 /** Where an image comes from: a web address, or a file in the Obsidian vault. */
 export type ImageRef =
-	| { kind: "web"; url: string }
-	| { kind: "vault"; path: string };
+	{ kind: "web"; url: string } | { kind: "vault"; path: string };
 
 export type ImageInline = {
 	type: "image";
@@ -111,8 +110,17 @@ export type ImageInline = {
 	height?: number;
 };
 
+/** A voice note or video of the vault, from ![[20261107125555.m4a]]. Played inside the post. */
+export type MediaInline = {
+	type: "media";
+	kind: "audio" | "video";
+	/** Path from the vault folder. */
+	path: string;
+};
+
 export type Inline =
 	| { type: "text"; text: string }
+	| MediaInline
 	| { type: "code"; text: string }
 	| { type: "bold" | "italic" | "strike"; children: Inline[] }
 	| { type: "link"; href: string; children: Inline[] }
@@ -128,12 +136,10 @@ export const INLINE_RE =
 	/`([^`\n]+)`|\*\*\*(\S(?:[^*]*?\S)??)\*\*\*|\*\*(\S(?:.*?\S)??)\*\*|~~(\S(?:.*?\S)??)~~|\*(\S(?:[^*]*?\S)??)\*|\[([^\]\n]+)\]\(((?:[^()\s]|\([^()\s]*\))+)\)|!\[\[([^\]\n]+)\]\]|!\[([^\]\n]*)\]\(((?:[^()\s]|\([^()\s]*\))+)\)/g;
 
 /** Just a Markdown image: ![alt](url). Groups: 1 alt, 2 url. Same pattern as the last branch of INLINE_RE. */
-export const IMAGE_RE =
-	/!\[([^\]\n]*)\]\(((?:[^()\s]|\([^()\s]*\))+)\)/g;
+export const IMAGE_RE = /!\[([^\]\n]*)\]\(((?:[^()\s]|\([^()\s]*\))+)\)/g;
 
 /** Just the link: [text](url). Groups: 1 text, 2 url. Same pattern as the last branch of INLINE_RE. */
-export const LINK_RE =
-	/\[([^\]\n]+)\]\(((?:[^()\s]|\([^()\s]*\))+)\)/g;
+export const LINK_RE = /\[([^\]\n]+)\]\(((?:[^()\s]|\([^()\s]*\))+)\)/g;
 
 const SCHEME_URL = /^(?:https?:\/\/|mailto:)\S+$/i;
 // "example.com", "www.example.com/path", "example.com:8080": no scheme, but clearly a web address.
@@ -160,6 +166,48 @@ export function looksLikeUrl(s: string): boolean {
 const WEB_IMAGE = /^https?:\/\/\S+$/i;
 /** File types an image can have inside the vault (what the phone can draw). */
 export const IMAGE_EXT = /\.(?:png|jpe?g|gif|webp|bmp)$/i;
+/** Voice notes and videos the app saves in the vault: ![[20261107125555.m4a]] */
+export const MEDIA_EXT = /\.(?:m4a|mp3|wav|ogg|aac|mp4|mov|webm|mkv)$/i;
+
+/** True for the inside of an ![[embed]] that points at a sound or a video ("path|options" allowed). */
+export function isMediaEmbed(inner: string): boolean {
+	const target = inner
+		.split("|")[0]
+		.replace(/[#^].*$/, "")
+		.trim();
+	return MEDIA_EXT.test(target);
+}
+
+const VIDEO_EXT = /\.(?:mp4|mov|webm|mkv)$/i;
+
+/**
+ * The voice note or video behind an ![[embed]] (group 8 of INLINE_RE), or null
+ * when it isn't one. Only with Obsidian compatibility on.
+ */
+export function mediaFromMatch(
+	m: RegExpMatchArray,
+	obsidian: boolean,
+): MediaInline | null {
+	if (!obsidian || m[8] === undefined || !isMediaEmbed(m[8])) return null;
+	let path = m[8].split("|")[0];
+	try {
+		path = decodeURIComponent(path);
+	} catch {
+		/* not encoded: keep it */
+	}
+	path = path
+		.replace(/[#^].*$/, "")
+		.replace(/\\/g, "/")
+		.replace(/^(?:\.\/|\/)+/, "")
+		.trim();
+	if (!path) return null;
+	return {
+		type: "media",
+		kind: VIDEO_EXT.test(path) ? "video" : "audio",
+		path,
+	};
+}
+
 const SIZE = /^(\d{1,4})(?:x(\d{1,4}))?$/;
 
 /**
@@ -195,7 +243,10 @@ function labelParts(label: string): {
 	const parts = label.split("|");
 	const m = parts[parts.length - 1].trim().match(SIZE);
 	if (!m) return { alt: label.trim() };
-	const out = { alt: parts.slice(0, -1).join("|").trim(), width: Number(m[1]) };
+	const out = {
+		alt: parts.slice(0, -1).join("|").trim(),
+		width: Number(m[1]),
+	};
 	return m[2] ? { ...out, height: Number(m[2]) } : out;
 }
 
@@ -226,10 +277,37 @@ export function imageFromMatch(
  * The images a text shows, in order: the ones standing directly in a line
  * of text (not inside bold, a link...), which is where the post draws them.
  */
-export function collectImages(md: string, opts: ParseOptions = {}): ImageInline[] {
+export function collectImages(
+	md: string,
+	opts: ParseOptions = {},
+): ImageInline[] {
 	const out: ImageInline[] = [];
 	const scan = (text: string) => {
-		for (const n of parseInline(text, opts)) if (n.type === "image") out.push(n);
+		for (const n of parseInline(text, opts))
+			if (n.type === "image") out.push(n);
+	};
+	for (const b of parseBlocks(md, opts)) {
+		if (b.type === "quote") b.lines.forEach(scan);
+		else if (
+			b.type === "paragraph" ||
+			b.type === "bullet" ||
+			b.type === "ordered" ||
+			b.type === "task"
+		)
+			scan(b.text);
+	}
+	return out;
+}
+
+/** The voice notes and videos a text plays, in order (same places as collectImages). */
+export function collectMedia(
+	md: string,
+	opts: ParseOptions = {},
+): MediaInline[] {
+	const out: MediaInline[] = [];
+	const scan = (text: string) => {
+		for (const n of parseInline(text, opts))
+			if (n.type === "media") out.push(n);
 	};
 	for (const b of parseBlocks(md, opts)) {
 		if (b.type === "quote") b.lines.forEach(scan);
@@ -256,7 +334,9 @@ export function parseInline(text: string, opts: ParseOptions = {}): Inline[] {
 		} else if (m[2] !== undefined) {
 			out.push({
 				type: "bold",
-				children: [{ type: "italic", children: parseInline(m[2], opts) }],
+				children: [
+					{ type: "italic", children: parseInline(m[2], opts) },
+				],
 			});
 		} else if (m[3] !== undefined) {
 			out.push({ type: "bold", children: parseInline(m[3], opts) });
@@ -265,12 +345,13 @@ export function parseInline(text: string, opts: ParseOptions = {}): Inline[] {
 		} else if (m[5] !== undefined) {
 			out.push({ type: "italic", children: parseInline(m[5], opts) });
 		} else if (m[8] !== undefined || m[10] !== undefined) {
-			// An image, or the text of one we won't draw.
+			// An image, a voice note or video, or the text of one we won't draw.
 			out.push(
-				imageFromMatch(m, !!opts.obsidian) ?? {
-					type: "text",
-					text: m[0],
-				},
+				imageFromMatch(m, !!opts.obsidian) ??
+					mediaFromMatch(m, !!opts.obsidian) ?? {
+						type: "text",
+						text: m[0],
+					},
 			);
 		} else {
 			const href = safeHref(m[7]);

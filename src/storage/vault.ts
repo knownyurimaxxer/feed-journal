@@ -1,10 +1,10 @@
 /**
  * Reads an Obsidian vault folder (picked through the system folder picker)
- * to find its pictures. Nothing in the vault is ever written or changed.
+ * to find its pictures, voice notes and videos. Reading only: new files are added by mediaStore.ts.
  */
 import { Directory, File } from "expo-file-system";
 import { addToIndex, createIndex, VaultIndex } from "../utils/vaultIndex";
-import { IMAGE_EXT } from "../utils/markdown";
+import { IMAGE_EXT, MEDIA_EXT } from "../utils/markdown";
 
 const yieldToUi = () => new Promise<void>((r) => setTimeout(r, 0));
 
@@ -32,7 +32,10 @@ export async function buildVaultIndex(uri: string): Promise<VaultIndex> {
 			if (entry instanceof Directory) {
 				if (!entry.name.startsWith("."))
 					queue.push({ dir: entry, path: `${path}${entry.name}/` });
-			} else if (IMAGE_EXT.test(entry.name)) {
+			} else if (
+				IMAGE_EXT.test(entry.name) ||
+				MEDIA_EXT.test(entry.name)
+			) {
 				addToIndex(index, path + entry.name, entry.uri);
 			}
 		}

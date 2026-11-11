@@ -17,7 +17,12 @@
 				"monochromeImage": "./assets/android-icon-monochrome.png"
 			},
 			"predictiveBackGestureEnabled": false,
-			"package": "com.knownyurimaxxer.feedjournal"
+			"package": "com.knownyurimaxxer.feedjournal",
+			"permissions": [
+				"RECORD_AUDIO",
+				"FOREGROUND_SERVICE",
+				"FOREGROUND_SERVICE_MEDIA_PROJECTION"
+			]
 		},
 		"web": {
 			"favicon": "./assets/favicon.png"
@@ -27,7 +32,13 @@
 			[
 				"expo-image-picker",
 				{
-					"photosPermission": "Allow $(PRODUCT_NAME) to access your photos to set your avatar."
+					"photosPermission": "Allow $(PRODUCT_NAME) to access your photos to set your avatar and to add pictures to your Obsidian vault."
+				}
+			],
+			[
+				"expo-audio",
+				{
+					"microphonePermission": "Allow $(PRODUCT_NAME) to use the microphone to record voice notes."
 				}
 			],
 			"expo-localization",

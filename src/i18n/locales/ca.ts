@@ -21,6 +21,8 @@ export const ca: Messages = {
 	"feed.deleteTitle": "Vols eliminar aquesta publicació?",
 	"feed.deleteBody":
 		"S'eliminarà el fitxer .md. (De tota manera, ningú no la va veure.)",
+	"feed.deleteBodyFiles":
+		"S'esborrarà el fitxer .md i {n} fitxer(s) adjunt(s) del vault. No es pot desfer.",
 	"feed.resetTitle": "Vols eliminar-ho tot?",
 	"feed.resetBody":
 		"Això elimina per sempre totes les notes de la teva carpeta de notes, a més de tots els likes i ajustos, i restableix l'app. No es pot desfer.",
@@ -108,8 +110,49 @@ export const ca: Messages = {
 	"settings.noVault":
 		"Cap vault triat. Obsidian continua desactivat fins que en triïs un.",
 	"settings.vaultHint":
-		"Tria el teu vault d'Obsidian (la carpeta que conté la carpeta .obsidian). Les imatges es cerquen allà per nom o ruta. No es canvia res del vault.",
+		"Tria el teu vault d'Obsidian (la carpeta que conté la carpeta .obsidian). Les imatges es cerquen allà per nom o ruta. L'app només afegeix fitxers al vault; mai canvia ni esborra el que ja hi ha.",
 	"settings.clear": "Treu",
+
+	// pictures, voice notes and screen recordings saved in the vault
+	"media.addImage": "Afegeix imatge",
+	"media.recordAudio": "Grava nota de veu",
+	"media.recordScreen": "Grava la pantalla",
+	"media.recordingAudio": "Gravant nota de veu",
+	"media.recordingScreen": "Gravant la pantalla",
+	"media.saving": "Desant al vault…",
+	"media.stop": "Atura",
+	"media.failed": "No s'ha pogut desar al vault",
+	"media.needVault": "Tria primer el teu vault a Ajustaments.",
+	"media.micDenied":
+		"El micròfon no està permès. Activa'l als ajustaments del telèfon.",
+	"media.nothingRecorded": "No s'ha gravat res.",
+	"settings.media": "Imatges, notes de veu i vídeos",
+	"settings.mediaHint":
+		"Carpetes dins del teu vault on es desen els fitxers nous, escrites des de la carpeta del vault. Les carpetes que falten es creen. Els fitxers es diuen per data i hora, com 20261107125555.",
+	"settings.mediaImages": "Carpeta d'imatges",
+	"settings.mediaAudio": "Carpeta de notes de veu",
+	"settings.mediaVideo": "Carpeta de gravacions de pantalla",
+	"settings.mediaRoot": "La carpeta del vault mateixa",
+	"settings.deleteFiles": "Esborra també els fitxers de la publicació",
+	"settings.deleteFilesHint":
+		"En esborrar una publicació també s'esborren les imatges, notes de veu i vídeos que aquesta app ha desat per a ella, tret que una altra publicació encara els mostri. Els fitxers que ja eren al teu vault mai no es toquen.",
+
+	// quality of voice notes and screen recordings, and the player
+	"settings.voice": "Notes de veu",
+	"settings.voiceHint":
+		"Mono a 64 kbps se sent clar per parlar; fes servir estèreo i 128 kbps o més per a música.",
+	"settings.channels": "Canals",
+	"settings.mono": "Mono",
+	"settings.stereo": "Estèreo",
+	"settings.compression": "Compressió",
+	"settings.screen": "Gravacions de pantalla",
+	"settings.screenHint":
+		"Només es mostren els còdecs que el teu telèfon pot gravar. 2 Mbps es veu clar per a text en un telèfon.",
+	"settings.codec": "Còdec",
+	"player.play": "Reprodueix",
+	"player.pause": "Pausa",
+	"player.playVideo": "Reprodueix el vídeo",
+	"player.notFound": "no és al vault",
 	"settings.user": "Usuari",
 	"settings.showNickname": "Mostra el sobrenom",
 	"settings.showNicknameHint":

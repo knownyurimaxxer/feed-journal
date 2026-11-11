@@ -1,7 +1,12 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { buildVaultIndex } from "../storage/vault";
 import { ObsidianApi, ObsidianStatus } from "../theme/ObsidianContext";
-import { findInIndex, isObsidianActive, VaultIndex } from "../utils/vaultIndex";
+import {
+	addToIndex,
+	findInIndex,
+	isObsidianActive,
+	VaultIndex,
+} from "../utils/vaultIndex";
 
 /**
  * Keeps the list of pictures of the Obsidian vault. It is rebuilt when the
@@ -16,6 +21,7 @@ export function useVault(enabled: boolean, vaultUri: string | null) {
 		index: VaultIndex | null;
 	} | null>(null);
 	const [round, setRound] = useState(0);
+	const [added, setAdded] = useState(0); // counts files the app saved itself
 	const active = isObsidianActive(enabled, vaultUri);
 	const uri = active ? vaultUri : null;
 
@@ -38,6 +44,15 @@ export function useVault(enabled: boolean, vaultUri: string | null) {
 
 	const refresh = useCallback(() => setRound((n) => n + 1), []);
 
+	// Files the app saves into the vault are added to the list directly.
+	const indexRef = useRef<VaultIndex | null>(null);
+	indexRef.current = built && built.uri === uri ? built.index : null;
+	const registerFile = useCallback((path: string, fileUri: string) => {
+		if (!indexRef.current) return;
+		addToIndex(indexRef.current, path, fileUri);
+		setAdded((n) => n + 1);
+	}, []);
+
 	const api = useMemo<ObsidianApi>(() => {
 		const current = built && built.uri === uri ? built : null;
 		const status: ObsidianStatus = !uri
@@ -52,8 +67,10 @@ export function useVault(enabled: boolean, vaultUri: string | null) {
 			enabled: active,
 			status,
 			resolveImage: (path) => (index ? findInIndex(index, path) : null),
+			registerFile,
 		};
-	}, [active, uri, built]);
+		// `added` makes a new object when the list grew, so pictures look again.
+	}, [active, uri, built, registerFile, added]);
 
 	return { api, refresh };
 }

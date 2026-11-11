@@ -21,6 +21,8 @@ export const gl: Messages = {
 	"feed.deleteTitle": "Eliminar esta publicación?",
 	"feed.deleteBody":
 		"Eliminarase o ficheiro .md. (Ninguén a viu, de todos os xeitos.)",
+	"feed.deleteBodyFiles":
+		"Borrarase o ficheiro .md e {n} ficheiro(s) adxunto(s) da bóveda. Non se pode desfacer.",
 	"feed.resetTitle": "Eliminar todo?",
 	"feed.resetBody":
 		"Isto elimina para sempre todas as notas do teu cartafol de notas, ademais de todos os likes e axustes, e restablece a app. Non se pode desfacer.",
@@ -108,8 +110,49 @@ export const gl: Messages = {
 	"settings.noVault":
 		"Non hai ningunha bóveda elixida. Obsidian queda desactivado ata que elixas unha.",
 	"settings.vaultHint":
-		"Elixe a túa bóveda de Obsidian (o cartafol que contén o cartafol .obsidian). As imaxes búscanse alí polo nome ou pola ruta. Non se cambia nada na bóveda.",
+		"Elixe a túa bóveda de Obsidian (o cartafol que contén o cartafol .obsidian). As imaxes búscanse alí polo nome ou pola ruta. A app só engade ficheiros á bóveda; nunca cambia nin borra o que xa hai.",
 	"settings.clear": "Quitar",
+
+	// pictures, voice notes and screen recordings saved in the vault
+	"media.addImage": "Engadir imaxe",
+	"media.recordAudio": "Gravar nota de voz",
+	"media.recordScreen": "Gravar a pantalla",
+	"media.recordingAudio": "Gravando nota de voz",
+	"media.recordingScreen": "Gravando a pantalla",
+	"media.saving": "Gardando na bóveda…",
+	"media.stop": "Parar",
+	"media.failed": "Non se puido gardar na bóveda",
+	"media.needVault": "Elixe primeiro a túa bóveda en Axustes.",
+	"media.micDenied":
+		"O micrófono non está permitido. Actívao nos axustes do teléfono.",
+	"media.nothingRecorded": "Non se gravou nada.",
+	"settings.media": "Imaxes, notas de voz e vídeos",
+	"settings.mediaHint":
+		"Cartafoles dentro da túa bóveda onde se gardan os ficheiros novos, escritos desde o cartafol da bóveda. Os cartafoles que faltan créanse. Os ficheiros chámanse pola data e a hora, como 20261107125555.",
+	"settings.mediaImages": "Cartafol de imaxes",
+	"settings.mediaAudio": "Cartafol de notas de voz",
+	"settings.mediaVideo": "Cartafol de gravacións de pantalla",
+	"settings.mediaRoot": "O propio cartafol da bóveda",
+	"settings.deleteFiles": "Borrar tamén os ficheiros da publicación",
+	"settings.deleteFilesHint":
+		"Ao borrar unha publicación bórranse tamén as imaxes, notas de voz e vídeos que esta app gardou para ela, salvo que outra publicación aínda os amose. Os ficheiros que xa estaban na túa bóveda nunca se tocan.",
+
+	// quality of voice notes and screen recordings, and the player
+	"settings.voice": "Notas de voz",
+	"settings.voiceHint":
+		"Mono a 64 kbps óese claro para falar; usa estéreo e 128 kbps ou máis para música.",
+	"settings.channels": "Canles",
+	"settings.mono": "Mono",
+	"settings.stereo": "Estéreo",
+	"settings.compression": "Compresión",
+	"settings.screen": "Gravacións de pantalla",
+	"settings.screenHint":
+		"Só se amosan os códecs que o teu teléfono pode gravar. 2 Mbps vese claro para texto nun teléfono.",
+	"settings.codec": "Códec",
+	"player.play": "Reproducir",
+	"player.pause": "Pausar",
+	"player.playVideo": "Reproducir vídeo",
+	"player.notFound": "non está na bóveda",
 	"settings.user": "Usuario",
 	"settings.showNickname": "Mostrar o alcume",
 	"settings.showNicknameHint": "Oculta o nome nas publicacións e no editor.",

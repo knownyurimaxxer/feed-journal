@@ -21,6 +21,8 @@ export const pt: Messages = {
 	"feed.deleteTitle": "Eliminar esta publicação?",
 	"feed.deleteBody":
 		"O ficheiro .md será eliminado. (De qualquer forma, ninguém a viu.)",
+	"feed.deleteBodyFiles":
+		"O ficheiro .md e {n} ficheiro(s) anexo(s) do cofre serão apagados. Não se pode desfazer.",
 	"feed.resetTitle": "Eliminar tudo?",
 	"feed.resetBody":
 		"Isto elimina permanentemente todas as notas da tua pasta de notas, além de todos os likes e definições, e repõe a app. Não pode ser desfeito.",
@@ -108,8 +110,49 @@ export const pt: Messages = {
 	"settings.noVault":
 		"Nenhum cofre escolhido. O Obsidian fica desligado até escolheres um.",
 	"settings.vaultHint":
-		"Escolhe o teu cofre do Obsidian (a pasta que contém a pasta .obsidian). As imagens são procuradas aí pelo nome ou caminho. Nada no cofre é alterado.",
+		"Escolhe o teu cofre do Obsidian (a pasta que contém a pasta .obsidian). As imagens são procuradas aí pelo nome ou caminho. A app só adiciona ficheiros ao cofre; nunca altera nem apaga o que já lá está.",
 	"settings.clear": "Limpar",
+
+	// pictures, voice notes and screen recordings saved in the vault
+	"media.addImage": "Adicionar imagem",
+	"media.recordAudio": "Gravar nota de voz",
+	"media.recordScreen": "Gravar ecrã",
+	"media.recordingAudio": "A gravar nota de voz",
+	"media.recordingScreen": "A gravar o ecrã",
+	"media.saving": "A guardar no cofre…",
+	"media.stop": "Parar",
+	"media.failed": "Não foi possível guardar no cofre",
+	"media.needVault": "Escolhe primeiro o teu cofre nas Definições.",
+	"media.micDenied":
+		"O microfone não está permitido. Ativa-o nas definições do telemóvel.",
+	"media.nothingRecorded": "Nada foi gravado.",
+	"settings.media": "Imagens, notas de voz e vídeos",
+	"settings.mediaHint":
+		"Pastas dentro do teu cofre onde os ficheiros novos são guardados, escritas a partir da pasta do cofre. As pastas em falta são criadas. Os ficheiros têm o nome da data e hora, como 20261107125555.",
+	"settings.mediaImages": "Pasta das imagens",
+	"settings.mediaAudio": "Pasta das notas de voz",
+	"settings.mediaVideo": "Pasta das gravações de ecrã",
+	"settings.mediaRoot": "A própria pasta do cofre",
+	"settings.deleteFiles": "Apagar também os ficheiros da publicação",
+	"settings.deleteFilesHint":
+		"Ao apagar uma publicação também são apagadas as imagens, notas de voz e vídeos que esta app guardou para ela, a menos que outra publicação ainda os mostre. Os ficheiros que já estavam no teu cofre nunca são tocados.",
+
+	// quality of voice notes and screen recordings, and the player
+	"settings.voice": "Notas de voz",
+	"settings.voiceHint":
+		"Mono a 64 kbps ouve-se bem para falar; usa estéreo e 128 kbps ou mais para música.",
+	"settings.channels": "Canais",
+	"settings.mono": "Mono",
+	"settings.stereo": "Estéreo",
+	"settings.compression": "Compressão",
+	"settings.screen": "Gravações de ecrã",
+	"settings.screenHint":
+		"Só são mostrados os codecs que o teu telemóvel consegue gravar. 2 Mbps vê-se bem para texto num telemóvel.",
+	"settings.codec": "Codec",
+	"player.play": "Reproduzir",
+	"player.pause": "Pausar",
+	"player.playVideo": "Reproduzir vídeo",
+	"player.notFound": "não está no cofre",
 	"settings.user": "Utilizador",
 	"settings.showNickname": "Mostrar alcunha",
 	"settings.showNicknameHint": "Esconde o nome nas publicações e no editor.",
