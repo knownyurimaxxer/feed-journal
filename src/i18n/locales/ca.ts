@@ -30,6 +30,7 @@ export const ca: Messages = {
 	"feed.resetSureBody": "S'eliminaran totes les notes.",
 	"feed.resetSureConfirm": "Elimina-ho tot",
 	"feed.resetFailed": "No s'ha pogut restablir",
+	"feed.clearSearch": "Esborra la cerca",
 
 	// post card
 	"post.edited": " · editat",
@@ -174,12 +175,12 @@ export const ca: Messages = {
 	"settings.maxTags": "Etiquetes per publicació",
 	"settings.maxTagsHint":
 		"De {min} a {max}. Amb 0 s'amaga el quadre d'etiquetes en escriure.",
-	"settings.noCharLimit": "Sense límit de caràcters",
-	"settings.noCharLimitHint":
-		"Les publicacions poden tenir qualsevol longitud.",
-	"settings.noTagLimit": "Sense límit d'etiquetes",
-	"settings.noTagLimitHint":
-		"Les publicacions poden tenir qualsevol nombre d'etiquetes.",
+	"settings.limitChars": "Limitar caràcters per publicació",
+	"settings.limitCharsHint":
+		"Si ho desactives, les publicacions poden tenir qualsevol longitud.",
+	"settings.limitTags": "Limitar etiquetes per publicació",
+	"settings.limitTagsHint":
+		"Si ho desactives, les publicacions poden tenir qualsevol nombre d'etiquetes.",
 	"settings.theme": "Tema",
 	"settings.presets": "Predefinits",
 	"role.background": "Fons",

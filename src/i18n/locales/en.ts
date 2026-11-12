@@ -33,6 +33,7 @@ export const en = {
 	"feed.resetSureBody": "Every note will be deleted.",
 	"feed.resetSureConfirm": "Delete everything",
 	"feed.resetFailed": "Couldn't reset",
+	"feed.clearSearch": "Clear search",
 
 	// post card
 	"post.edited": " · edited",
@@ -174,10 +175,11 @@ export const en = {
 	"settings.maxTags": "Tags per post",
 	"settings.maxTagsHint":
 		"From {min} to {max}. 0 hides the tag box when writing.",
-	"settings.noCharLimit": "No character limit",
-	"settings.noCharLimitHint": "Posts can be any length.",
-	"settings.noTagLimit": "No tag limit",
-	"settings.noTagLimitHint": "Posts can have any number of tags.",
+	"settings.limitChars": "Limit characters per post",
+	"settings.limitCharsHint": "If you turn this off, posts can be any length.",
+	"settings.limitTags": "Limit tags per post",
+	"settings.limitTagsHint":
+		"If you turn this off, posts can have any number of tags.",
 	"settings.theme": "Theme",
 	"settings.presets": "Presets",
 	"role.background": "Background",

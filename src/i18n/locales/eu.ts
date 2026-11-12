@@ -30,6 +30,7 @@ export const eu: Messages = {
 	"feed.resetSureBody": "Ohar guztiak ezabatuko dira.",
 	"feed.resetSureConfirm": "Ezabatu dena",
 	"feed.resetFailed": "Ezin izan da berrezarri",
+	"feed.clearSearch": "Garbitu bilaketa",
 
 	// post card
 	"post.edited": " · editatua",
@@ -174,11 +175,12 @@ export const eu: Messages = {
 	"settings.maxTags": "Etiketak argitalpen bakoitzeko",
 	"settings.maxTagsHint":
 		"{min} eta {max} artean. 0 jartzean etiketen kutxa ezkutatzen da idaztean.",
-	"settings.noCharLimit": "Karaktere-mugarik ez",
-	"settings.noCharLimitHint": "Argitalpenek edozein luzera izan dezakete.",
-	"settings.noTagLimit": "Etiketa-mugarik ez",
-	"settings.noTagLimitHint":
-		"Argitalpenek edozein etiketa kopuru izan dezakete.",
+	"settings.limitChars": "Mugatu karaktereak argitalpen bakoitzeko",
+	"settings.limitCharsHint":
+		"Desaktibatzen baduzu, argitalpenek edozein luzera izan dezakete.",
+	"settings.limitTags": "Mugatu etiketak argitalpen bakoitzeko",
+	"settings.limitTagsHint":
+		"Desaktibatzen baduzu, argitalpenek edozein etiketa kopuru izan dezakete.",
 	"settings.theme": "Gaia",
 	"settings.presets": "Aurrezarpenak",
 	"role.background": "Atzeko planoa",

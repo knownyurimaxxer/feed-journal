@@ -30,6 +30,7 @@ export const pt: Messages = {
 	"feed.resetSureBody": "Todas as notas serão eliminadas.",
 	"feed.resetSureConfirm": "Eliminar tudo",
 	"feed.resetFailed": "Não foi possível repor",
+	"feed.clearSearch": "Limpar pesquisa",
 
 	// post card
 	"post.edited": " · editado",
@@ -172,11 +173,12 @@ export const pt: Messages = {
 	"settings.maxTags": "Etiquetas por publicação",
 	"settings.maxTagsHint":
 		"De {min} a {max}. 0 esconde a caixa de etiquetas ao escrever.",
-	"settings.noCharLimit": "Sem limite de caracteres",
-	"settings.noCharLimitHint": "As publicações podem ter qualquer tamanho.",
-	"settings.noTagLimit": "Sem limite de etiquetas",
-	"settings.noTagLimitHint":
-		"As publicações podem ter qualquer número de etiquetas.",
+	"settings.limitChars": "Limitar carateres por publicação",
+	"settings.limitCharsHint":
+		"Se o desativares, as publicações podem ter qualquer tamanho.",
+	"settings.limitTags": "Limitar etiquetas por publicação",
+	"settings.limitTagsHint":
+		"Se o desativares, as publicações podem ter qualquer número de etiquetas.",
 	"settings.theme": "Tema",
 	"settings.presets": "Predefinições",
 	"role.background": "Fundo",

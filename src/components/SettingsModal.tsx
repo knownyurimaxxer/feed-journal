@@ -776,7 +776,25 @@ export default function SettingsModal({
 							}}
 						/>
 					</View>
-					{!settings.unlimitedChars && (
+					<View style={[s.row, { marginTop: 12 }]}>
+						<View style={{ flex: 1, paddingRight: 12 }}>
+							<Text style={s.rowTitle}>
+								{t("settings.limitChars")}
+							</Text>
+							<Text style={s.rowHint}>
+								{t("settings.limitCharsHint")}
+							</Text>
+						</View>
+						<Switch
+							value={settings.limitChars}
+							onValueChange={(v) => update("limitChars", v)}
+							trackColor={{
+								true: theme.accent,
+								false: "#88888888",
+							}}
+						/>
+					</View>
+					{settings.limitChars && (
 						<View style={{ marginTop: 12 }}>
 							<NumberField
 								title={t("settings.maxChars")}
@@ -794,22 +812,22 @@ export default function SettingsModal({
 					<View style={[s.row, { marginTop: 12 }]}>
 						<View style={{ flex: 1, paddingRight: 12 }}>
 							<Text style={s.rowTitle}>
-								{t("settings.noCharLimit")}
+								{t("settings.limitTags")}
 							</Text>
 							<Text style={s.rowHint}>
-								{t("settings.noCharLimitHint")}
+								{t("settings.limitTagsHint")}
 							</Text>
 						</View>
 						<Switch
-							value={settings.unlimitedChars}
-							onValueChange={(v) => update("unlimitedChars", v)}
+							value={settings.limitTags}
+							onValueChange={(v) => update("limitTags", v)}
 							trackColor={{
 								true: theme.accent,
 								false: "#88888888",
 							}}
 						/>
 					</View>
-					{!settings.unlimitedTags && (
+					{settings.limitTags && (
 						<View style={{ marginTop: 12 }}>
 							<NumberField
 								title={t("settings.maxTags")}
@@ -824,24 +842,6 @@ export default function SettingsModal({
 							/>
 						</View>
 					)}
-					<View style={[s.row, { marginTop: 12 }]}>
-						<View style={{ flex: 1, paddingRight: 12 }}>
-							<Text style={s.rowTitle}>
-								{t("settings.noTagLimit")}
-							</Text>
-							<Text style={s.rowHint}>
-								{t("settings.noTagLimitHint")}
-							</Text>
-						</View>
-						<Switch
-							value={settings.unlimitedTags}
-							onValueChange={(v) => update("unlimitedTags", v)}
-							trackColor={{
-								true: theme.accent,
-								false: "#88888888",
-							}}
-						/>
-					</View>
 
 					{/* theme */}
 					<Text style={[s.section, { marginTop: 24 }]}>

@@ -305,15 +305,36 @@ export default function FeedScreen({
 			)}
 
 			<View style={s.searchRow}>
-				<TextInput
-					style={s.search}
-					placeholder={t("feed.search")}
-					placeholderTextColor={theme.text + "88"}
-					value={query}
-					onChangeText={setQuery}
-					returnKeyType="search"
-					clearButtonMode="while-editing"
-				/>
+				<View style={s.searchBox}>
+					<Ionicons
+						name="search"
+						size={18}
+						color={theme.text + "88"}
+					/>
+					<TextInput
+						style={s.searchInput}
+						placeholder={t("feed.search")}
+						placeholderTextColor={theme.text + "88"}
+						value={query}
+						onChangeText={setQuery}
+						returnKeyType="search"
+						clearButtonMode="while-editing"
+					/>
+					{query !== "" && (
+						<Pressable
+							accessibilityRole="button"
+							accessibilityLabel={t("feed.clearSearch")}
+							hitSlop={8}
+							onPress={() => setQuery("")}
+						>
+							<Ionicons
+								name="close-circle"
+								size={18}
+								color={theme.text + "88"}
+							/>
+						</Pressable>
+					)}
+				</View>
 				<Pressable
 					onPress={() => {
 						haptic("settings");
@@ -453,11 +474,9 @@ export default function FeedScreen({
 				editing={composer.editing}
 				avatar={avatarValue}
 				nickname={nicknameValue}
-				// With "no limit" on, the editor gets an endless limit.
-				maxChars={
-					settings.unlimitedChars ? Infinity : settings.maxChars
-				}
-				maxTags={settings.unlimitedTags ? Infinity : settings.maxTags}
+				// With the limit off, the editor gets an endless limit.
+				maxChars={settings.limitChars ? settings.maxChars : Infinity}
+				maxTags={settings.limitTags ? settings.maxTags : Infinity}
 				media={media}
 				onClose={closeComposer}
 				onSave={handleSave}
@@ -502,14 +521,21 @@ const makeStyles = (t: Theme) => {
 			paddingTop: 7.75,
 			paddingBottom: 8,
 		},
-		search: {
+		searchBox: {
 			flex: 1,
+			flexDirection: "row",
+			alignItems: "center",
+			gap: 8,
 			backgroundColor: t.card,
-			color: t.text,
 			borderRadius: 8,
-			paddingHorizontal: 14,
-			paddingVertical: 10,
+			paddingHorizontal: 12,
+			minHeight: 40,
+		},
+		searchInput: {
+			flex: 1,
+			color: t.text,
 			fontSize: 15,
+			paddingVertical: 10,
 		},
 		chipRow: { paddingHorizontal: 14, paddingBottom: 8, gap: 8 },
 		empty: {
