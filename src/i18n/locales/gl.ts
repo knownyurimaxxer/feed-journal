@@ -173,11 +173,12 @@ export const gl: Messages = {
 	"settings.maxTags": "Etiquetas por publicación",
 	"settings.maxTagsHint":
 		"De {min} a {max}. 0 oculta a caixa de etiquetas ao escribir.",
-	"settings.noCharLimit": "Sen límite de caracteres",
-	"settings.noCharLimitHint": "As publicacións poden ter calquera lonxitude.",
-	"settings.noTagLimit": "Sen límite de etiquetas",
-	"settings.noTagLimitHint":
-		"As publicacións poden ter calquera número de etiquetas.",
+	"settings.limitChars": "Limitar caracteres por publicación",
+	"settings.limitCharsHint":
+		"Se o desactivas, as publicacións poden ter calquera lonxitude.",
+	"settings.limitTags": "Limitar etiquetas por publicación",
+	"settings.limitTagsHint":
+		"Se o desactivas, as publicacións poden ter calquera número de etiquetas.",
 	"settings.theme": "Tema",
 	"settings.presets": "Predefinidos",
 	"role.background": "Fondo",

@@ -175,12 +175,12 @@ export const es: Messages = {
 	"settings.maxTags": "Etiquetas por publicación",
 	"settings.maxTagsHint":
 		"De {min} a {max}. Con 0 se oculta el cuadro de etiquetas al escribir.",
-	"settings.noCharLimit": "Sin límite de caracteres",
-	"settings.noCharLimitHint":
-		"Las publicaciones pueden tener cualquier longitud.",
-	"settings.noTagLimit": "Sin límite de etiquetas",
-	"settings.noTagLimitHint":
-		"Las publicaciones pueden tener cualquier número de etiquetas.",
+	"settings.limitChars": "Limitar caracteres por publicación",
+	"settings.limitCharsHint":
+		"Si lo desactivas, las publicaciones pueden tener cualquier longitud.",
+	"settings.limitTags": "Limitar etiquetas por publicación",
+	"settings.limitTagsHint":
+		"Si lo desactivas, las publicaciones pueden tener cualquier número de etiquetas.",
 	"settings.theme": "Tema",
 	"settings.presets": "Preajustes",
 	"role.background": "Fondo",
