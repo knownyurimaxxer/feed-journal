@@ -30,6 +30,7 @@ export const ca: Messages = {
 	"feed.resetSureBody": "S'eliminaran totes les notes.",
 	"feed.resetSureConfirm": "Elimina-ho tot",
 	"feed.resetFailed": "No s'ha pogut restablir",
+	"feed.clearSearch": "Esborra la cerca",
 
 	// post card
 	"post.edited": " · editat",

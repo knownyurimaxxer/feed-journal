@@ -30,6 +30,7 @@ export const gl: Messages = {
 	"feed.resetSureBody": "Eliminaranse todas as notas.",
 	"feed.resetSureConfirm": "Eliminar todo",
 	"feed.resetFailed": "Non se puido restablecer",
+	"feed.clearSearch": "Borrar a busca",
 
 	// post card
 	"post.edited": " · editado",

@@ -30,6 +30,7 @@ export const pt: Messages = {
 	"feed.resetSureBody": "Todas as notas serão eliminadas.",
 	"feed.resetSureConfirm": "Eliminar tudo",
 	"feed.resetFailed": "Não foi possível repor",
+	"feed.clearSearch": "Limpar pesquisa",
 
 	// post card
 	"post.edited": " · editado",

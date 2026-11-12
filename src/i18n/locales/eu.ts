@@ -30,6 +30,7 @@ export const eu: Messages = {
 	"feed.resetSureBody": "Ohar guztiak ezabatuko dira.",
 	"feed.resetSureConfirm": "Ezabatu dena",
 	"feed.resetFailed": "Ezin izan da berrezarri",
+	"feed.clearSearch": "Garbitu bilaketa",
 
 	// post card
 	"post.edited": " · editatua",

@@ -33,6 +33,7 @@ export const en = {
 	"feed.resetSureBody": "Every note will be deleted.",
 	"feed.resetSureConfirm": "Delete everything",
 	"feed.resetFailed": "Couldn't reset",
+	"feed.clearSearch": "Clear search",
 
 	// post card
 	"post.edited": " · edited",
